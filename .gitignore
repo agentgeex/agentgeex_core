@@ -1,0 +1,95 @@
+.env
+.venv/
+.idea/*
+logs/*
+*/logs/*
+**/logs/**
+config/__pycache__/
+__pycache__/
+*/__pycache__/*
+**/__pycache__/
+**/__pycache__
+**/obj_train_data/**
+**/util/result/**
+.python-version
+/agx_cleanup_projectagent.sh
+/agx.sql.2026-05-22.sql
+/agx.sql.2026-05-25.sql
+.ruff_cache/
+.pytest_cache/
+.vscode/
+# daily 日志合并前的历史快照（★ 2026-10-24 改为入库，应备尽备）
+# docs/agent_docs/daily/.backup_*/
+
+# 测试专用配置（含密码，不入库；由 test/agx_config.test.json 生成）
+test/agx_config.test.json
+
+# 凭证文件（含 API key/密码明文，一律不入库；skills/* 运行时本地创建）
+**/credentials.txt
+**/credentials.json
+**/*.credentials
+
+# 本地数据备份/DB dump 快照（非源码，不入库）
+# ★ 2026-10-24：bak/ 已于同日整体移至 bak 分支（远程留档），master 不再保留。
+/backups/
+
+# 配置备份（防手滑入库）
+agx_config.json.bak*
+agx_config.json.bak*
+
+# ══════════════════════════════════════════════════════════════
+# ★ 2026-10-24 老冯定：本仓库为私有仓库，凭据不再作为排除理由
+#    「这个仓库是私有的，所以上诉问题都不用担心，大胆的提交吧」
+#    应备尽备：备份/配置文件一律入库，正式发布时再统一做减法。
+# ══════════════════════════════════════════════════════════════
+
+# ══════════════════════════════════════════════════════════════
+# ★ 2026-10-30 老冯定：仓库是代码库，不是工作目录
+#    「你在仓库跑，它就会产生日志和其他文件，我担心不小心同步到仓库里」
+#    设计上本该「仓库 = 纯代码，运行 = 安装目录」，但 mac 上实际跑在仓库目录
+#    （见下），所以这里把运行时产物逐类钉死，保证 `git status` 永远是干净的。
+#    注意：这是保险，不是许可 —— 生产部署仍应走安装目录。
+# ══════════════════════════════════════════════════════════════
+
+# 守护进程运行时产物（logs/ 已在上面忽略，这里补它散落在外的同族）
+logs/.watchdog_heartbeat
+
+# state_relay 运行时产物（log / timing jsonl / supervisor lock，约 11MB 且持续增长）
+/runtime_watch/
+*.pid
+*.sock
+*.out
+
+# 手工备份/临时快照（.bak / .bak-<tag> / .orig / .rej）
+*.bak
+*.bak-*
+*.orig
+*.rej
+*~
+
+# 操作系统与编辑器残留
+.DS_Store
+**/.DS_Store
+*.swp
+*.swo
+
+# 字节码与日志散落（__pycache__ 之外的同族）
+*.pyc
+*.pyo
+*.log
+
+# 例外：已入库的协议样例日志（.gitignore 不影响已跟踪文件，此处仅为意图声明）
+!**/bridge_poc/**/*.log
+*.bak_*
+
+# 语音服务调试音频（可能很大，不入库）
+tools/audio_stt/debug_audio/*
+!tools/audio_stt/debug_audio/.gitkeep
+
+# ASR 本地覆盖（可选）：仓库根的 asr.env 是进库的默认配置；
+# 想在本机改而不动库，就放到 tools/audio_stt/asr.env
+tools/audio_stt/asr.env
+
+# ── 数据库凭据文件（含明文密码，绝不入库）── 2026-11-13
+mysql_env.sh
+agx_config.json
