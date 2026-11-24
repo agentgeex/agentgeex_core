@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- 品牌图标（图片统一放 public/brand/，见其 README） -->
+    <!-- SVG 第一优先：矢量图标在任何 DPI / 缩放比例下都锐，现代浏览器都支持 -->
+    <link rel="icon" type="image/svg+xml" href="/brand/logo-mark.svg" />
+    <link rel="icon" href="/brand/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/brand/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/brand/apple-touch-icon.png" />
+    <meta name="theme-color" content="#09090b" />
+    <title>AgentGeeX — 智能体管理控制台</title>
+    <meta
+      name="description"
+      content="AgentGeeX — 可检索、可预览、可复制取用的 UI 组件与案例集合。browse, preview, copy, ship."
+    />
+    <!-- 主题预置：首帧前应用已保存主题，避免刷新闪烁（含 /login 等 Shell 外路由） -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("agentgeex.theme");
+          document.documentElement.classList.toggle("dark", t === "dark");
+        } catch (e) {
+          document.documentElement.classList.remove("dark");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

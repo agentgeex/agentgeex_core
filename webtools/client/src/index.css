@@ -1,0 +1,259 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* 【台面层次 2026-10-20】画布与内容面解绑：画布灰、卡片白，四区分明 */
+    --background: 220 20% 96%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    /* 【2026-10-30】描述列表（Descriptions）标签列底色 —— 移植自 shardkit。
+       这个值必须同时满足两个差，别凭手感改：
+         light 220 20% 96% = rgb(243,244,247)：与网格线差 ~13、与白框差 ~10（1px 线可见）
+         取 93% 时只剩 5 的差 → 网格线被底色吃掉（shardkit 真实返工事故）
+       dark 240 8% 12.5% = rgb(29,29,34)：比线暗 ~10、比 card(9%) 亮 ~8（线浮得出来）
+         取 15% 反而比线更亮 → 线消失
+       ⚠️ 改值必须同时验「底 vs 网格线」和「底 vs 框底」两个差。 */
+    --table-head: 220 20% 96%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    /* 【2026-11-05 11:25 老冯】「你按照这个都去统一吧。这是你这个框架的最大的症结，看不清楚。」
+       全局细线由 91% 抬到 84%（= 原 --border-strong 那一档，#D1D4DC）。
+       原因：本框架的页面普遍是「灰画布 → 大白框 → 里面又是白框 → 再是小块」，
+       两级白之间零色差，全靠 1px 线撑层次；91% 的线在白卡(255) 与画布(244) 之间立不住，
+       结果是整页"什么都是一片白，看不出块"（老冯原话：看得非常吃力）。
+       84% 已在系统状态页目视确认。--border 与 --border-strong 现在**同一个值**：
+       全站只有一档线，不再区分"常规线/区域线"—— 分层交给留白与底色，不交给线的深浅。
+       ⚠️ 将来若要恢复两级线，改这里即可；但不要只改 --border 不改 --input（按钮走 input）。 */
+    --border: 220 13% 84%;
+    /* 区域分界（比常规边框深一档，让四块"看得见线"） */
+    --border-strong: 220 13% 84%;
+    /* 与 --border 同步：按钮/输入框描边走 --input，只改 --border 会留下一批浅线 */
+    --input: 220 13% 84%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.6rem;
+    /* 状态语义色（成功/警告/信息） */
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 26 83% 14%;
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+    /* 【2026-10-28 15:05 老冯】动作按钮专用色：状态色当按钮底太浅（success 白字仅 2.3:1），
+       故为「执行(success 同色相)/查看(info 同色相)」各取一档更深的实底，白字 ≥4.5:1。 */
+    --action-run: 152 72% 28%;
+    --action-run-foreground: 0 0% 100%;
+    --action-view: 199 95% 30%;
+    --action-view-foreground: 0 0% 100%;
+    /* 分类标识色（角色徽标/图例等多色区分，无语义）—— 用法同状态色：border-chart-N/30 bg-chart-N/15 text-chart-N */
+    --chart-1: 258 89.5% 66.3%;
+    --chart-2: 37.7 92.1% 50.2%;
+    --chart-3: 188.7 94.5% 42.7%;
+    --chart-4: 330.4 81.2% 60.4%;
+    --chart-5: 217.2 91.2% 59.8%;
+    --chart-6: 173.4 80.4% 40.4%;
+    /* 代码/终端面板（明暗两态都保持深底） */
+    --code: 228.6 84% 4.9%;
+    --code-foreground: 0 0% 98%;
+    /* 导航外壳（深色侧栏）：四区台面 A/C 区 */
+    --chrome: 222 47% 11%;
+    --chrome-foreground: 215 20% 70%;
+    --chrome-hover: 217 33% 15%;
+    --chrome-active: 210 40% 98%;
+    --chrome-active-foreground: 222 47% 11%;
+  }
+
+  .dark {
+    /* 暗色单独调：卡片必须明显高于画布，否则黑底上等于没层次 */
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+    --card: 240 8% 9%;
+    --card-foreground: 0 0% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --table-head: 240 8% 12.5%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --popover: 240 8% 9%;
+    --popover-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 45%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5% 20%;
+    --border-strong: 240 6% 23%;
+    --input: 240 5% 20%;
+    --ring: 224.3 76.3% 48%;
+    /* 状态语义色（成功/警告/信息） */
+    --success: 142 69% 58%;
+    --success-foreground: 144 61% 12%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 26 83% 14%;
+    --info: 199 89% 60%;
+    --info-foreground: 202 80% 10%;
+    --action-run: 152 60% 34%;
+    --action-run-foreground: 0 0% 100%;
+    --action-view: 199 88% 34%;
+    --action-view-foreground: 0 0% 100%;
+    --chart-1: 255.1 91.7% 76.3%;
+    --chart-2: 43.3 96.4% 56.3%;
+    --chart-3: 187.9 85.7% 53.3%;
+    --chart-4: 328.6 85.5% 70.2%;
+    --chart-5: 213.1 93.9% 67.8%;
+    --chart-6: 172.5 66.1% 50.4%;
+    --code: 228.6 84% 4.9%;
+    --code-foreground: 0 0% 98%;
+    /* 导航外壳（暗色） */
+    --chrome: 222 40% 13%;
+    --chrome-foreground: 215 18% 68%;
+    --chrome-hover: 222 38% 17%;
+    --chrome-active: 210 40% 98%;
+    --chrome-active-foreground: 222 47% 11%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+      "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  code,
+  pre {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+      "Liberation Mono", monospace;
+  }
+}
+
+/* shiki 代码高亮块适配 */
+.shiki-block pre {
+  margin: 0;
+  padding: 1rem;
+  overflow: auto;
+  font-size: 12.5px;
+  line-height: 1.6;
+  background: hsl(240 6% 5%) !important;
+}
+.shiki-block code {
+  font-size: 12.5px;
+}
+
+@layer components {
+  /* 细滚动条 */
+  .scrollbar-thin::-webkit-scrollbar { height: 6px; width: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { @apply rounded-full bg-border; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin { scrollbar-width: thin; }
+
+  /* 富文本内容排版（Tiptap 编辑区 + 渲染区通用） */
+  .prose-agentgeex { @apply text-sm leading-7 text-foreground; }
+  .prose-agentgeex h1 { @apply mt-3 mb-2 text-xl font-bold; }
+  .prose-agentgeex h2 { @apply mt-3 mb-2 text-lg font-semibold; }
+  .prose-agentgeex h3 { @apply mt-2 mb-1 text-base font-semibold; }
+  .prose-agentgeex p { @apply my-1.5; }
+  .prose-agentgeex ul { @apply my-1.5 list-disc pl-5; }
+  .prose-agentgeex ol { @apply my-1.5 list-decimal pl-5; }
+  .prose-agentgeex blockquote { @apply my-2 border-l-2 border-primary/50 pl-3 text-muted-foreground; }
+  .prose-agentgeex code { @apply rounded bg-muted px-1 py-0.5 text-xs; }
+  .prose-agentgeex a { @apply text-primary underline; }
+  .prose-agentgeex p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    @apply pointer-events-none float-left h-0 text-muted-foreground;
+  }
+
+  /* Markdown 编辑器：贴合 shadcn 主题 */
+  .agentgeex-md .w-md-editor { @apply bg-transparent; }
+  .agentgeex-md .w-md-editor-toolbar { @apply border-b bg-muted/30; }
+  /*
+   * 关键：编辑区 = 透明 textarea（真光标）+ 背后高亮 pre 叠层。
+   * 二者字体度量必须逐一致（font-size / line-height / font-family /
+   * letter-spacing / padding / white-space），否则光标会与可见文字错位。
+   * 注意 .w-md-editor-text-pre > code 默认 14px，比 textarea 的 13px 大 →
+   * 高亮层字宽偏大 → 光标随行漂移。故这里把内层 code/code-line/token
+   * 一并锁到 13px / 18px（与 textarea 一致）。
+   */
+  .agentgeex-md .w-md-editor-text,
+  .agentgeex-md .w-md-editor-text-pre,
+  .agentgeex-md .w-md-editor-text-pre > code,
+  .agentgeex-md .w-md-editor-text-pre .code-line,
+  .agentgeex-md .w-md-editor-text-pre .token,
+  .agentgeex-md .w-md-editor-text-input {
+    font-size: 13px !important;
+    line-height: 18px !important;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+      "Liberation Mono", monospace !important;
+    letter-spacing: normal !important;
+    tab-size: 4 !important;
+  }
+
+  /* 全屏态：必须给不透明主题背景，否则 fixed 覆盖层透明 → 背后控件可见 */
+  .agentgeex-md .w-md-editor-fullscreen {
+    background-color: hsl(var(--background)) !important;
+  }
+  .agentgeex-md .w-md-editor-fullscreen .w-md-editor-content,
+  .agentgeex-md .w-md-editor-fullscreen .w-md-editor-area,
+  .agentgeex-md .w-md-editor-fullscreen .w-md-editor-text,
+  .agentgeex-md .w-md-editor-fullscreen .w-md-editor-preview {
+    background-color: hsl(var(--background)) !important;
+  }
+
+  /*
+   * 只读 Markdown 预览（MarkdownView）正文基准：14px / 1.75
+   * ────────────────────────────────────────────────────────────────
+   * 组件库默认 16px，比全站正文（14px）大一档 → 同一个详情页里
+   * 「表格里的正文 14px、说明书 16px」，读者会觉得说明书是「放大版」。
+   * 统一到 14px：与表格值、正文同档，行高 1.75 保证长文可读。
+   * compact（弹窗/窄容器）再降一档到 13px，见下。
+   */
+  .agentgeex-md .wmde-markdown {
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  /*
+   * 紧凑档（弹窗、窄容器）：层级再收敛——h1 不过大，整体字号降一档，避免头重脚轻。
+   * 仅作用于标记了 data-md-compact 的预览容器。
+   */
+  .agentgeex-md[data-md-compact] .wmde-markdown {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .agentgeex-md[data-md-compact] .wmde-markdown h1 { font-size: 1.25rem; }
+  .agentgeex-md[data-md-compact] .wmde-markdown h2 { font-size: 1.1rem; }
+  .agentgeex-md[data-md-compact] .wmde-markdown h3 { font-size: 1rem; }
+  .agentgeex-md[data-md-compact] .wmde-markdown h4,
+  .agentgeex-md[data-md-compact] .wmde-markdown h5,
+  .agentgeex-md[data-md-compact] .wmde-markdown h6 { font-size: 0.9rem; }
+  .agentgeex-md[data-md-compact] .wmde-markdown pre { font-size: 12px; }
+}
+
+/* 无障碍：尊重系统「减少动态效果」偏好（原缺失） */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,24 @@
+[project]
+name = "win3-bff"
+version = "0.1.0"
+description = "Win3 商业控制台 BFF — 前端专用鉴权/聚合/适配层（FastAPI，复用 AgentGeeX 内核 agx_mcp）"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.0",
+    "redis>=7.4.0",
+    "pymysql>=1.1.2",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+exclude = [".venv", "__pycache__"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "UP", "B", "SIM", "C4"]
+ignore = ["E402", "E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "agx_mcp", "common"]

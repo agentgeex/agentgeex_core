@@ -1,0 +1,806 @@
+{
+  "group": "system_project",
+  "group_name": "agx-core-group",
+  "spec_version": "v2.1",
+  "collected_at": "2026-10-08 15:00:00",
+  "collected_by": "agx_core",
+  "requested_by": "agentgeex_agent",
+  "agents_surveyed": [
+    "agx_core",
+    "agx_host",
+    "agx_agentfather",
+    "agx_projectmother"
+  ],
+  "changelog": "v1→v2: example→placeholder, +default, enum→options[{value,label}], caller_role_limit 结构化, +delegate_to, +value_source; v2→v2.1(依 win_ui_lead 复核): host_id type 统一 text+value_source, value_source 规范枚举, 区分候选必选/自由输入, enforce 增 both, +date/datetime, 空槽集不误报; v2.1→v2.2: +项目配置(configure_project/deactivate_project, projectmother 侧, 运营字段; 停用走快捷指令不建 task)",
+  "commands": [
+    {
+      "cmd_id": "system_usage_analysis",
+      "title": "网络使用情况检查分析",
+      "owner_agent": "agx_core",
+      "target_task": "network_analysis",
+      "delegate_to": "",
+      "semantic_skeleton": "分析整个 AgentGeeX 网络的使用情况(主机资源/节点状态/任务负载分布)",
+      "params": [
+        {
+          "name": "scope",
+          "label": "分析粒度",
+          "required": false,
+          "type": "enum",
+          "placeholder": "",
+          "default": "",
+          "options": [
+            {
+              "value": "summary",
+              "label": "概要"
+            },
+            {
+              "value": "detailed",
+              "label": "详细"
+            }
+          ]
+        }
+      ],
+      "composed_instruction": "请分析本网络的整体使用情况(scope={scope})：各主机资源消耗、各节点运行状态、任务负载分布，输出结构化分析报告。",
+      "example_filled": "请分析本网络的整体使用情况(scope=summary)：各主机资源消耗、各节点运行状态、任务负载分布，输出结构化分析报告。",
+      "notes": "零/少参数，随时可触发。is_private=1(仅归属 Agent/PM/全局角色)。",
+      "caller_role_limit": {
+        "roles": [
+          "workshop_manager"
+        ],
+        "enforce": "both",
+        "note": "workshop_manager / 全局角色"
+      }
+    },
+    {
+      "cmd_id": "system_check",
+      "title": "系统检查",
+      "owner_agent": "agx_core",
+      "target_task": "system_check",
+      "delegate_to": "",
+      "semantic_skeleton": "检查当前系统是否满足 AgentGeeX 运行环境的最低要求(依赖与配置)",
+      "params": [],
+      "composed_instruction": "请检查当前系统是否适配 AgentGeeX 的运行环境，确保所有依赖和配置满足最低要求，输出检查结论。",
+      "example_filled": "请检查当前系统是否适配 AgentGeeX 的运行环境，确保所有依赖和配置满足最低要求，输出检查结论。",
+      "notes": "零参数纯检查，随时可触发。is_private=1。",
+      "caller_role_limit": {
+        "roles": [
+          "workshop_manager"
+        ],
+        "enforce": "both",
+        "note": "workshop_manager / 全局角色"
+      }
+    },
+    {
+      "cmd_id": "summarize_notices",
+      "title": "公告提炼",
+      "owner_agent": "agx_core",
+      "target_task": "notice_summarize",
+      "delegate_to": "",
+      "semantic_skeleton": "对指定项目的有效公告进行提炼并归档原始公告",
+      "params": [
+        {
+          "name": "project_id",
+          "label": "项目ID",
+          "required": true,
+          "type": "text",
+          "placeholder": "proj_da3046e8f017",
+          "default": "",
+          "value_source": "project"
+        },
+        {
+          "name": "date_range",
+          "label": "时间范围",
+          "required": false,
+          "type": "date",
+          "placeholder": "2026-10-01~2026-10-08",
+          "default": ""
+        }
+      ],
+      "composed_instruction": "请对项目 {project_id} 在 {date_range} 内的有效公告进行提炼，生成结构化摘要并归档原始公告。",
+      "example_filled": "请对项目 proj_da3046e8f017 在 2026-10-01~2026-10-08 内的有效公告进行提炼，生成结构化摘要并归档原始公告。",
+      "notes": "用于定期提炼归档，避免公告表膨胀；归档前建议确认时间窗。is_private=1。",
+      "caller_role_limit": {
+        "roles": [
+          "workshop_manager"
+        ],
+        "enforce": "both",
+        "note": "workshop_manager / 全局角色"
+      }
+    },
+    {
+      "cmd_id": "deploy_agent",
+      "title": "部署 Agent",
+      "owner_agent": "agx_host",
+      "target_task": "agent_deploy",
+      "delegate_to": "",
+      "semantic_skeleton": "将已注册的 Agent 配置物化到本机文件系统并注册到守护进程",
+      "params": [
+        {
+          "name": "agent_id",
+          "label": "目标 Agent ID",
+          "required": true,
+          "type": "text",
+          "placeholder": "agx_host",
+          "default": "",
+          "value_source": "agent"
+        },
+        {
+          "name": "host_id",
+          "label": "目标主机",
+          "required": true,
+          "type": "text",
+          "placeholder": "如：test_host_mac",
+          "default": "",
+          "value_source": "host"
+        }
+      ],
+      "composed_instruction": "请在本机({host_id})部署 Agent：{agent_id}，完成目录物化与 OpenClaw 注册。",
+      "example_filled": "请在本机(test_host_mac)部署 Agent：agx_host，完成目录物化与 OpenClaw 注册。",
+      "notes": "前置：Agent 必须已在 DB 注册；force 默认关闭，重复部署幂等跳过。通常由 agent_create 自动触发，人工快捷入口仅在补部署/重部署时用。",
+      "caller_role_limit": {
+        "roles": [
+          "host_manager"
+        ],
+        "enforce": "both",
+        "note": "host_manager"
+      }
+    },
+    {
+      "cmd_id": "host_info_report",
+      "title": "主机信息搜集",
+      "owner_agent": "agx_host",
+      "target_task": "host_info",
+      "delegate_to": "",
+      "semantic_skeleton": "搜集本机 CPU/内存/磁盘/网络信息用于资源调度",
+      "params": [
+        {
+          "name": "host_id",
+          "label": "目标主机",
+          "required": false,
+          "type": "text",
+          "placeholder": "如：test_host_mac（留空=本机）",
+          "default": "",
+          "value_source": "host"
+        }
+      ],
+      "composed_instruction": "请搜集主机({host_id})的硬件与系统信息(CPU/内存/磁盘/网络)，输出结构化报告。",
+      "example_filled": "请搜集主机(test_host_mac)的硬件与系统信息(CPU/内存/磁盘/网络)，输出结构化报告。",
+      "notes": "零参数纯查询，随时可触发。is_private=1。",
+      "caller_role_limit": {
+        "roles": [
+          "host_manager"
+        ],
+        "enforce": "both",
+        "note": "host_manager"
+      }
+    },
+    {
+      "cmd_id": "agent_create",
+      "title": "创建 Agent",
+      "owner_agent": "agx_agentfather",
+      "target_task": "agent_create",
+      "delegate_to": "",
+      "semantic_skeleton": "在指定项目下注册一个新 Agent(可指定 agent_id/表意名/角色/主机/模型)",
+      "params": [
+        {
+          "name": "agent_id",
+          "label": "Agent ID",
+          "required": true,
+          "type": "text",
+          "placeholder": "pt11_pm",
+          "default": ""
+        },
+        {
+          "name": "agent_name",
+          "label": "表意名称",
+          "required": false,
+          "type": "text",
+          "placeholder": "Pt11 项目经理",
+          "default": ""
+        },
+        {
+          "name": "agent_role",
+          "label": "角色",
+          "required": true,
+          "type": "enum",
+          "placeholder": "",
+          "default": "",
+          "options": [
+            {
+              "value": "worker",
+              "label": "Worker（执行单元）"
+            },
+            {
+              "value": "project_manager",
+              "label": "Project Manager（项目管理员）"
+            },
+            {
+              "value": "host_manager",
+              "label": "Host Manager（主机管理）"
+            },
+            {
+              "value": "workshop_manager",
+              "label": "Workshop Manager（顶层调度）"
+            },
+            {
+              "value": "agent_manager",
+              "label": "Agent Manager（Agent 生命周期）"
+            }
+          ]
+        },
+        {
+          "name": "host_id",
+          "label": "归属主机",
+          "required": true,
+          "type": "text",
+          "placeholder": "test_host_mac",
+          "default": "",
+          "value_source": "host"
+        },
+        {
+          "name": "project_id",
+          "label": "目标项目",
+          "required": true,
+          "type": "text",
+          "placeholder": "proj_xxxx",
+          "default": "",
+          "value_source": "project"
+        },
+        {
+          "name": "model",
+          "label": "基础模型",
+          "required": false,
+          "type": "text",
+          "placeholder": "deepseek-v4-flash",
+          "default": ""
+        },
+        {
+          "name": "prompt",
+          "label": "系统提示词",
+          "required": false,
+          "type": "text",
+          "placeholder": "你是...",
+          "default": ""
+        },
+        {
+          "name": "agent_labs",
+          "label": "Agent 标签",
+          "required": false,
+          "type": "text",
+          "placeholder": "pt11_pm",
+          "default": ""
+        }
+      ],
+      "composed_instruction": "创建 Agent:agent_id={agent_id},表意名={agent_name},角色={agent_role},归属主机={host_id},项目={project_id},模型={model},提示词={prompt},标签={agent_labs}。请先 agx_get_agent 查重(已存在且 active → succeed 返回已有),再 agx_upsert_agent 注册并回读自检。",
+      "example_filled": "创建 Agent:agent_id=pt11_pm,表意名=Pt11 项目经理,角色=project_manager,归属主机=test_host_mac,项目=proj_9f3a21,模型=deepseek-v4-flash,提示词=你是Pt11项目的项目经理,标签=pt11_pm。请先 agx_get_agent 查重,再 agx_upsert_agent 注册并回读自检。",
+      "notes": "agent_id 必须全小写 snake_case；host_id 必填；幂等:已存在绝不报 failed；创建仅完成注册,部署需另行触发 agent_deploy。",
+      "caller_role_limit": {
+        "roles": [
+          "agent_manager"
+        ],
+        "enforce": "both",
+        "note": "agentfather 独占；其他角色不可用"
+      }
+    },
+    {
+      "cmd_id": "agent_clone",
+      "title": "克隆 Agent",
+      "owner_agent": "agx_agentfather",
+      "target_task": "agent_clone",
+      "delegate_to": "",
+      "semantic_skeleton": "以现有 Agent 为模板克隆一个新 Agent 并绑定到目标项目",
+      "params": [
+        {
+          "name": "template_agent_id",
+          "label": "模板 Agent",
+          "required": true,
+          "type": "text",
+          "placeholder": "agx_core",
+          "default": "",
+          "value_source": "agent"
+        },
+        {
+          "name": "target_project_id",
+          "label": "目标项目",
+          "required": true,
+          "type": "text",
+          "placeholder": "proj_xxxx",
+          "default": "",
+          "value_source": "project"
+        },
+        {
+          "name": "host_id",
+          "label": "归属主机",
+          "required": true,
+          "type": "text",
+          "placeholder": "test_host_mac",
+          "default": "",
+          "value_source": "host"
+        },
+        {
+          "name": "new_agent_id",
+          "label": "新 Agent ID",
+          "required": false,
+          "type": "text",
+          "placeholder": "pt11_pm",
+          "default": ""
+        },
+        {
+          "name": "agent_name",
+          "label": "新 Agent 表意名",
+          "required": false,
+          "type": "text",
+          "placeholder": "Pt11 项目经理",
+          "default": ""
+        }
+      ],
+      "composed_instruction": "克隆 Agent:以 {template_agent_id} 为模板,目标项目={target_project_id},归属主机={host_id},新 agent_id={new_agent_id},新表意名={agent_name}。请先查重(目标已存在且 active → succeed),再调用 agx_clone_agent 完成克隆。",
+      "example_filled": "克隆 Agent:以 agx_core 为模板,目标项目=proj_9f3a21,归属主机=test_host_mac,新 agent_id=pt11_pm,新表意名=Pt11 项目经理。请先查重,再调用 agx_clone_agent 完成克隆。",
+      "notes": "克隆继承模板 role/model/labs/prompt/_md,不继承笔记；共享 task 自动创建；不传 new_agent_id 时自动生成 {template}_{随机后缀}；幂等:目标已存在 → succeed。",
+      "caller_role_limit": {
+        "roles": [
+          "agent_manager"
+        ],
+        "enforce": "both",
+        "note": "agentfather 独占；其他角色不可用"
+      }
+    },
+    {
+      "cmd_id": "agent_configure",
+      "title": "配置 Agent",
+      "owner_agent": "agx_agentfather",
+      "target_task": "agent_configure",
+      "delegate_to": "",
+      "semantic_skeleton": "修改指定 Agent 的一项或多项配置字段(模型/名称/角色/主机/提示词/启停)",
+      "params": [
+        {
+          "name": "agent_id",
+          "label": "目标 Agent",
+          "required": true,
+          "type": "text",
+          "placeholder": "pt11_pm",
+          "default": "",
+          "value_source": "agent"
+        },
+        {
+          "name": "field",
+          "label": "修改字段",
+          "required": true,
+          "type": "enum",
+          "placeholder": "",
+          "default": "",
+          "options": [
+            {
+              "value": "agent_name",
+              "label": "表意名称"
+            },
+            {
+              "value": "agent_role",
+              "label": "角色"
+            },
+            {
+              "value": "host_id",
+              "label": "归属主机"
+            },
+            {
+              "value": "base_model",
+              "label": "基础模型"
+            },
+            {
+              "value": "system_prompt",
+              "label": "系统提示词"
+            },
+            {
+              "value": "active_status",
+              "label": "启用状态"
+            }
+          ]
+        },
+        {
+          "name": "new_value",
+          "label": "新值",
+          "required": true,
+          "type": "text",
+          "placeholder": "gpt-4o",
+          "default": ""
+        }
+      ],
+      "composed_instruction": "配置 Agent {agent_id}:将字段 {field} 修改为 {new_value}。请先 agx_get_agent 验证目标存在且 active(若目标是 agx_agentfather 则拒绝,不自改),再 agx_update_agent 更新并回读确认。",
+      "example_filled": "配置 Agent pt11_pm:将字段 base_model 修改为 gpt-4o。请先 agx_get_agent 验证目标存在且 active,再 agx_update_agent 更新并回读确认。",
+      "notes": "目标必须已注册且 active；不允许改自己(agx_agentfather)；reply_mode=confirm。",
+      "caller_role_limit": {
+        "roles": [
+          "agent_manager"
+        ],
+        "enforce": "both",
+        "note": "agentfather；涉及自身的修改一律拒绝"
+      }
+    },
+    {
+      "cmd_id": "agent_deploy_trigger",
+      "title": "部署 Agent(委托)",
+      "owner_agent": "agx_agentfather",
+      "target_task": "agent_deploy",
+      "delegate_to": "host_manager",
+      "semantic_skeleton": "把已注册的 Agent 配置物化到目标主机文件系统并注册到 OpenClaw(委托 host_manager 执行)",
+      "params": [
+        {
+          "name": "agent_id",
+          "label": "目标 Agent",
+          "required": true,
+          "type": "text",
+          "placeholder": "pt11_pm",
+          "default": "",
+          "value_source": "agent"
+        },
+        {
+          "name": "host_id",
+          "label": "目标主机",
+          "required": true,
+          "type": "text",
+          "placeholder": "test_host_mac",
+          "default": "",
+          "value_source": "host"
+        },
+        {
+          "name": "force",
+          "label": "强制覆盖",
+          "required": false,
+          "type": "bool",
+          "placeholder": "",
+          "default": false
+        }
+      ],
+      "composed_instruction": "部署 Agent {agent_id} 到主机 {host_id}(force={force})。先 agx_resolve_host_manager(host_id) 解析出目标 host_manager,再 agx_dispatch_task 派发其 agent_deploy 任务。",
+      "example_filled": "部署 Agent pt11_pm 到主机 test_host_mac(force=false)。先 agx_resolve_host_manager(test_host_mac) 解析出 host_manager,再 agx_dispatch_task 派发 agent_deploy。",
+      "notes": "本 Agent 自身不执行 agent_deploy,须委托 host_manager；部署前 Agent 须已注册；force=false 幂等跳过已有文件。",
+      "caller_role_limit": {
+        "roles": [
+          "agent_manager",
+          "host_manager"
+        ],
+        "enforce": "both",
+        "note": "由 agent_manager 发起，实际执行方为 host_manager"
+      }
+    },
+    {
+      "cmd_id": "create_project",
+      "title": "创建项目",
+      "owner_agent": "agx_projectmother",
+      "target_task": "project_create",
+      "delegate_to": "",
+      "semantic_skeleton": "在网络内创建一个新项目容器，并按需克隆项目专属 PM(经 agentfather)",
+      "params": [
+        {
+          "name": "project_name",
+          "label": "项目名称",
+          "required": true,
+          "type": "text",
+          "placeholder": "庄家分析V5",
+          "default": ""
+        },
+        {
+          "name": "description",
+          "label": "项目描述",
+          "required": true,
+          "type": "text",
+          "placeholder": "面向 A 股庄家资金流的指标体系，负责人老冯",
+          "default": ""
+        },
+        {
+          "name": "project_abbr",
+          "label": "项目简称(全小写字母)",
+          "required": false,
+          "type": "text",
+          "placeholder": "div5",
+          "default": ""
+        },
+        {
+          "name": "platform",
+          "label": "目标平台",
+          "required": false,
+          "type": "enum",
+          "placeholder": "",
+          "default": "openclaw",
+          "options": [
+            {
+              "value": "openclaw",
+              "label": "OpenClaw"
+            },
+            {
+              "value": "claude_code",
+              "label": "Claude Code"
+            },
+            {
+              "value": "custom",
+              "label": "Custom"
+            }
+          ]
+        },
+        {
+          "name": "clone_pm",
+          "label": "是否克隆项目专属PM",
+          "required": false,
+          "type": "bool",
+          "placeholder": "",
+          "default": true
+        }
+      ],
+      "composed_instruction": "创建项目：project_name={project_name}，description={description}，project_abbr={project_abbr}，platform={platform}；先查重(同名项目不可重复)，再 agx_create_project；若 {clone_pm}=true，则 dispatch 给 agx_agentfather 执行 agent_clone 克隆项目专属 PM。",
+      "example_filled": "创建项目：project_name=庄家分析V5，description=面向 A 股庄家资金流的指标体系，负责人老冯，project_abbr=div5，platform=openclaw；先查重再 agx_create_project；clone_pm=true，dispatch agx_agentfather 执行 agent_clone 克隆 PM。",
+      "notes": "project_abbr 必须全小写字母；创建 Agent 必须走 agentfather，禁止自调 agx_clone_agent/agx_upsert_agent；批量建 Agent 需逐条 dispatch；agentfather 超时→升级 agx_core/人类，绝不自干。",
+      "caller_role_limit": {
+        "roles": [
+          "project_manager"
+        ],
+        "enforce": "both",
+        "note": "仅项目管理员(项目 admin_agent_id)"
+      }
+    },
+    {
+      "cmd_id": "audit_project",
+      "title": "项目审计",
+      "owner_agent": "agx_projectmother",
+      "target_task": "project_audit",
+      "delegate_to": "",
+      "semantic_skeleton": "巡检所有项目的健康状态、Agent 绑定与活跃度，输出审计报告",
+      "params": [
+        {
+          "name": "scope",
+          "label": "审计范围",
+          "required": false,
+          "type": "enum",
+          "placeholder": "",
+          "default": "all",
+          "options": [
+            {
+              "value": "all",
+              "label": "全部项目"
+            },
+            {
+              "value": "single",
+              "label": "单个项目"
+            }
+          ]
+        },
+        {
+          "name": "project_id",
+          "label": "项目ID(scope=single时)",
+          "required": false,
+          "type": "text",
+          "placeholder": "proj_da3046e8f017",
+          "default": "",
+          "value_source": "project"
+        }
+      ],
+      "composed_instruction": "项目审计：scope={scope}，project_id={project_id}。scope=all 时全量审计所有活跃项目；scope=single 时仅审计指定 project_id。检查：空项目/Agent active_status/资源争用/长期无任务，输出审计报告。",
+      "example_filled": "项目审计：scope=all，project_id=。",
+      "notes": "常由 HEARTBEAT 或“看大盘”触发；审计为只读，无副作用。",
+      "caller_role_limit": {
+        "roles": [
+          "project_manager"
+        ],
+        "enforce": "both",
+        "note": "仅项目管理员(项目 admin_agent_id)"
+      }
+    },
+    {
+      "cmd_id": "configure_project",
+      "title": "配置项目",
+      "owner_agent": "agx_projectmother",
+      "target_task": "project_configure",
+      "delegate_to": "",
+      "semantic_skeleton": "修改指定项目的运营属性(名称/简称/Logo/描述/源码目录),不含启停",
+      "params": [
+        {
+          "name": "project_id",
+          "label": "目标项目",
+          "required": true,
+          "type": "text",
+          "placeholder": "proj_xxxx",
+          "default": "",
+          "value_source": "project"
+        },
+        {
+          "name": "field",
+          "label": "修改字段",
+          "required": true,
+          "type": "enum",
+          "placeholder": "",
+          "default": "",
+          "options": [
+            {
+              "value": "project_name",
+              "label": "项目名称"
+            },
+            {
+              "value": "project_abbr",
+              "label": "项目简称"
+            },
+            {
+              "value": "project_logo",
+              "label": "项目 Logo"
+            },
+            {
+              "value": "x_desc",
+              "label": "项目描述"
+            },
+            {
+              "value": "source_dir",
+              "label": "源码目录"
+            }
+          ]
+        },
+        {
+          "name": "new_value",
+          "label": "新值",
+          "required": true,
+          "type": "text",
+          "placeholder": "庄家分析V5",
+          "default": ""
+        }
+      ],
+      "composed_instruction": "配置项目 {project_id}:将字段 {field} 修改为 {new_value}。请先 agx_get_project 验证目标存在且 active,再 agx_update_project 更新并回读确认。★ 仅限运营字段;若要求改 active_status(启停)则拒绝,提示走独立快捷指令。",
+      "example_filled": "配置项目 proj_b2ed70d5ac17:将字段 project_name 修改为 庄家分析V5。请先 agx_get_project 验证目标存在且 active,再 agx_update_project 更新并回读确认。",
+      "notes": "仅运营字段(name/abbr/logo/x_desc/source_dir);不含 active_status(启停走独立快捷指令);reply_mode=result。",
+      "caller_role_limit": {
+        "roles": [
+          "project_manager"
+        ],
+        "enforce": "both",
+        "note": "项目管理员;仅能改自己 admin 的项目"
+      }
+    },
+    {
+      "cmd_id": "deactivate_project",
+      "title": "停用/恢复项目",
+      "owner_agent": "agx_projectmother",
+      "target_task": "project_configure",
+      "delegate_to": "",
+      "semantic_skeleton": "将指定项目停用(active_status=0)或恢复(active_status=1),并刷新缓存、写备案公告",
+      "params": [
+        {
+          "name": "project_id",
+          "label": "目标项目",
+          "required": true,
+          "type": "text",
+          "placeholder": "proj_xxxx",
+          "default": "",
+          "value_source": "project"
+        },
+        {
+          "name": "action",
+          "label": "动作",
+          "required": true,
+          "type": "enum",
+          "placeholder": "",
+          "default": "deactivate",
+          "options": [
+            {
+              "value": "deactivate",
+              "label": "停用"
+            },
+            {
+              "value": "activate",
+              "label": "恢复"
+            }
+          ]
+        },
+        {
+          "name": "reason",
+          "label": "原因(备案用)",
+          "required": false,
+          "type": "text",
+          "placeholder": "项目已交付完成",
+          "default": ""
+        }
+      ],
+      "composed_instruction": "将项目 {project_id} 执行 {action}(deactivate=active_status=0 / activate=active_status=1),原因: {reason}。请 agx_update_project 改 active_status,刷新缓存,并写一条备案公告(notice_type=decision)。★ 本质=改属性+刷缓存,无复杂操作。",
+      "example_filled": "将项目 proj_b2ed70d5ac17 执行 deactivate(active_status=0),原因: 项目已交付完成。请 agx_update_project 改 active_status,刷新缓存,并写一条备案公告。",
+      "notes": "本质=改属性+刷缓存,无复杂操作,故走快捷指令(不独立建 task,复用 target_task=project_configure);仅 projectmother 可做。",
+      "caller_role_limit": {
+        "roles": [
+          "project_manager"
+        ],
+        "enforce": "both",
+        "note": "projectmother(角色归属体系待老冯后续说明, Q1 搁置)"
+      }
+    },
+    {
+      "cmd_id": "organize_log",
+      "title": "整理日志",
+      "owner_agent": "agx_projectmother",
+      "target_task": "log_organize",
+      "delegate_to": "",
+      "semantic_skeleton": "聚合本项目组所有 Agent 的 execution.summary，过滤低信息量条目，成文为当日 daily 日志",
+      "params": [
+        {
+          "name": "date",
+          "label": "目标日期",
+          "required": false,
+          "type": "date",
+          "placeholder": "2026-10-08",
+          "default": ""
+        },
+        {
+          "name": "output",
+          "label": "输出方式",
+          "required": false,
+          "type": "enum",
+          "placeholder": "",
+          "default": "daily",
+          "options": [
+            {
+              "value": "daily",
+              "label": "当日 daily 日志"
+            },
+            {
+              "value": "report",
+              "label": "独立报告"
+            }
+          ]
+        }
+      ],
+      "composed_instruction": "整理日志：date={date}，output={output}。拉取指定时间窗内本项目组所有 Agent 的 execution.summary → 过滤低信息量(R0看门狗/R1回执/R2极短/R3验证/R4重复/R5自引用) → 按时间+切片分组成文 → output=daily 写入 docs/agent_docs/daily/{date}.md(追加合并)。",
+      "example_filled": "整理日志：date=2026-10-08，output=daily。",
+      "notes": "时间字段以 finished_at 归窗(非 session_last_active_at)；daily 文件已存在则追加不覆盖；范围仅限本项目组，不跨项目；建议独立会话(已配 dedicated_session=1)。",
+      "caller_role_limit": {
+        "roles": [
+          "project_manager"
+        ],
+        "enforce": "both",
+        "note": "仅项目管理员；非 PM 直接拒绝"
+      }
+    }
+  ],
+  "not_applicable_summary": {
+    "reason_common": "入参为自由文本 instruction，无固定参数槽位，每次语义不同，做快捷指令无意义",
+    "tasks": [
+      "general(通用消息处理)",
+      "watchdog_alert(看门狗报警处理)",
+      "universal(万能任务)"
+    ]
+  },
+  "cross_action_analysis": [
+    {
+      "case": "创建项目(project_create)",
+      "verdict": "一条装下",
+      "reason": "PM 观点：建项目+克隆PM+可选建Worker 是同一意图的固定编排，用户心智是『给我建个能用的项目』，拆多条会强迫用户理解内部步骤。差异点用 params(bool/数量)表达。风险(克隆超时)属执行期降级，不影响指令原子性。"
+    },
+    {
+      "case": "创建/克隆 Agent 后部署(agent_create/clone → agent_deploy)",
+      "verdict": "拆成 2 条",
+      "reason": "agentfather 观点：执行主体不同(create/clone 由 agentfather 独占；deploy 由 host_manager 执行)，部署需先解析 host_manager 且为可选后置步骤；拆开可单独重试/跳过，保持单一职责与可组合性。"
+    },
+    {
+      "case": "agent_deploy 内部(目录物化+OpenClaw注册)",
+      "verdict": "无需拆",
+      "reason": "host 观点：已由 MCP 单次调用原子完成。"
+    }
+  ],
+  "role_limit_summary": {
+    "agent_manager": [
+      "agent_create",
+      "agent_clone",
+      "agent_configure"
+    ],
+    "host_manager": [
+      "agent_deploy",
+      "host_info",
+      "host_communication(暂不适用)"
+    ],
+    "project_manager": [
+      "project_create",
+      "project_audit",
+      "project_configure",
+      "configure_project",
+      "deactivate_project",
+      "log_organize"
+    ],
+    "workshop_manager": [
+      "network_analysis",
+      "system_check",
+      "notice_summarize"
+    ]
+  }
+}

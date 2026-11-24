@@ -1,0 +1,92 @@
+{
+  "_comment": "AgentGeeX 配置模板。复制到 ~/.agx/agx_config.json 后按本机情况修改。★ 账号/密码不写在这里，另存 ~/.agx/agx_creds.env（chmod 600），变量名见文件末尾说明。",
+  "host_id": "<本机 host_id，如 test_host_mac>",
+  "network_id": "<所属网络，如 lan_001>",
+  "mode": "core",
+  "work_dir": "~/.agx",
+  "assistant_files_root_rel_template": "agx_agents/{agent_id}/workspace/assistants",
+  "read_scope_mode": "log",
+  "logs_dir": "logs",
+  "agent_type": "openclaw",
+  "task_timeout": 3600,
+  "plan_timeout": 3600,
+  "tmux_timeout": 600,
+  "test_data_ttl": 30,
+  "mysql": {
+    "host": "127.0.0.1",
+    "port": 3306,
+    "database": "agentgeex",
+    "charset": "utf8mb4",
+    "pool_enabled": "0",
+    "pool_size": "10"
+  },
+  "redis": {
+    "host": "127.0.0.1",
+    "port": 6379,
+    "db": 0,
+    "pool_size": 20
+  },
+  "gateways": [
+    {
+      "host_id": "<本机 host_id>",
+      "ws_url": "ws://127.0.0.1:18789",
+      "token": "<OpenClaw gateway token>"
+    }
+  ],
+  "dsh": {
+    "host": "127.0.0.1",
+    "port": 8791,
+    "profile": "web",
+    "autostart": false,
+    "check_version": false,
+    "max_concurrent": 4
+  },
+  "mcp": {
+    "sse_host": "127.0.0.1",
+    "sse_port": 31888,
+    "url": "http://127.0.0.1:31890/agentgeex/mcp"
+  },
+  "daemon": {
+    "poll_interval": 2,
+    "ws_result_poll_interval": 5,
+    "watchdog_poll_interval": 2,
+    "watchdog_grace_period": 1800,
+    "watchdog_max_retries": 3,
+    "watchdog_test_mode": "0",
+    "watchdog_wake_enabled": "1",
+    "watchdog_wake_grace": 120,
+    "watchdog_wake_ratio": "0.5",
+    "watchdog_wake_tiers": "0.7,0.8,0.9",
+    "watchdog_session_done_wake_cooldown": 60,
+    "watchdog_wake_message": "系统提醒：如果任务仍在执行中，请继续完成。如果已完成，请调用 agx_finish_task 更新状态。\n另外，如果你收到一条包含 \"task_run_uuid\" 字段的 JSON 消息，这表示有一个超时任务需要你检查。请用该 task_run_uuid 查询 agx_get_execution，确认任务是否已完成，若已完成请调用 agx_finish_task 标记状态。",
+    "watchdog_heartbeat_file": "logs/.watchdog_heartbeat",
+    "watchdog_ws_timeout": 120,
+    "watchdog_ws_hist_timeout": 300,
+    "watchdog_startup_grace": 30,
+    "watchdog_heartbeat_timeout": 1800,
+    "watchdog_crisis_threshold": 3,
+    "watchdog_log_level": "INFO",
+    "queue_block_timeout": 3,
+    "heartbeat_interval": 30,
+    "watchdog_host_heartbeat_timeout": 90,
+    "watchdog_host_alert_cooldown": 600,
+    "watchdog_host_orphan_escalate": 3600
+  },
+  "ws": {
+    "health_interval": 30,
+    "ping_interval": 20,
+    "ping_timeout": 120,
+    "max_msg_size": 10485760,
+    "call_timeout": 30,
+    "event_timeout": 10,
+    "blpop_timeout": 5,
+    "max_backlog": 100,
+    "max_concurrent": 16,
+    "initial_backoff": 2,
+    "reconnect_delay": 60,
+    "reconnect_backoff": 2,
+    "reconnect_fail_threshold": 3,
+    "session_retries": 3
+  },
+  "_creds_note": "数据库/缓存凭据请写入 ~/.agx/agx_creds.env（chmod 600），可用变量：AGX_DB_HOST / AGX_DB_PORT / AGX_DB_USER / AGX_DB_PASS / AGX_DB_NAME；AGX_REDIS_HOST / AGX_REDIS_PORT / AGX_REDIS_DB / AGX_REDIS_USERNAME / AGX_REDIS_PASSWORD。同名环境变量优先级更高。"
+}

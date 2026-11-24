@@ -1,0 +1,26 @@
+[Unit]
+Description=AgentGeeX Daemon (core: daemon + watchdog + ws_client + dsh_client)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# Type=simple + run 前台模式（2026-10-25）
+# ★ 为什么不用 oneshot + start：start 启动完就退出，systemd 记的是脚本退出码。
+#   实测杀主进程后 is-active 仍是 active（只剩 watchdog/ws 两个孤儿）。改为前台运行，
+#   主进程即服务主进程，进程死即服务死，Restart=always 才真正生效。
+Type=simple
+ExecStart=/bin/bash %h/.agx/daemon.sh run --core
+
+# 停止走 daemon.sh stop（清理 watchdog/ws/dsh 子进程，避免残留孤儿）
+ExecStop=/bin/bash %h/.agx/daemon.sh stop
+TimeoutStopSec=60
+
+Restart=always
+RestartSec=15
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=agx-daemon
+
+[Install]
+WantedBy=default.target

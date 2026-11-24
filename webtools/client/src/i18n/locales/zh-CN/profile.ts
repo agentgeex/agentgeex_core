@@ -1,0 +1,23 @@
+/** Personal centre (/personal/center) */
+export default {
+  title: "个人中心",
+  subtitle: "查看当前登录身份；资料与密码的修改尚未接入后端。",
+  infoCard: "个人信息",
+  basicCard: "基本资料",
+  account: "账号",
+  nickname: "昵称",
+  email: "邮箱",
+  role: "角色",
+  avatarHint: "头像由账号首字母生成（暂不支持上传）",
+  tabBasic: "基本信息",
+  tabPassword: "修改密码",
+  oldPassword: "旧密码",
+  newPassword: "新密码",
+  confirmPassword: "确认新密码",
+  confirmChange: "确认修改",
+  nameRequired: "昵称不能为空",
+  fillAll: "请填写完整",
+  mismatch: "两次输入的新密码不一致",
+  notConnectedTitle: "该功能尚未接入后端",
+  notConnectedDesc: "当前只是界面占位，改动不会被保存。",
+} as const;

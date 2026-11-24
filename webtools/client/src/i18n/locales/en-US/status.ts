@@ -1,0 +1,21 @@
+/** Shared status words (badges). Must match the dashboard and run list */
+export default {
+  online: "Online",
+  busy: "Busy",
+  offline: "Offline",
+  error: "Error",
+  active: "Active",
+  idle: "Idle",
+  archived: "Archived",
+  paused: "Paused",
+  running: "Running",
+  succeeded: "Succeeded",
+  failed: "Failed",
+  pending: "Queued",
+  awaiting_confirm: "Awaiting approval",
+  draft: "Draft",
+  cancelled: "Cancelled",
+  completed: "Completed",
+  activated: "In progress",
+  cancelling: "Cancelling",
+} as const;

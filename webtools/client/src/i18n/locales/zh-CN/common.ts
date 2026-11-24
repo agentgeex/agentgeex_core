@@ -1,0 +1,40 @@
+/**
+ * Shared words: buttons / states / empty states.
+ * ★ Only put **cross-feature** words here. Copy unique to one page goes into its own namespace (agents/executions/…),
+ *   otherwise this turns into a second "throw everything in" file.
+ */
+export default {
+  search: "搜索",
+  searchPlaceholder: "搜索…",
+  ok: "确定",
+  cancel: "取消",
+  confirm: "确认",
+  reset: "重置",
+  back: "返回",
+  loading: "加载中…",
+  noData: "暂无数据",
+  more: "更多",
+  viewAll: "查看全部",
+  copy: "复制",
+  copied: "已复制",
+  close: "关闭",
+  submit: "提交",
+  save: "保存",
+  delete: "删除",
+  edit: "编辑",
+  detail: "详情",
+  create: "新建",
+  actions: "操作",
+  /** Shared by counts and lists (works with i18next plurals) */
+  count: "{{count}} 条",
+  openSession: "打开会话",
+  openSessionIn: "在 OpenClaw 打开这个会话 · {{href}}",
+  host: "主机",
+  allOption: "{{label}}：全部",
+  all: "全部",
+  unknown: "未知",
+  backToList: "返回列表",
+  recordMissing: "{{what}}不存在或已被归档",
+  yes: "是",
+  no: "否",
+} as const;

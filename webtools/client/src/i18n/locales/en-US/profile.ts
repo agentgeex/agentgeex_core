@@ -1,0 +1,23 @@
+/** Profile (/personal/center) */
+export default {
+  title: "Profile",
+  subtitle: "Your current identity. Editing profile and password is not wired to the backend yet.",
+  infoCard: "Account info",
+  basicCard: "Basic profile",
+  account: "Account",
+  nickname: "Display name",
+  email: "Email",
+  role: "Role",
+  avatarHint: "Avatar is generated from the account's first letter (upload not supported yet)",
+  tabBasic: "Basic info",
+  tabPassword: "Change password",
+  oldPassword: "Current password",
+  newPassword: "New password",
+  confirmPassword: "Confirm new password",
+  confirmChange: "Change password",
+  nameRequired: "Display name cannot be empty",
+  fillAll: "Fill in all fields",
+  mismatch: "The two new passwords do not match",
+  notConnectedTitle: "Not connected to the backend yet",
+  notConnectedDesc: "This is a placeholder UI; changes are not saved.",
+} as const;

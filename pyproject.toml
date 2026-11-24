@@ -1,0 +1,83 @@
+[project]
+name = "agentgeex"
+version = "0.1.0"
+license = { text = "Apache-2.0" }
+description = "AgentGeeX — multi-agent orchestration platform"
+readme = "README.md"
+requires-python = ">=3.12"
+
+# ★ 依赖版本的唯一权威是 uv.lock，不是下面各行的 >= 约束。
+#   建/更新 venv 必须 uv sync（走 lock）；uv pip install 会绕过 lock 装到最新版，
+#   导致同一份代码在不同机器上行为不同（2026-11-04 实测：188 装到 fastmcp 4.1.3，
+#   工具 docstring 被剥离 Returns 段，且不报任何错）。详见 docs/development/environment-parity.md。
+dependencies = [
+    "dbutils>=3.1.2",
+    "fastapi>=0.115",
+    "fastmcp>=3.2.4",
+    "jsonpath-ng>=1.8.0",
+    "mistune>=3.2.1",
+    "pymysql>=1.1.2",
+    "pytest>=9.0.3",
+    "redis>=7.4.0",
+    "ruff>=0.15.19",
+    "streamlit>=1.58.0",
+    "uvicorn[standard]>=0.30",
+    "watchdog>=6.0.0",
+    "websockets>=16.0",
+]
+
+# ★ 重依赖（torch / funasr）放 optional extra，不进核心同步。
+#   核心（MCP / daemon / watchdog）一行 numpy/torch 都不用；
+#   把它们写成必装依赖，会让「跑调度器」这个最小场景也要拖 2GB 的 CUDA/MPS 栈。
+#   本机代码已做懒加载：不装 extra 也能 import tools.audio_stt 的模块。
+#   用法：uv sync --extra audio
+[project.optional-dependencies]
+audio = [
+    # [knf] 装 kaldi-native-fbank —— funasr 抽特征必须有 fbank 后端。
+    # 它自己的报错原文：“Install either torchaudio (matching your torch version)
+    # or kaldi-native-fbank”。选 knf 而不是 torchaudio：torchaudio 与 torch 的
+    # 版本号必须严格配套，PyPI 上不存在与 torch 2.15.0 对应的 torchaudio（实测
+    # 解析直接失败），而 knf 是 funasr 官方声明的 extra，与 torch 版本解耦。
+    "funasr[knf]>=1.2.6",
+    # ★ 上界是有理由的，不是保守癖：torch 2.15.0 在本机 macOS 14.5 上
+    # MPS 直接崩进程（NSInvalidArgumentException: -[MPSNDArray
+    # arrayViewWithShape:strides:] unrecognized selector → abort trap 6）。
+    # 这是 NSException，不是 Python 异常，try/except 拦不住 —— 服务端一旦选中
+    # mps 就是“第一个请求把整个进程带走”。2.7.1 实测可用（同一台机、同一模型）。
+    "torch>=2.7.1,<2.8",
+    "sounddevice>=0.5.2",
+    "scipy>=1.16.0",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+exclude = [".venv", ".git", "__pycache__", "test/__pycache__", "_fix_table.py", "test_gateway.py", "skills/"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "C4",  # flake8-comprehensions
+]
+ignore = [
+    "E402",   # module-level import not at top (sys.path 注入场景)
+    "E501",   # line too long (由 formatter 处理)
+    "SIM105", # contextlib.suppress 替代 try-except-pass（可读性优先）
+    "SIM102", # collapsible-if（嵌套可读性优先）
+    "SIM108", # if-else → 三元（可读性优先）
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["common", "agx_mcp", "scripts"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

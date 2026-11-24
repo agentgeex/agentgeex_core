@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Python (BFF 选型后启用)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.python-version
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+.vite/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# 运行时偏好（如"选了哪台语音主机"）—— 本机状态，不入库
+.runtime/

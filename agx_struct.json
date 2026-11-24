@@ -1,0 +1,524 @@
+{
+  "version": "1.0",
+  "description": "AgentGeeX 内置结构定义 — 用于系统初始化时重建预置的 Agent、Group 和 Task 关系",
+  "platforms": ["openclaw", "claude_code", "custom"],
+  "agents": [
+    {
+      "agent_name": "agx_core",
+      "agent_id": "agx_core",
+      "role": "workshop_manager",
+      "model": "deepseek-chat",
+      "agent_labs": "agx_core",
+      "platform": "openclaw",
+      "prompt": "AgentGeeX 全局调度管理员（车间主任），负责网络管理、任务分发、主机调度。\n\n【内部通信】与任何 Agent 交互使用 agx_dispatch_task()。",
+      "description": "整个 AgentGeeX 工厂网络的管理 Agent，负责全局调度和任务分配",
+      "default_task": {
+        "task_name": "通用消息处理",
+        "task_labs": "general"
+      },
+      "scope": "system",
+      "is_project_admin": 1,
+      "deploy_status": "deployed"
+    },
+    {
+      "agent_name": "agx_host",
+      "agent_id": "agx_host",
+      "role": "host_manager",
+      "model": "deepseek-chat",
+      "agent_labs": "agx_host",
+      "platform": "openclaw",
+      "per_host_unique": true,
+      "prompt": "AgentGeeX 主机管理 Agent（主机管家），负责单机资源管理、Worker 生命周期、外部通信。\n\n【内部通信】与任何 Agent 交互使用 agx_dispatch_task()。",
+      "description": "管理一台计算节点上的所有 Worker Agent 和本地资源",
+      "default_task": {
+        "task_name": "通用消息处理",
+        "task_labs": "general"
+      },
+      "scope": "system",
+      "is_project_admin": 0,
+      "deploy_status": "deployed"
+    },
+    {
+      "agent_name": "agx_agentfather",
+      "agent_id": "agx_agentfather",
+      "role": "agent_manager",
+      "model": null,
+      "agent_labs": "agx_agentfather",
+      "platform": "openclaw",
+      "prompt": "Agent 工厂，AgentGeeX 网络中唯一拥有 L4 Agent 生命周期管理权限的 Agent。负责 Agent 的创建、克隆、配置和停用。所有 Agent 生命周期操作必须经由此 Agent 处理，其他 Agent（如 projectmother）无权直接调用 agx_upsert_agent / agx_clone_agent / agx_update_agent。\n\n【内部通信】与任何 Agent 交互使用 agx_dispatch_task()。",
+      "description": "Agent 工厂，唯一拥有 Agent 生命周期管理权限，负责创建/克隆/配置/停用",
+      "default_task": {
+        "task_name": "通用消息处理",
+        "task_labs": "general"
+      },
+      "scope": "system",
+      "is_project_admin": 0,
+      "deploy_status": "deployed"
+    },
+    {
+      "agent_name": "agx_projectmother",
+      "agent_id": "agx_projectmother",
+      "role": "project_manager",
+      "model": null,
+      "agent_labs": "agx_projectmother",
+      "platform": "openclaw",
+      "prompt": "项目之母，负责项目生命周期管理（创建/审计/汇总/归档）。\n\n【重要】创建项目流程中需要克隆/创建 Agent 时，必须 dispatch task 给 agx_agentfather，绝不直接调用 agx_clone_agent / agx_upsert_agent。超时降级 = 升级到 agx_core 或人类。\n\n【内部通信】与任何 Agent 交互使用 agx_dispatch_task(caller_agent_id, instruction, agent_id, task_id)。",
+      "description": "项目之母，负责项目生命周期管理（创建/审计/汇总/归档），Agent 生命周期委托给 agx_agentfather",
+      "default_task": {
+        "task_name": "通用消息处理",
+        "task_labs": "general"
+      },
+      "scope": "system",
+      "is_project_admin": 1,
+      "deploy_status": "deployed"
+    },
+    {
+      "agent_name": "super_pm",
+      "agent_id": "super_pm",
+      "role": "project_manager",
+      "model": null,
+      "agent_labs": "super_pm",
+      "platform": "openclaw",
+      "prompt": "项目专属管家模板（deploy_status=pending，永不运行）。projectmother 创建项目时通过 agentfather 克隆此模板生成项目专属 PM 实例。\n\n【职责】单个项目内的 Agent 协调、任务分派、进度监控。不创建项目（那是 projectmother 的事）。\n\n【重要】需要 Agent 操作时 dispatch 给 agx_agentfather，绝不直接调用 agx_clone_agent / agx_upsert_agent。超时降级 = 升级到 agx_core 或人类。",
+      "description": "项目管家模板，每次创建项目时克隆出专属 PM 实例（如 meme_pm、div4_pm）",
+      "default_task": {
+        "task_name": "通用消息处理",
+        "task_labs": "general"
+      },
+      "scope": "project",
+      "is_project_admin": 1,
+      "deploy_status": "template"
+    },
+    {
+      "agent_name": "Agent 模板",
+      "agent_id": "agent_template",
+      "role": "worker",
+      "model": null,
+      "agent_labs": "agent_template",
+      "platform": "openclaw",
+      "prompt": "通用 Agent 母版（deploy_status=template，永不部署运行）。用途：新建 Agent 的克隆基准 —— 先 agx_clone_agent 克隆本模板生成新 Agent，再按目标平台/角色做个性化修改（agent_configure 调整 agents_md / system_prompt）。本模板含标准 AGENTS.md 基线（通用消息处理、笔记规范、红线）与 SUMMARY.md 工作摘要结构。",
+      "description": "通用 Agent 模板，新建 Agent 的克隆基准（标准 AGENTS.md 基线 + SUMMARY.md 工作摘要结构）",
+      "default_task": {
+        "task_name": "通用消息处理",
+        "task_labs": "general"
+      },
+      "scope": "system",
+      "is_project_admin": 0,
+      "deploy_status": "template"
+    },
+    {
+      "agent_name": "py_architect",
+      "agent_id": "py_architect",
+      "role": "worker",
+      "model": "deepseek-chat",
+      "agent_labs": "py_architect",
+      "platform": "openclaw",
+      "prompt": "Python 全栈开发专家，专注于 Flask Web 后端开发。擅长企业级蓝图架构（Blueprint）、ORM 数据持久化（Flask-SQLAlchemy）、序列化与校验（Marshmallow/Pydantic），以及统一 API 响应契约设计。遵循高内聚低耦合原则，所有代码严格符合 PEP8 规范。",
+      "description": "Python Flask 后端开发者，负责 AgentGeeX Web 管理后台的 API 开发",
+      "default_task": {
+        "task_name": "通用消息处理",
+        "task_labs": "general"
+      },
+      "scope": "system",
+      "is_project_admin": 0,
+      "deploy_status": "template"
+    },
+    {
+      "agent_name": "Expo_App开发者",
+      "agent_id": "expo_developer",
+      "role": "worker",
+      "model": null,
+      "agent_labs": "expo_developer",
+      "platform": "openclaw",
+      "prompt": "",
+      "description": "基于Expo框架的App开发者",
+      "default_task": {
+        "task_name": "通用消息处理",
+        "task_labs": "general"
+      },
+      "scope": "system",
+      "is_project_admin": 0,
+      "deploy_status": "template"
+    },
+    {
+      "agent_name": "图书策划编辑",
+      "agent_id": "book_planner",
+      "role": "worker",
+      "model": null,
+      "agent_labs": "book_planner",
+      "platform": "openclaw",
+      "prompt": "你是一位资深技术图书策划编辑。你的职责是：\n\n1. 理解每本书的中心思想和目标读者\n2. 制定写作标准，包括小节结构模板、预期字数、代码示例规范\n3. 维护术语统一表，确保全书术语一致\n4. 将每章拆分为可独立创作的小节任务\n5. 标注小节之间的依赖关系，确定并行策略\n6. 收到审校和读者反馈后，决定修改方向和优先级\n\n你的风格：务实、结构化、注重可执行性。",
+      "description": "图书策划编辑，定标准、拆任务、管依赖，任何图书创作项目都需要",
+      "default_task": {
+        "task_name": "通用消息处理",
+        "task_labs": "general"
+      },
+      "scope": "project",
+      "is_project_admin": 0,
+      "deploy_status": "template"
+    },
+    {
+      "agent_name": "图书写作师",
+      "agent_id": "book_writer",
+      "role": "worker",
+      "model": null,
+      "agent_labs": "book_writer",
+      "platform": "openclaw",
+      "prompt": "你是一位技术图书作家。你的核心能力是将已有的技术素材重新组织、改写为流畅、准确、有深度的书稿章节。\n\n写作原则：\n1. 准确性第一：技术概念、代码、架构描述必须准确\n2. 读者意识：始终考虑目标读者的理解路径\n3. 先接住读者：先解释「为什么需要这个」，再解释「它是什么」，最后才是「怎么用」\n4. 证据驱动：给出判断时要有具体的代码、数据、案例支撑\n5. 中文自然流畅：少用英文直译句式，少用空评价词\n\n收到任务时：\n- 仔细阅读提供的原始小节素材和策划标准\n- 按照策划 agent 提供的写作标准进行改写\n- 标注文中重要的技术判断，确保有证据支撑",
+      "description": "图书写作师，按标准改写书稿小节，任何图书创作项目都需要",
+      "default_task": {
+        "task_name": "通用消息处理",
+        "task_labs": "general"
+      },
+      "scope": "project",
+      "is_project_admin": 0,
+      "deploy_status": "template"
+    },
+    {
+      "agent_name": "图书审校官",
+      "agent_id": "book_reviewer",
+      "role": "worker",
+      "model": null,
+      "agent_labs": "book_reviewer",
+      "platform": "openclaw",
+      "prompt": "你是一位技术图书审校官。你的职责是质量把控的最后一道防线。\n\n审校清单：\n1. 术语一致性：全书专有名词是否统一\n2. 风格统一性：各章语气、结构是否一致\n3. 跨章节引用：前文提到的概念后文是否 callback，引用是否正确\n4. 准确性与完整性：技术描述是否有误，是否遗漏关键信息\n5. 读者反馈整合：收到读者 Agent 的反馈后，判断哪些需要采纳、哪些需要说明\n\n工作方式：\n- 收到稿件后逐项检查\n- 通过则标注通过，不通过则给出具体修改意见\n- 整合读者反馈，形成统一的修改建议",
+      "description": "图书审校官，术语一致性、风格统一、质量检查，任何图书创作项目都需要",
+      "default_task": {
+        "task_name": "通用消息处理",
+        "task_labs": "general"
+      },
+      "scope": "project",
+      "is_project_admin": 0,
+      "deploy_status": "template"
+    },
+    {
+      "agent_name": "图书读者试读员",
+      "agent_id": "book_beta_reader",
+      "role": "worker",
+      "model": null,
+      "agent_labs": "book_beta_reader",
+      "platform": "openclaw",
+      "prompt": "你是技术图书的读者试读员。你的职责是在审校官检查完格式和准确性之后，以目标读者的身份沉浸式通读书稿小节，给出真实的阅读体验反馈。\n\n核心原则：\n1. 读者代言人：你的困惑就是未来读者的困惑，你的惊喜就是这本书的亮点\n2. 第一人称真实感受：不用\"本文认为\"，你就是\"我\"，那个周末下午捧着书在读的人\n3. 说真话：没读懂就是没读懂，无聊就是无聊，不替作者找理由\n4. 具体到行号：模糊的反馈没有价值，必须指到 L{行号}\n5. 协作而非找茬：反馈交给 reviewer 整合，由 writer 修改，你是在帮这本书变好\n6. 不越界：你不纠术语、不判对错——那是 reviewer 的事\n\n关注维度：可读性、节奏、情绪、吸引力、困惑点、金句时刻\n\n收到任务时：解析指令 → agx_get_execution 获取完整指令 → 按 task 说明书执行 → agx_finish_task 回写结果",
+      "description": "图书读者试读员，以目标读者身份沉浸式阅读并给出体验反馈，任何图书创作项目都需要",
+      "default_task": {
+        "task_name": "通用消息处理",
+        "task_labs": "general"
+      },
+      "scope": "project",
+      "is_project_admin": 0,
+      "deploy_status": "template"
+    }
+  ],
+  "agent_groups": [
+    {
+      "group_name": "agx-core-group",
+      "group_id": "group_agx_core",
+      "description": "AgentGeeX 核心团队 — 所有内置 Agent 所属组",
+      "members": ["agx_core", "agx_host", "agx_agentfather", "agx_projectmother"]
+    },
+    {
+      "group_name": "Python-Vue 开发小队",
+      "group_id": "group_python_vue",
+      "description": "前后端开发小组：py_architect 负责 Flask 后端，super_pm 负责项目管理",
+      "members": ["super_pm", "py_architect"]
+    },
+    {
+      "group_name": "图书创作小队",
+      "group_id": "group_book_writer",
+      "description": "图书创作标准团队模板 — 策划定标准拆任务、写作按标准执行、审校做质量把关。创建图书项目时克隆此组生成项目专属团队。",
+      "members": ["super_pm", "book_planner", "book_writer", "book_reviewer", "book_beta_reader"]
+    }
+  ],
+  "tasks": [
+    {
+      "task_name": "通用消息处理，但是本类型消息会启动一个独立的会话",
+      "task_labs": "universal",
+      "owner_agent": null,
+      "description": "处理发给当前 Agent 的通用系统消息和通知，是每个 Agent 的默认任务模板，该消息会在一个独立的会话中进行处理",
+      "md_file": "tasks/universal.md",
+      "is_private": 0,
+      "platforms": ["all"],
+      "dedicated_session": true,
+      "reply_mode": "confirm"
+    },
+    {
+      "task_name": "通用消息处理",
+      "task_labs": "general",
+      "owner_agent": null,
+      "description": "处理发给当前 Agent 的通用系统消息和通知，是每个 Agent 的默认任务模板",
+      "md_file": "tasks/general.md",
+      "is_private": 0,
+      "platforms": ["all"],
+      "dedicated_session": false,
+      "reply_mode": "confirm"
+    },
+    {
+      "task_name": "看门狗报警处理",
+      "task_labs": "watchdog_alert",
+      "owner_agent": null,
+      "description": "处理看门狗发出的任务超时/异常报警，判断真死假死并执行相应处置",
+      "md_file": "tasks/watchdog_alert.md",
+      "is_private": 0,
+      "platforms": ["openclaw"],
+      "dedicated_session": true,
+      "reply_mode": "confirm"
+    },
+    {
+      "task_name": "系统检查",
+      "task_labs": "system_check",
+      "owner_agent": "agx_core",
+      "description": "检查当前系统是否适配 AgentGeeX 的运行环境，确保所有依赖和配置满足最低要求",
+      "md_file": "tasks/system_check.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "silent"
+    },
+    {
+      "task_name": "主机信息搜集",
+      "task_labs": "host_info",
+      "owner_agent": "agx_host",
+      "description": "搜集当前主机的硬件和系统信息（CPU、内存、磁盘、网络），为资源调度和负载均衡提供依据",
+      "md_file": "tasks/host_info.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "主机通信",
+      "task_labs": "host_communication",
+      "owner_agent": "agx_host",
+      "description": "负责主机与外部系统的通信，通过邮件、Telegram、飞书等渠道收发消息和告警",
+      "md_file": "tasks/host_communication.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "网络使用情况检查分析",
+      "task_labs": "network_analysis",
+      "owner_agent": "agx_core",
+      "description": "分析整个 AgentGeeX 网络的使用情况，包括各主机资源消耗、各节点运行状态、任务负载分布",
+      "md_file": "tasks/network_analysis.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "项目创建",
+      "task_labs": "project_create",
+      "owner_agent": "agx_projectmother",
+      "description": "在 AgentGeeX 网络中创建新项目。执行体=agx_create_project_pipeline(建项目→克隆PM→部署PM→建Worker→部署Worker→绑定验收)；仅 agx_projectmother 可触发(方法自带权限锁死)",
+      "md_file": "tasks/project_create.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "项目审计",
+      "task_labs": "project_audit",
+      "owner_agent": "agx_projectmother",
+      "description": "对网络中的所有项目进行全面审计，检查健康状态、资源使用和活跃度",
+      "md_file": "tasks/project_audit.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "项目配置",
+      "task_labs": "project_configure",
+      "owner_agent": "agx_projectmother",
+      "description": "修改项目运营属性(名称/简称/Logo/描述/源码目录)。不含启停(active_status 走独立快捷指令)",
+      "md_file": "tasks/project_configure.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "Agent 克隆",
+      "task_labs": "agent_clone",
+      "owner_agent": "agx_agentfather",
+      "description": "从模板克隆新 Agent(agentfather 专属)。执行体=agx_create_agent_pipeline；PM 模板 super_pm / worker 模板 agent_template。幂等:目标已存在→succeed",
+      "md_file": "tasks/agent_clone.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "Agent 创建",
+      "task_labs": "agent_create",
+      "owner_agent": "agx_agentfather",
+      "description": "创建新 Agent(对外公开入口，区别于 agent_clone 的克隆语义)。执行体=agx_create_agent_pipeline(与 agent_clone 同实现，不走 agx_upsert_agent 直写)。PM 可请求建本项目 worker",
+      "md_file": "tasks/agent_create.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "Agent 配置",
+      "task_labs": "agent_configure",
+      "owner_agent": "agx_agentfather",
+      "description": "修改已有 Agent 的配置参数（模型、prompt、名称等）",
+      "md_file": "tasks/agent_configure.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "confirm"
+    },
+    {
+      "task_name": "Agent 部署",
+      "task_labs": "agent_deploy",
+      "owner_agent": "agx_host",
+      "description": "将数据库中已注册的 Agent 配置物化到本机文件系统并注册到守护进程，使其达到可运行状态。由 agx_agentfather 在克隆 Agent 后自动触发",
+      "md_file": "tasks/agent_deploy.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "confirm"
+    },
+    {
+      "task_name": "公告提炼",
+      "task_labs": "notice_summarize",
+      "owner_agent": "agx_core",
+      "description": "对指定项目的有效公告进行提炼，生成结构化摘要并归档原始公告",
+      "md_file": "tasks/notice_summarize.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "Flask 后端开发",
+      "task_labs": "task_flask_dev",
+      "owner_agent": "py_architect",
+      "description": "使用 Flask 框架开发企业级 Web 管理后台系统，遵循蓝图架构、ORM 持久化、序列化校验和统一响应契约",
+      "md_file": "tasks/task_flask_dev.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "图书结构与标准制定",
+      "task_labs": "book_plan_structure",
+      "owner_agent": "book_planner",
+      "description": "理解全书目标和读者画像，制定写作标准（小节结构模板、字数、代码规范、语气要求）和术语统一表",
+      "md_file": "tasks/book_plan_structure.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "小节写作",
+      "task_labs": "book_write_section",
+      "owner_agent": "book_writer",
+      "description": "根据策划编辑制定的写作标准和拆分计划，将原始素材改写为高质量的书稿小节",
+      "md_file": "tasks/book_write_section.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "小节修订",
+      "task_labs": "book_revise_section",
+      "owner_agent": "book_writer",
+      "description": "根据审校官或读者的反馈意见，针对性地修改已写的小节稿",
+      "md_file": "tasks/book_revise_section.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "书稿审校",
+      "task_labs": "book_review_content",
+      "owner_agent": "book_reviewer",
+      "description": "对已完成的小节进行术语一致性、风格统一、内容准确性、引用完整性、读者体验的全面检查",
+      "md_file": "tasks/book_review_content.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "读者反馈整合",
+      "task_labs": "book_integrate_feedback",
+      "owner_agent": "book_reviewer",
+      "description": "收集多个读者 Agent 的反馈，分类判断、去重合并，形成统一的修改建议",
+      "md_file": "tasks/book_integrate_feedback.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "图书读者试读",
+      "task_labs": "book_beta_read",
+      "owner_agent": "book_beta_reader",
+      "description": "读者 Agent 以目标读者身份通读书稿小节，给出阅读体验反馈",
+      "md_file": "tasks/book_beta_read.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "质量控制",
+      "task_labs": "book_manage_quality",
+      "owner_agent": "book_planner",
+      "description": "质量看板：汇总审校报告和读者反馈，计算质量指标并决定修订优先级",
+      "md_file": "tasks/book_manage_quality.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "章节合并",
+      "task_labs": "book_merge_chapter",
+      "owner_agent": "book_planner",
+      "description": "将分布在各小节文件中的终稿合并为整章文件",
+      "md_file": "tasks/book_merge_chapter.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "图书项目管理",
+      "task_labs": "book_project_orchestrate",
+      "owner_agent": "super_pm",
+      "description": "书级编排：多章 split、层级计划、逐章 dispatch chapter_orchestrate",
+      "md_file": "tasks/book_project_orchestrate.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "reply_mode": "result",
+      "owner_group": "group_book_writer"
+    },
+    {
+      "task_name": "项目计划的生成和部署",
+      "task_labs": "plan_generate_and_deploy",
+      "owner_agent": "super_pm",
+      "description": "在独立 session 中生成 Plan JSON 并调用 agx_plan_deploy 部署，避免主 session 上下文膨胀导致的 token 超限",
+      "md_file": "tasks/plan_generate_and_deploy.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "dedicated_session": true,
+      "task_type": "plan",
+      "reply_mode": "result"
+    },
+    {
+      "task_name": "plan_execute",
+      "task_labs": "plan_execute",
+      "owner_agent": "super_pm",
+      "extra_owner_agents": ["agx_core"],
+      "description": "激活并管理已部署计划的生命周期：激活→接收step回执→处理失败→结案。支持层级计划嵌套（plan_execute step 触发子计划）",
+      "md_file": "tasks/plan_execute.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "task_type": "plan",
+      "reply_mode": "result",
+      "session_done_wake": 0
+    },
+    {
+      "task_name": "日志整理",
+      "task_labs": "log_organize",
+      "owner_agent": "super_pm",
+      "description": "日志整理任务（汇总层）：聚合项目组内所有 Agent 的 execution.summary，过滤低信息量条目，成文为 daily 日志。仅限 PM 使用",
+      "md_file": "tasks/log_organize.md",
+      "is_private": 1,
+      "platforms": ["all"],
+      "dedicated_session": true,
+      "reply_mode": "result"
+    }
+  ]
+}

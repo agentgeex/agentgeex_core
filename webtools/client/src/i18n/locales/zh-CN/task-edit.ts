@@ -1,0 +1,32 @@
+/**
+ * Task edit page (/tasks/:id/edit)
+ */
+export default {
+  title: "编辑任务",
+  notFoundWithError: "任务 {{id}} 读不到：{{error}}",
+  notFoundGone: "任务 {{id}} 读不到，可能已被移除。",
+  loading: "读取任务详情…",
+  kernelHint: "写入走内核 agx_update_task（字段白名单 / 权属校验 / 缓存同步都在内核）",
+  ownerAgent: "归属 Agent",
+  xdescLabel: "任务说明书（x_desc）",
+  xdescHint: "Agent 执行这个任务时读的就是这份内容（Markdown）。改这里等于改它的作业说明。",
+  fPriority: "优先级",
+  fPriorityHint: "数字，越大越优先（内核按此排序）",
+  fTarget: "目标对象",
+  fTargetHint: "task_base 里的 target_object，通常留空",
+  fVisibility: "可见性",
+  fVisibilityHint: "私有 = 仅归属 Agent 与项目管理员可见",
+  visibilityShared: "共享（全员可见）",
+  visibilityPrivate: "私有（仅归属方）",
+  fStatus: "状态",
+  fStatusHint: "停用后不再出现在可派发列表里，历史记录保留",
+  statusEnabled: "启用",
+  statusDisabled: "停用",
+  payloadLabel: "载荷（payload）",
+  payloadPlaceholder: '{ "key": "value" }　（留空 = 清空载荷）',
+  payloadHint: "结构化参数包，必须是 JSON 对象：派发时会作为硬输入给 Agent。",
+  errPayloadNotObject: "载荷必须是 JSON 对象（{...}）",
+  errPayloadBadJson: "载荷不是合法 JSON：{{error}}",
+  errPriorityNumber: "优先级必须是数字",
+  updated: "任务已更新",
+} as const;

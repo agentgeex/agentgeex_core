@@ -1,0 +1,32 @@
+/**
+ * Task edit page (/tasks/:id/edit)
+ */
+export default {
+  title: "Edit task",
+  notFoundWithError: "Task {{id}} cannot be loaded: {{error}}",
+  notFoundGone: "Task {{id}} cannot be loaded; it may have been removed.",
+  loading: "Loading task details…",
+  kernelHint: "Writes go through the kernel (agx_update_task): field whitelist, ownership checks and cache sync all happen there",
+  ownerAgent: "Owning agent",
+  xdescLabel: "Task instructions (x_desc)",
+  xdescHint: "This is what the agent reads when it runs the task (Markdown). Editing it changes its work order.",
+  fPriority: "Priority",
+  fPriorityHint: "A number; higher runs first (the kernel sorts by it)",
+  fTarget: "Target object",
+  fTargetHint: "target_object in task_base; usually left empty",
+  fVisibility: "Visibility",
+  fVisibilityHint: "Private = visible only to the owning agent and project admins",
+  visibilityShared: "Shared (everyone)",
+  visibilityPrivate: "Private (owner only)",
+  fStatus: "Status",
+  fStatusHint: "Disabled tasks no longer appear in dispatch lists; history is kept",
+  statusEnabled: "Enabled",
+  statusDisabled: "Disabled",
+  payloadLabel: "Payload",
+  payloadPlaceholder: '{ "key": "value" } (leave empty to clear the payload)',
+  payloadHint: "Structured parameter pack; must be a JSON object. It is passed to the agent as hard input on dispatch.",
+  errPayloadNotObject: "Payload must be a JSON object ({...})",
+  errPayloadBadJson: "Payload is not valid JSON: {{error}}",
+  errPriorityNumber: "Priority must be a number",
+  updated: "Task updated",
+} as const;

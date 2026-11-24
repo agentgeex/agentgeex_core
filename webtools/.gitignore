@@ -1,0 +1,16 @@
+# 前端构建产物 / 依赖（client 侧细节见 client/.gitignore）
+node_modules/
+dist/
+logs/
+.vite/
+*.tsbuildinfo
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+
+# Env
+.env
+.env.*
+!.env.example

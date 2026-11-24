@@ -1,0 +1,21 @@
+/** Common status words (Badge). ★ Must match the board and executions word for word */
+export default {
+  online: "在线",
+  busy: "忙碌",
+  offline: "离线",
+  error: "异常",
+  active: "活跃",
+  idle: "空闲",
+  archived: "已归档",
+  paused: "已暂停",
+  running: "运行中",
+  succeeded: "已成功",
+  failed: "失败",
+  pending: "排队中",
+  awaiting_confirm: "待人类确认",
+  draft: "草稿",
+  cancelled: "已取消",
+  completed: "已完成",
+  activated: "进行中",
+  cancelling: "取消中",
+} as const;

@@ -1,0 +1,20 @@
+{
+  "accounts": {
+    "robertfeng": {
+      "email": "",
+      "name": "",
+      "smtp_host": "",
+      "smtp_port": 25,
+      "smtp_user": "",
+      "smtp_pass": "",
+      "imap_host": "",
+      "imap_port": 993,
+      "imap_user": "",
+      "imap_pass": "",
+      "pop_host": "",
+      "pop_port": 995,
+      "pop_user": "",
+      "pop_pass": ""
+    }
+  }
+}
