@@ -1,129 +1,134 @@
-# brand/ — AgentGeeX 品牌图片目录
+<!-- English (GitHub) primary. Chinese version: README.zh-CN.md -->
 
-前端所有**品牌/静态图片**统一放这里（`public/brand/`，构建后原样拷到站点根 `/brand/`）。
-后续新增图片（Logo 变体、空状态插画、合作方标识等）也放这个目录，不要再散落到 `public/` 根。
+# brand/ — AgentGeeX brand image directory
 
-## ⚠️ 真源是 SVG，PNG 都是产物
+Every **brand / static image** in the frontend lives here (`public/brand/`, copied verbatim to the site root `/brand/` after build).
+Images added later (logo variants, empty-state illustrations, partner marks, etc.) also go in this directory — stop scattering them into `public/` root.
+
+## ⚠️ SVG is the source of truth, every PNG is a build product
 
 ```
-logo-mark.svg        ← 唯一真源（改图只改它）
+logo-mark.svg        ← the only source of truth (edit images here and nowhere else)
    └─ node scripts/brand_export.mjs --ico
         ├─ logo-mark.png 512 / logo-64.png / apple-touch-icon.png 180
         ├─ favicon-32.png / favicon-16.png / favicon.ico(16·32·48·64)
 ```
 
-手改 PNG 等于制造第二个真源：下次谁改了 SVG，PNG 就是旧的，而**没人看得出来**。
-所以只改 SVG，然后跑一次脚本，所有尺寸一起重出（脚本会写清每个尺寸）。
+Hand-editing a PNG creates a second source of truth: next time someone edits the SVG the PNG is stale, and **nobody can tell**.
+So edit only the SVG, then run the script once and every size is regenerated together (the script spells out each size).
 
-### AGX 标志（2026-11-10 老冯重做）
+### The AGX mark (reworked by the author, 2026-11-10)
 
-原话：「这个图标不太好，当时设计没讲清楚……AGX 嘛，就三个字，把三个字放里面就行，
-        没必要搞那么复杂。……现在这个搞得反而不好看。」
+In the author's own words: "This icon isn't great — the design wasn't explained clearly back then… AGX, that's
+        three letters, just put the three letters in it,
+        no need to overcomplicate it. … What we have now actually looks worse."
 
-| 文件 | 说明 |
+| File | Description |
 |---|---|
-| `logo-mark.svg` | **组合标（现用）**：上排 G·X + 下方一个大 A，实底圆角方块 + 白色单线字 |
-| `logo-wordmark.svg` | 备选：AGX 三字并排（字身只占方块 33% 高，缩到 24px 会退化成一条细带） |
+| `logo-mark.svg` | **Combined mark (in use)**: G·X on the top row + one large A below, solid rounded square + white single-stroke letters |
+| `logo-wordmark.svg` | Alternative: AGX side by side (glyph bodies fill only 33% of the square's height, degrading to a thin band at 24px) |
 
-为什么主选组合标而不是三字并排：方块图标里三字并排每个字只有 1/3 宽，
-**缩到侧边栏 24–28px 就成了一条 20×8 的糊影**；组合标把字撑满方块（24px 时墨迹 19×19）。
+Why the combined mark over three letters in a row: inside a square icon each of three letters is only 1/3 as wide,
+**at sidebar size 24–28px it collapses into a 20×8 smudge**; the combined mark fills the square with ink (19×19 at 24px).
 
-字全部是**手写几何路径**（不依赖字体）：字体依赖会在别人机器上变样，
-logo 不能因为没装某个字号就崩。
+Every glyph is a **hand-written geometric path** (no font dependency): a font dependency renders differently on someone else's machine,
+and a logo must not break just because a certain font size isn't installed.
 
-### 规格（2026-11-10 23:57 老冯定稿 · 小写 g 版）
+### Spec (finalised by the author 2026-11-10 23:57 · lowercase-g version)
 
-| 项 | 值 | 他的原话 |
+| Item | Value | In his own words |
 |---|---|---|
-| 底色 | **蓝 `#2563EB`** | 「还是改成蓝色吧」（先前定的藏青作废） |
-| A | 原样不动 | 「A 不管」 |
-| 左侧字母 | **小写 g**（bowl 整圆 + 右侧 stem + 向下弯钩） | 「G 改成小写 g 试试看，大写 G 看不出来这个是个 G」 |
-| 右侧字母 | 大写 X（他没提，保持） | |
+| Ground colour | **blue `#2563EB`** | "Let's change it to blue after all" (the earlier navy is void) |
+| A | untouched | "Leave the A alone" |
+| Left letter | **lowercase g** (full-circle bowl + right-side stem + downward hook) | "Try lowercase g instead of G — at uppercase G you can't tell it's a G" |
+| Right letter | uppercase X (he didn't mention it, unchanged) | |
 
-#### 为什么小写 g 比大写 G 好认（这条是量出来的，不是感觉）
+#### Why lowercase g reads better than uppercase G (measured, not felt)
 
-大写 G 的构形是「圆环 + **环内**一根横杠」。缩到 24px 时环内只剩 3px，
-横杠 1.3px 横穿过去 → 孔被切成两半、各自不到 1px，抗锯齿一糊就**归零**：
-实测 24px 下大写 G 的闭合孔数 = **0**（等于一个带缺口的小圆点）。
+Uppercase G is built as "a ring + **an inner** horizontal bar". At 24px the ring interior is only 3px,
+and a 1.3px bar crosses it → the counter is cut in two, each half under 1px, and anti-aliasing flattens it to **zero**:
+measured closed-counter count for uppercase G at 24px = **0** (i.e. a small circle with a notch).
 
-小写 g 的构形是「圆 bowl + **环外**一根下伸的尾巴」。
-尾巴在环外面，不与孔争空间 → 24px 下孔数 = **4**，28px = **8**。
-加上 descender 造成的上下不对称，人眼更容易把它读成字母而不是装饰。
+Lowercase g is built as "a round bowl + **one tail outside** the ring".
+The tail sits outside the ring and doesn't compete with the counter → counter count at 24px = **4**, at 28px = **8**.
+Plus the vertical asymmetry created by the descender, which the eye reads more readily as a letter rather than an ornament.
 
-#### 排版细节（小写不是"把大写缩小"）
+#### Typographic detail (lowercase is not "a shrunken uppercase")
 
-- g 的**顶部低于 X 顶部**（32 vs 28）—— 这是 x-height，小写就该比大写矮
-- g 的**底部低于 X 底部**（157 vs 147）—— descender 伸出基线，这是小写 g 的身份
-- g 的**底部仍在 A 之上**（157 < A 顶点笔画 157..）—— 不压主字母
+- g's **top sits below X's top** (32 vs 28) — that's x-height; lowercase is supposed to be shorter than uppercase
+- g's **bottom sits below X's bottom** (157 vs 147) — the descender extends past the baseline; that is what identifies a lowercase g
+- g's **bottom still sits above the A** (157 < the A apex stroke 157..) — it does not crowd the main letter
 
-#### 小写 g 的最终形态（2026-11-11 07:58 老冯定稿）
+#### Final form of the lowercase g (finalised by the author 2026-11-11 07:58)
 
-他的原话：「这个已经非常好了，就差一点，那个 g 的尾巴有点短，稍微再往左延伸点，
-           否则就有点像 9；g 的右边那一竖，在上面稍微往上翘点。现在的有点像 9。」
+In his own words: "This is very good already, just one thing — that g's tail is a bit short, extend it a little further
+           to the left, otherwise it looks like a 9; and the right-hand vertical of the g, let it curve up a bit at the top.
+           Right now it does look like a 9."
 
-| 项 | 上一版 | 定稿 | 说明 |
+| Item | Previous version | Final | Note |
 |---|---|---|---|
-| 钩子半径 | 32 | **42** | 钩子本身更大 |
-| 钩子角度 | 112° | **115°** | 末端更向左上回卷 |
-| 钩子水平跨度 | 44 | **60**（+36%） | 这才是"往左延伸"的实测量 |
-| 尾巴露出（descender） | 67 | **75** | |
-| 竖线顶端 | 与圆心等高 | **高出 20px** | 即他要的"往上翘" |
+| Hook radius | 32 | **42** | The hook itself is larger |
+| Hook angle | 112° | **115°** | The end curls further back to the upper left |
+| Hook horizontal span | 44 | **60** (+36%) | This is the measured version of "extend to the left" |
+| Tail exposure (descender) | 67 | **75** | |
+| Stem top | level with the circle centre | **20px above** | What he asked for as "curve up" |
 
-**为什么这两处能拉开和「9」的差距**：数字 9 的构形是「圆 + 右侧一条笔直的竖线」，
-竖线顶端与圆接口齐平、底端直下或右弯。小写 g 的两处特征正好相反 ——
-尾巴向左上回卷、竖线顶端微微翘出。所以：
-- 尾巴往左 → 破掉"直下"
-- 竖线往上翘 → 破掉"齐平接口"
+**Why these two changes create distance from "9"**: the digit 9 is built as "a circle + one straight vertical on the right",
+with the vertical's top flush against the circle and its bottom going straight down or bending right. The lowercase g's two features are the exact opposite —
+the tail curls back to the upper left, and the stem top lifts slightly above.
+So:
+- tail to the left → breaks "straight down"
+- stem lifted at the top → breaks the "flush junction"
 
-视觉模型对 220px 的判读因此从「更像数字 9」翻成「更像小写 g」；
-36px 也从「像 9」变成「更像 g」（虽然那个 20px 的上翘在小尺寸里只剩 1.4px，看不出）。
+As a result the vision model's reading at 220px flipped from "more like the digit 9" to "more like a lowercase g";
+at 36px it also went from "like a 9" to "more like a g" (though that 20px lift is only 1.4px at small sizes, invisible).
 
-**A 一根线没动**：水平居中仍在 x=256，三档墨迹与基线完全相同。
+**The A did not move by a single line**: horizontal centring is still at x=256, and ink and baseline are identical across all three sizes.
 
-#### 各尺寸实测（视觉模型判读）
+#### Measured result per size (vision-model reading)
 
-| 尺寸 | 结果 |
+| Size | Result |
 |---|---|
-| **220px** | 尾巴向左上回卷、竖线上翘，**像单层小写 g**（改前被判"像 9"） |
-| **140px** | 清楚，回卷可见 |
-| **96px** | 能辨认，特征可见 |
-| 36px（侧边栏） | 尾巴的回卷看得见，**整体更像 g**；竖线那 1.4px 的上翘看不出 |
-| 28px 及以下 | 只剩一条竖直短线 |
+| **220px** | Tail curls to the upper left, stem lifts, **reads as a single-storey lowercase g** (before the change it was judged "like a 9") |
+| **140px** | Clear, the curl is visible |
+| **96px** | Legible, the features are visible |
+| 36px (sidebar) | The tail's curl is visible, **overall more like a g**; the stem's 1.4px lift is invisible |
+| 28px and below | Only a short vertical dash remains |
 
-## 现有文件
+## Existing files
 
-| 文件 | 尺寸 | 用途 |
+| File | Size | Use |
 |---|---|---|
-| `logo-mark.png` | 512×512（透明） | 侧边栏 / 登录页品牌图标（大图，含 8% 留白） |
-| `logo-mark.svg` | 矢量 | 同上，**实际引用的就是这个**（任何 DPI 都锐） |
-| `logo-64.png` | 64×64（透明） | 小尺寸图标 / 文档用 |
-| `favicon-32.png` / `favicon-16.png` | 32 / 16 | 浏览器标签页图标 |
-| `favicon.ico` | 16/32/48/64 多尺寸 | 传统 favicon 兜底（Safari、旧浏览器） |
-| `apple-touch-icon.png` | 180×180 | iOS 添加到主屏 |
+| `logo-mark.png` | 512×512 (transparent) | Sidebar / login-page brand icon (large, with 8% padding) |
+| `logo-mark.svg` | vector | Same as above, **this is the one actually referenced** (sharp at any DPI) |
+| `logo-64.png` | 64×64 (transparent) | Small icon / documentation use |
+| `favicon-32.png` / `favicon-16.png` | 32 / 16 | Browser tab icon |
+| `favicon.ico` | 16/32/48/64 multi-size | Legacy favicon fallback (Safari, older browsers) |
+| `apple-touch-icon.png` | 180×180 | iOS add-to-home-screen |
 
-## 命名约定
+## Naming conventions
 
-- 全小写、连字符分隔：`logo-mark.png`、`empty-agents.svg`
-- 同一图多种尺寸：`<name>-<px>.png`（如 `logo-64.png`）
-- 原始素材放 `source/`，不进构建产物引用
-- 优先使用**透明背景 PNG** 或 **SVG**（深色/浅色主题都能用）；不要放白底图
+- All lowercase, hyphen-separated: `logo-mark.png`, `empty-agents.svg`
+- Multiple sizes of one image: `<name>-<px>.png` (e.g. `logo-64.png`)
+- Original assets go in `source/`, never referenced by the build output
+- Prefer **transparent PNG** or **SVG** (works on both dark and light themes); never ship a white-background image
 
-## 来源
+## Provenance
 
-`source/agentgeex-original-1024.png` = 老冯 2026-10-19 提供的原图（1024×1024，带大量白边）。
-加工方式：从四边 flood-fill 去白底 → 自动裁掉空白（497×411）→ 方形化留白 → 导出各尺寸。
+`source/agentgeex-original-1024.png` = the original image the author supplied on 2026-10-19 (1024×1024, with a lot of white margin).
+Processing: flood-fill the white from all four edges → auto-crop to content (497×411) → square with padding → export every size.
 
-## avatars/ — 对象头像（Agent / 助理）
+## avatars/ — object avatars (Agent / assistant)
 
-- 命名：**文件名 = 对象 id**，助理带 `case_` 前缀（如 `aifr_pm.png`、`case_aifr_intel.png`）
-- 来源：aifr_pm 的 `assistants/t2i_research/outputs/logos_final`（2026-10-19 定稿，1024×1024 纯白底）
-- 解析代码：`src/lib/brand-avatars.ts`（显式清单，不再拼路径猜）
-- 回退链：`avatarUrl`（后端 agent_avatar）→ 本地品牌图 → 首字母 + 确定性配色
-- 新增对象：补图到本目录 + 在 `BRAND_AVATARS` 里加一行即可（未加的自动走首字母）
+- Naming: **filename = object id**, assistants carry a `case_` prefix (e.g. `aifr_pm.png`, `case_aifr_intel.png`)
+- Source: aifr_pm's `assistants/t2i_research/outputs/logos_final` (finalised 2026-10-19, 1024×1024 on pure white)
+- Resolver code: `src/lib/brand-avatars.ts` (an explicit list; no more guessing by path concatenation)
+- Fallback chain: `avatarUrl` (backend `agent_avatar`) → local brand image → initial letter + deterministic colour
+- Adding an object: drop the image in this directory and add one line to `BRAND_AVATARS` (anything not listed falls back to the initial letter)
 
-| 文件 | 对象 | 主色 |
+| File | Object | Primary colour |
 |---|---|---|
-| `aifr_pm.png` | aifr_pm（AI 前沿雷达 PM） | `#1F5FA8` |
+| `aifr_pm.png` | aifr_pm (AI frontier radar PM) | `#1F5FA8` |
 | `case_aifr_intel.png` | aifr_intel | `#E07B39` |
 | `case_agent_research.png` | agent_research | `#6C5CE7` |
 | `case_skill_research.png` | skill_research | `#2E9E5B` |

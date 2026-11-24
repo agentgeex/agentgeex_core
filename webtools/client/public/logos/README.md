@@ -1,40 +1,42 @@
-# 合作方 / 生态项目 Logo
+<!-- English (GitHub) primary. Chinese version: README.zh-CN.md -->
 
-用于 AgentGeeX Web 前端展示生态内各 Agent 运行时 / CLI 的识别标识。
-前端直接引用：`/logos/<file>`（Vite `public/` 目录，构建后原样输出）。
+# Partner / ecosystem project logos
 
-> 采集日期：2026-10-16 ｜ 采集人：agx_ui_lead
+Used by the AgentGeeX web frontend to identify each agent runtime / CLI in the ecosystem.
+The frontend references them directly: `/logos/<file>` (Vite `public/` directory, emitted verbatim after build).
 
-## 主要 4 个（老冯 2026-10-16 指定）
+> Collected: 2026-10-16 | Collected by: agx_ui_lead
 
-| 文件 | 项目 | 形态 | 来源（官方） |
+## The main four (specified by the author 2026-10-16)
+
+| File | Project | Form | Source (official) |
 |---|---|---|---|
-| `openclaw.svg` | **OpenClaw** | 红色龙虾吉祥物（官方站图标）| `https://openclaw.ai/favicon.svg` |
-| `openclaw-mascot.svg` | OpenClaw | 像素龙虾（官方仓库）| repo `openclaw/openclaw` → `docs/assets/pixel-lobster.svg` |
-| `dsh.svg` / `dsh-dark.svg` | **DSH**（DeepSeek Harness）| 鲸标（官方 Web UI favicon，light/dark）| repo `deepseek-ai/deepseek-harness` → `apps/web/public/favicon[-dark].svg` |
-| `dsh-icon.svg` | DSH | 桌面应用图标（1104×1104）| repo `deepseek-ai/deepseek-harness` → `apps/desktop/resources/icon.svg` |
-| `codex.svg` | **OpenAI Codex** | 蓝圆 + 白色结标（Codex 文档站图标）| `https://developers.openai.com/codex` favicon |
-| `claude-code.svg` | **Claude Code** | Claude 官方标记（#D97757）| Simple Icons `claude`（CDN `cdn.simpleicons.org/claude`）|
+| `openclaw.svg` | **OpenClaw** | Red lobster mascot (official site icon) | `https://openclaw.ai/favicon.svg` |
+| `openclaw-mascot.svg` | OpenClaw | Pixel lobster (official repo) | repo `openclaw/openclaw` → `docs/assets/pixel-lobster.svg` |
+| `dsh.svg` / `dsh-dark.svg` | **DSH** (DeepSeek Harness) | Whale mark (official web UI favicon, light/dark) | repo `deepseek-ai/deepseek-harness` → `apps/web/public/favicon[-dark].svg` |
+| `dsh-icon.svg` | DSH | Desktop app icon (1104×1104) | repo `deepseek-ai/deepseek-harness` → `apps/desktop/resources/icon.svg` |
+| `codex.svg` | **OpenAI Codex** | Blue circle + white knot mark (Codex docs site icon) | `https://developers.openai.com/codex` favicon |
+| `claude-code.svg` | **Claude Code** | Official Claude mark (#D97757) | Simple Icons `claude` (CDN `cdn.simpleicons.org/claude`) |
 
-## 备选 / 通用品牌标（同源可替换）
+## Alternatives / generic brand marks (same origin, interchangeable)
 
-| 文件 | 品牌 | 来源 |
+| File | Brand | Source |
 |---|---|---|
-| `openai.svg` | OpenAI 花标（白色，需深底）| repo `openclaw/openclaw` → `docs/assets/sponsors/openai.svg` |
-| `anthropic.svg` | Anthropic 标记 | Simple Icons `anthropic` |
-| `deepseek.svg` | DeepSeek 鲸标（单色 #5786FE）| Simple Icons `deepseek` |
+| `openai.svg` | OpenAI flower mark (white, needs a dark background) | repo `openclaw/openclaw` → `docs/assets/sponsors/openai.svg` |
+| `anthropic.svg` | Anthropic mark | Simple Icons `anthropic` |
+| `deepseek.svg` | DeepSeek whale mark (mono #5786FE) | Simple Icons `deepseek` |
 
-## 当前实际引用（2026-11-16 更新）
+## What is actually referenced today (updated 2026-11-16)
 
-- 平台 `dsh` 在界面上引用 **`deepseek.svg`（品牌蓝 #5786FE）**，不是 `dsh.svg`。
-  原因：`dsh.svg` / `dsh-dark.svg` 是官方 Web UI favicon 的**单色**版（黑 / 白），
-  放进浅底色卡片里就是"一坨黑"（老冯 2026-11-16：「DSH 是个蓝色的图标吧」）。
-  两个单色文件**保留**，将来做深色主题配对时要用。
-- 平台 `openclaw` 引用 `openclaw.svg`；`codex` / `claude_code` 同上表。
+- Platform `dsh` references **`deepseek.svg` (brand blue #5786FE)** in the UI, not `dsh.svg`.
+  Why: `dsh.svg` / `dsh-dark.svg` are the **monochrome** (black / white) versions of the
+  official web UI favicon, and inside a light-background card they become "one black blob" (author, 2026-11-16: "DSH is a blue icon, isn't it?").
+  Both monochrome files are **kept** — they'll be needed for dark-theme pairing later.
+- Platform `openclaw` references `openclaw.svg`; `codex` / `claude_code` as in the table above.
 
-## 说明 / 注意
+## Notes / caveats
 
-- **DSH = DeepSeek Harness** 的官方缩写（见其 `BRAND_GUIDELINES.md`）。其 logo 即 DeepSeek 鲸标。
-- **Codex / Claude Code** 官方仓库内**无独立 logo 资产**：Codex 取 Codex 文档站 favicon；Claude Code 取 Claude 官方品牌标记。
-- **商标**：以上均为各公司商标。仅用于**指代/识别**对应产品（"纳指性使用"），不得暗示官方背书或合作。商用/再分发前请复核各自品牌指南与授权。
-- 🔧 如需 **Claude Code / Codex 专属产品标**（而非品牌标），需从官方 press kit 获取，当前公开渠道未提供。
+- **DSH = DeepSeek Harness** is the official abbreviation (see its `BRAND_GUIDELINES.md`). Its logo is the DeepSeek whale mark.
+- **Codex / Claude Code** ship **no standalone logo asset** in their official repos: Codex uses the Codex docs-site favicon; Claude Code uses the official Claude brand mark.
+- **Trademarks**: all of the above are trademarks of their respective companies. They are used only to **refer to / identify** the corresponding product (nominative use) and must not imply official endorsement or partnership. Re-check each brand guideline and licence before commercial use or redistribution.
+- 🔧 If you need the **Claude Code / Codex product marks** (rather than the brand marks), you have to get them from the official press kit; they are not available through public channels today.

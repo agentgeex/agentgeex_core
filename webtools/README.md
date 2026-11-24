@@ -1,73 +1,78 @@
-# webtools — Win3 商业控制台（前端 + 服务器端）
+<!-- English (GitHub) primary. Chinese version: README.zh-CN.md -->
 
-> AgentGeeX 面向付费客户的 **Win3 商业控制台**：前端 SPA + 专用 BFF 服务器端。
-> 核心设计理念：**把 Prompt 封装为按钮** —— 客户不写 Prompt，点按钮即驱动 Agent 干活。
+# webtools — Win3 commercial console (frontend + server)
+
+> The **Win3 commercial console** AgentGeeX ships to paying customers: a frontend SPA
+> plus a dedicated BFF server.
+> Core design principle: **wrap prompts as buttons** — customers don't write prompts,
+> they click a button and the agent goes to work.
 >
-> 维护者：agx_ui_lead（UI 前端负责人）　最后更新：2026-09-29
+> Maintainer: agx_ui_lead (UI frontend lead) | Last updated: 2026-09-29
 
 ---
 
-## 目录结构
+## Directory layout
 
 ```
 webtools/
-├── client/     ★ 前端 SPA（React 18 + Refine headless + Tailwind + shadcn/ui）
-└── server/     ★ 服务器端 BFF（鉴权 / 多租户 / 聚合裁剪 / 对内核适配）
+├── client/     ★ frontend SPA (React 18 + Refine headless + Tailwind + shadcn/ui)
+└── server/     ★ server-side BFF (auth / multi-tenancy / aggregation & trimming / kernel adapter)
 ```
 
 ---
 
-## 前端（client/）
+## Frontend (client/)
 
-| 项 | 值 |
+| Item | Value |
 |----|----|
-| 来源 | 从 **ShardKit** 模板（`wincubelabs/ui_test/ui_component_library`）copy-in 初始化 |
-| 技术栈 | React 18 + **Refine (headless)** + React Router 6 + **Tailwind** + **shadcn/ui** + TanStack Query + i18next |
-| 形态 | **成品页面案例集**（仪表盘 / 列表 CRUD 两套 / 表单 / 详情 / 查询 / 认证 / 错误 / 组件展厅）|
-| 零件库 | `registry-items/` 38 个可复制 UI 零件（copy-in 消费）|
-| 数据现状 | 前端内存 mock；生产切 `VITE_API_URL` 指向 BFF，**页面代码零改动** |
+| Origin | Copy-in initialised from the **ShardKit** template (`wincubelabs/ui_test/ui_component_library`) |
+| Stack | React 18 + **Refine (headless)** + React Router 6 + **Tailwind** + **shadcn/ui** + TanStack Query + i18next |
+| Shape | **A set of finished page cases** (dashboard / two list-CRUD variants / forms / detail / query / auth / error / component gallery) |
+| Widget library | `registry-items/` — 38 copy-in UI widgets (consumed by copy-in) |
+| Data today | Frontend in-memory mock; in production point `VITE_API_URL` at the BFF, **zero page-code changes** |
 
 ```bash
 cd client
 npm install
 npm run dev          # → http://localhost:5178
-npx tsc --noEmit     # 类型检查必须 TSC=0
-npm run build        # 生产构建
+npx tsc --noEmit     # type check must stay at TSC=0
+npm run build        # production build
 ```
 
-工程约定 / 工作流 / cookbook 见 [`client/agent_doc/usage-manual.md`](./client/agent_doc/usage-manual.md)。
+Engineering conventions / workflow / cookbook: see [`client/agent_doc/usage-manual.md`](./client/agent_doc/usage-manual.md).
 
 ---
 
-## 服务器端（server/）
+## Server (server/)
 
-**BFF（Backend-for-Frontend）**：前端只对本服务说 REST；本服务对内经 MCP / 内网 HTTP 调 AgentGeeX 内核。
+**BFF (Backend-for-Frontend)**: the frontend speaks REST only to this service; this service reaches the AgentGeeX kernel over MCP / internal HTTP.
 
-- 职责：鉴权（JWT）、多租户隔离、聚合 & 字段裁剪、配额 / 计费 / 限流 / 审计、对内核适配。
-- 选型：**FastAPI**（贴 Python/MCP 生态）或 **NestJS**（前后端同语言）—— 待拍板。
-- 对外契约（唯一事实源）：[`client/agent_doc/api-contract-draft.md`](./client/agent_doc/api-contract-draft.md)。
+- Responsibilities: auth (JWT), multi-tenant isolation, aggregation & field trimming, quota / billing / rate limiting / audit, kernel adapter.
+- Stack choice: **FastAPI** (close to the Python/MCP ecosystem) or **NestJS** (one language front to back) — pending decision.
+- External contract (single source of truth): [`client/agent_doc/api-contract-draft.md`](./client/agent_doc/api-contract-draft.md).
 
-详见 [`server/README.md`](./server/README.md)。
+Details: [`server/README.md`](./server/README.md).
 
 ---
 
-## 三层边界（红线）
+## Three-layer boundary (red line)
 
-| 层 | 碰 MySQL | 碰 Redis | 对谁说话 |
+| Layer | Touches MySQL | Touches Redis | Talks to |
 |----|:---:|:---:|------|
-| 浏览器 SPA（client）| ❌ | ❌ | 只对 **BFF** 说 REST |
-| **BFF（server）** | ✅ | ✅ | 对内 MCP/HTTP，对外 REST |
-| AgentGeeX 内核（MCP，已有）| ✅ | ✅ | MCP（SSE/stdio）|
+| Browser SPA (client) | ❌ | ❌ | REST to the **BFF** only |
+| **BFF (server)** | ✅ | ✅ | MCP/HTTP inward, REST outward |
+| AgentGeeX kernel (MCP, existing) | ✅ | ✅ | MCP (SSE/stdio) |
 
-> ⚠️ 前端**永远不直连** MySQL / Redis：浏览器无法说这两种协议，且凭证进 bundle 即被 F12 扒走。
+> ⚠️ The frontend **never** connects to MySQL / Redis directly: browsers cannot speak
+> either protocol, and any credential that reaches the bundle is one F12 away from being stolen.
 
 ---
 
-## 相关文档
+## Related documents
 
-| 文档 | 内容 |
+| Document | Contents |
 |------|------|
-| [`client/agent_doc/usage-manual.md`](./client/agent_doc/usage-manual.md) | 前端使用手册（目录地图 / 工作流 / 工程约定 / cookbook）|
-| [`client/agent_doc/architecture.md`](./client/agent_doc/architecture.md) | 前后端架构图 / 服务器端选型 / 数据交互 |
-| [`client/agent_doc/api-contract-draft.md`](./client/agent_doc/api-contract-draft.md) | BFF REST API 契约草案（对接双方共同遵守）|
-| [`client/README.md`](./client/README.md) | ShardKit 模板原始文档（定位 / 机制 / 图标 / i18n）|
+| [`client/agent_doc/usage-manual.md`](./client/agent_doc/usage-manual.md) | Frontend user manual (directory map / workflow / conventions / cookbook) |
+| [`client/agent_doc/architecture.md`](./client/agent_doc/architecture.md) | Frontend/backend architecture diagram / server stack choice / data flow |
+| [`client/agent_doc/api-contract-draft.md`](./client/agent_doc/api-contract-draft.md) | BFF REST API contract draft (binding on both sides) |
+| [`client/README.md`](./client/README.md) | Original ShardKit template doc (positioning / mechanics / icons / i18n) |
