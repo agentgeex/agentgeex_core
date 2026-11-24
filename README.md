@@ -6,6 +6,8 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md)
 
+> **Repository**: [GitHub](https://github.com/agentgeex/agentgeex_core) (primary) · [Gitee](https://gitee.com/agentgeex/agentgeex_core) (read-only mirror). Issues and pull requests are handled on GitHub.
+
 <p align="center">
   <img alt="Version v0.1.0" src="./assets/badges/badge-version.svg" height="20" />
   <img alt="Status pre-1.0" src="./assets/badges/badge-status.svg" height="20" />

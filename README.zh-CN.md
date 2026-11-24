@@ -6,6 +6,8 @@
 
 简体中文 · [English](README.md)
 
+> **仓库**：[GitHub](https://github.com/agentgeex/agentgeex_core)（主仓） · [Gitee](https://gitee.com/agentgeex/agentgeex_core)（只读镜像）。Issue 与 PR 统一在 GitHub 处理。
+
 <p align="center">
   <img alt="版本 v0.1.0" src="./assets/badges/badge-version.svg" height="20" />
   <img alt="状态 pre-1.0" src="./assets/badges/badge-status.svg" height="20" />
