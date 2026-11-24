@@ -183,7 +183,8 @@ is_pid_alive() {
 }
 
 # match only mcp_gateway.py, not the three service files (those are libraries, not entry points)
-MCP_PATTERN="agx_mcp/mcp_gateway\.py"
+# ★ 2026-11-24: anchored to THIS install root -- see the same note in daemon.sh.
+MCP_PATTERN="${PROJECT_ROOT}/agx_mcp/mcp_gateway\.py"
 
 find_mcp_pids() {
     pgrep -f "$MCP_PATTERN" 2>/dev/null | tr '\n' ' ' | sed 's/ *$//' || true

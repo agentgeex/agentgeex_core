@@ -206,7 +206,11 @@ is_pid_alive() {
 
 # ── process scan: fallback that does not trust the pidfile ──
 # matches the uv wrapper process and the python3 it spawns (both cmdlines contain the script path)
-DAEMON_PATTERN="scripts/agx_daemon\.py"
+# ★ 2026-11-24: must be anchored to THIS install root. A bare "scripts/agx_daemon.py" matches
+#   every AgentGeeX instance on the machine, so `daemon.sh stop` on a second install
+#   killed the first one's daemon (measured on 118: installing a demo tree under
+#   ~/.agx_demo took down the ~/.agx instance). Absolute path keeps instances apart.
+DAEMON_PATTERN="${PROJECT_ROOT}/scripts/agx_daemon\.py"
 
 # every matching process (wrapper + real body) — used by stop
 find_daemon_pids() {
