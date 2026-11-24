@@ -271,6 +271,11 @@ class Settings:
     # The derivation needs two truths: work_dir (the runtime root) and host_id (which machine this is).
     work_dir: str = _agx_cfg("work_dir", "~/.agx")
     host_id: str = _agx_cfg("host_id", "")
+    # ★ 2026-11-24: the tenant/network this install belongs to. realdata used to hard-code
+    #   `_NETWORK_ID = "lan_001"`, so any deployment whose network_id differs (e.g. the clean
+    #   118 install with `lan_test`) rendered every list as empty -- hosts, agents, tasks all [].
+    #   Single source of truth is agx_config.json.
+    network_id: str = _agx_cfg("network_id", "")
 
     # Read-only fetch cap (a hard upper bound on each realdata entity query, preventing full-table dumps; the default is large enough for real volumes)
     # Note: this is a blow-up guard, not business pagination -- business pagination is done by the frontend DataTable component.

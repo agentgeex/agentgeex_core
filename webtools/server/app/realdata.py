@@ -30,7 +30,13 @@ log = logging.getLogger("win3.bff.realdata")
 
 # Read-only fetch cap per entity (read uniformly from config; default 100000, prevents full-table dumps)
 _MAX = settings.fetch_limit
-_NETWORK_ID = "lan_001"  # TODO: derive from the caller once multi-tenant lands
+# ★ 2026-11-24: was hard-coded "lan_001"; read the install's own network_id instead.
+#   Symptom when it drifted: every list endpoint returned [] because `WHERE network_id = 'lan_001'`
+#   matched nothing (measured on the clean 118 install, network_id=lan_test).
+#   Multi-tenant derivation from the caller is still a TODO, but "the install's own network" is correct today.
+from .config import settings as _settings
+
+_NETWORK_ID = (_settings.network_id or "lan_001").strip()
 
 # ══════════════════════════════════════════════════════════════════
 # Field mapping: MCP tool return -> frontend mock field
