@@ -39,7 +39,7 @@ npx tsc --noEmit     # type check must stay at TSC=0
 npm run build        # production build
 ```
 
-Engineering conventions / workflow / cookbook: see [`client/agent_doc/usage-manual.md`](./client/agent_doc/usage-manual.md).
+Engineering conventions / workflow / cookbook live in the development repository under `client/agent_doc/`; they are not part of this distribution.
 
 ---
 
@@ -49,7 +49,7 @@ Engineering conventions / workflow / cookbook: see [`client/agent_doc/usage-manu
 
 - Responsibilities: auth (JWT), multi-tenant isolation, aggregation & field trimming, quota / billing / rate limiting / audit, kernel adapter.
 - Stack choice: **FastAPI** (close to the Python/MCP ecosystem) or **NestJS** (one language front to back) — pending decision.
-- External contract (single source of truth): [`client/agent_doc/api-contract-draft.md`](./client/agent_doc/api-contract-draft.md).
+- External contract: the BFF REST API contract is still being drafted; it will land in this tree once stable.
 
 Details: [`server/README.md`](./server/README.md).
 
@@ -72,7 +72,4 @@ Details: [`server/README.md`](./server/README.md).
 
 | Document | Contents |
 |------|------|
-| [`client/agent_doc/usage-manual.md`](./client/agent_doc/usage-manual.md) | Frontend user manual (directory map / workflow / conventions / cookbook) |
-| [`client/agent_doc/architecture.md`](./client/agent_doc/architecture.md) | Frontend/backend architecture diagram / server stack choice / data flow |
-| [`client/agent_doc/api-contract-draft.md`](./client/agent_doc/api-contract-draft.md) | BFF REST API contract draft (binding on both sides) |
 | [`client/README.md`](./client/README.md) | Original ShardKit template doc (positioning / mechanics / icons / i18n) |

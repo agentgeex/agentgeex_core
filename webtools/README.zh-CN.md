@@ -37,7 +37,7 @@ npx tsc --noEmit     # 类型检查必须 TSC=0
 npm run build        # 生产构建
 ```
 
-工程约定 / 工作流 / cookbook 见 [`client/agent_doc/usage-manual.md`](./client/agent_doc/usage-manual.md)。
+工程约定 / 工作流 / cookbook 在开发仓 `client/agent_doc/` 下维护，不在本发布包内。
 
 ---
 
@@ -47,7 +47,7 @@ npm run build        # 生产构建
 
 - 职责：鉴权（JWT）、多租户隔离、聚合 & 字段裁剪、配额 / 计费 / 限流 / 审计、对内核适配。
 - 选型：**FastAPI**（贴 Python/MCP 生态）或 **NestJS**（前后端同语言）—— 待拍板。
-- 对外契约（唯一事实源）：[`client/agent_doc/api-contract-draft.md`](./client/agent_doc/api-contract-draft.md)。
+- 对外契约：BFF REST API 契约仍在起草，稳定后再进本树。
 
 详见 [`server/README.md`](./server/README.md)。
 
@@ -69,7 +69,4 @@ npm run build        # 生产构建
 
 | 文档 | 内容 |
 |------|------|
-| [`client/agent_doc/usage-manual.md`](./client/agent_doc/usage-manual.md) | 前端使用手册（目录地图 / 工作流 / 工程约定 / cookbook）|
-| [`client/agent_doc/architecture.md`](./client/agent_doc/architecture.md) | 前后端架构图 / 服务器端选型 / 数据交互 |
-| [`client/agent_doc/api-contract-draft.md`](./client/agent_doc/api-contract-draft.md) | BFF REST API 契约草案（对接双方共同遵守）|
 | [`client/README.md`](./client/README.md) | ShardKit 模板原始文档（定位 / 机制 / 图标 / i18n）|
