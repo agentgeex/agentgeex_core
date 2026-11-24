@@ -16,7 +16,7 @@ would rather hear about a problem early than read about it later.
 2. Choose **Report a vulnerability** (GitHub Security Advisory).
 3. Describe the issue and, if you can, include a minimal reproduction.
 
-Direct link: `https://github.com/agentgeex/agentgeex/security/advisories/new`
+Direct link: `https://github.com/agentgeex/agentgeex_core/security/advisories/new`
 
 **Please do not open a public issue, pull request, or discussion for a security
 problem.** A public issue is visible to everyone including people who would

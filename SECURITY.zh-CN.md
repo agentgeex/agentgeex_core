@@ -15,7 +15,7 @@ AgentGeeX 是自托管软件，运行在你的机器上，握有数据库凭据�
 2. 选择 **Report a vulnerability**（GitHub Security Advisory）。
 3. 描述问题；能给出最小复现更好。
 
-直达链接：`https://github.com/agentgeex/agentgeex/security/advisories/new`
+直达链接：`https://github.com/agentgeex/agentgeex_core/security/advisories/new`
 
 **请不要用公开 issue、PR 或 discussion 报告安全问题。** 公开 issue 所有人都能看到，
 包括会利用它的人，而且发出去就撤不回来了。

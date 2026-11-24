@@ -44,7 +44,7 @@
 
 ## 监督
 
-辱骂、骚扰或其他不可接受的行为可通过 https://github.com/agentgeex/agentgeex/security/advisories/new （私下报告）向负责监督的社区领袖报告。 所有投诉都将得到及时和公平的审查和调查。
+辱骂、骚扰或其他不可接受的行为可通过 https://github.com/agentgeex/agentgeex_core/security/advisories/new （私下报告）向负责监督的社区领袖报告。 所有投诉都将得到及时和公平的审查和调查。
 
 所有社区领袖都有义务尊重任何事件报告者的隐私和安全。
 

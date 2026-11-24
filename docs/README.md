@@ -14,6 +14,13 @@ New to the project? [`../README.md`](../README.md) is the 5-minute overview.
 | [Onboarding an existing agent](getting-started/onboard-existing-agent.md) | You already run agents outside AgentGeeX and want to bring them in |
 | [Onboarding an existing agent — practical SOP](getting-started/onboard-existing-agent-practical.md) | You are doing the onboarding for real and want the step-by-step, including the traps we hit |
 
+## Manuals
+
+| Document | Read it when |
+|---|---|
+| [Console operations manual](webtools/docs/manual.md) | You are using the web console and want every page explained; screenshots in English and Chinese, plus the speech-to-text setup |
+| [User guide](manual/README.md) | You want the concepts in the order they are built: host → agent → project → task → execution → quick command → session → plan |
+
 ## Concepts
 
 | Document | Read it when |
