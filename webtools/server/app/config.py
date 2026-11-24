@@ -178,6 +178,34 @@ def redis_settings() -> dict:
     return conn_settings("redis")
 
 
+# ★ 2026-11-24: where agx_config.json may live, in priority order.
+#   Why this list exists: the kernel (install.py / daemon) puts the config in the *install* root
+#   (`~/.agx/agx_config.json`), while the BFF is started from the *source tree*. Looking only at
+#   `AGX_ROOT/agx_config.json` therefore found nothing on a standard install, so every `_agx_cfg()`
+#   call returned its default -- `network_id` became "", realdata fell back to "lan_001", and the
+#   console rendered every list as empty while /readyz still said ok. Measured on the clean 118 box.
+def agx_config_paths() -> list[Path]:
+    """Candidate config paths, highest priority first (never raises)."""
+    out: list[Path] = []
+    explicit = os.environ.get("AGX_CONFIG_PATH")
+    if explicit:
+        out.append(Path(explicit).expanduser())
+    out.append(AGX_ROOT / "agx_config.json")
+    work = os.environ.get("AGX_WORK_DIR") or os.environ.get("AGX_HOME")
+    if work:
+        out.append(Path(work).expanduser() / "agx_config.json")
+    out.append(Path.home() / ".agx" / "agx_config.json")
+    return out
+
+
+def agx_config_path() -> Path | None:
+    """The config file actually in use, or None when none exists."""
+    for p in agx_config_paths():
+        if p.is_file():
+            return p
+    return None
+
+
 def _agx_cfg(key: str, default: str) -> str:
     """Read the top-level fields of agx_config.json (defaults when unreadable).
 
@@ -185,8 +213,8 @@ def _agx_cfg(key: str, default: str) -> str:
       when unreadable it at worst shows the path as "unknown" and must never disable a feature.
 """
     try:
-        cfg_path = AGX_ROOT / "agx_config.json"
-        if cfg_path.is_file():
+        cfg_path = agx_config_path()
+        if cfg_path is not None:
             import json
 
             with open(cfg_path, encoding="utf-8") as f:

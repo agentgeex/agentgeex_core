@@ -257,5 +257,13 @@ def ping() -> dict[str, Any]:
 
 
 def config_path() -> str:
-    """Path of the kernel's main config file (for audit)."""
-    return str(AGX_ROOT / "agx_config.json")
+    """Path of the kernel's main config file (for audit).
+
+    ★ 2026-11-24: report the file actually in use (the install root on a standard deploy), not the
+      naive `AGX_ROOT/agx_config.json` -- the old answer pointed at a file that does not exist and
+      sent anyone debugging an empty console to the wrong place.
+    """
+    from .config import agx_config_path
+
+    hit = agx_config_path()
+    return str(hit) if hit is not None else str(AGX_ROOT / "agx_config.json")
