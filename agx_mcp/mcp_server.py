@@ -8736,6 +8736,15 @@ def _local_host_ids() -> set:
     return ids
 
 
+def _resolve_local_host_id() -> str:
+    """This machine's own host_id (config.host_id).
+
+    Used as the default when a caller does not pass host_id. Deliberately NOT a hard-coded machine
+    name: a literal name would silently point at a host that does not exist on anyone else's box.
+    """
+    return (config.get("host_id") or "").strip()
+
+
 @mcp.tool()
 @require_level(6)
 def agx_deploy_agent(caller_agent_id: str, agent_id: str, force: bool = False, task_run_uuid: str = "") -> str:
@@ -15549,7 +15558,7 @@ def agx_create_project_pipeline(
             return json.dumps({"error": f"agent '{caller_agent_id}' 不存在或已停用"}, indent=2, ensure_ascii=False)
         caller_row = agent_row[0]
         caller_project = caller_row.get("project_id") or ""
-        caller_host = caller_row.get("host_id") or ""
+        caller_host = (caller_row.get("host_id") or "").strip() or _resolve_local_host_id()
         caller_role = caller_row.get("agent_role") or ""
 
         # -- 0.5 permission check (Lao Feng, 2026-10-13: the method enforces it = the entrance is locked down) --
@@ -15624,7 +15633,15 @@ def agx_create_project_pipeline(
         pm_create_task = _find_task(SYS_PROJECTMOTHER, "project_create")
         clone_task = _find_task(SYS_AGENTFATHER, "agent_clone")
         # * 2026-10-13: agent_create is abolished; workers and PM both go through clone (no agent_create task needed any more).
-        host_manager = _resolve_host_manager(caller_host or "test_host_mac")
+        # * 2026-11-24: the hard-coded fallback host name is gone. If neither the caller nor this
+        #   machine's config yields a host_id, stop and say so -- never silently assume a machine.
+        if not caller_host:
+            return json.dumps(
+                {"error": "无法确定 host_id：调用方 agent 无 host_id 且本机 config.host_id 为空，请显式指定"},
+                indent=2,
+                ensure_ascii=False,
+            )
+        host_manager = _resolve_host_manager(caller_host)
         hm_agent_id = host_manager.get("agent_id") if host_manager else ""
         deploy_task = _find_task(hm_agent_id, "agent_deploy") if hm_agent_id else None
 
@@ -15697,7 +15714,7 @@ def agx_create_project_pipeline(
             "从中解析出新项目的 project_id。\n"
             "然后调用 agx_clone_agent 克隆项目专属 PM (模板 super_pm):\n"
             "  caller_agent_id=\"agx_agentfather\"\n"
-            "  host_id=\"" + (caller_host or "test_host_mac") + "\"\n"
+            "  host_id=\"" + caller_host + "\"\n"
             "  template_agent_id=\"super_pm\"\n"
             "  target_project_id=<step1 拿到的 project_id>\n"
             "  new_agent_id=\"" + abbr + "_pm\"\n"
@@ -15770,7 +15787,7 @@ def agx_create_project_pipeline(
                 "先用 agx_get_execution(\"" + run_create + "\") 读 step1.result 拿 project_id。\n"
                 "本步骤职责: 按你的 agent_clone 任务克隆 Worker（执行流程与约束见任务说明书 / AGENTS.md）。参数:\n"
                 "  caller_agent_id=\"agx_agentfather\"\n"
-                "  host_id=\"" + (caller_host or "test_host_mac") + "\"\n"
+                "  host_id=\"" + caller_host + "\"\n"
                 "  template_agent_id=\"" + (w_tpl or "agent_template") + "\"\n"
                 "  target_project_id=<step1 的 project_id>\n"
                 "  new_agent_id=\"" + w_id + "\"\n"
@@ -15986,7 +16003,7 @@ def agx_create_agent_pipeline(
         )
         if not agent_row:
             return json.dumps({"error": f"agent '{caller_agent_id}' 不存在或已停用"}, indent=2, ensure_ascii=False)
-        caller_host = agent_row[0].get("host_id") or ""
+        caller_host = (agent_row[0].get("host_id") or "").strip() or _resolve_local_host_id()
         caller_role = agent_row[0].get("agent_role") or ""
         caller_project = agent_row[0].get("project_id") or ""
 
@@ -16018,7 +16035,13 @@ def agx_create_agent_pipeline(
         ).strip()
         agent_name = (params.get("agent_name") or "").strip()
         target_project = (params.get("target_project_id") or "").strip()
-        host_id = (params.get("host_id") or caller_host or "test_host_mac").strip()
+        host_id = (params.get("host_id") or caller_host or "").strip()
+        if not host_id:
+            return json.dumps(
+                {"error": "无法确定 host_id：请显式传 host_id，或确认本机 config.host_id 已配置"},
+                indent=2,
+                ensure_ascii=False,
+            )
         agent_role = (params.get("agent_role") or "worker").strip()
         agent_type = (params.get("agent_type") or "openclaw").strip()
         configure = params.get("configure") or {}

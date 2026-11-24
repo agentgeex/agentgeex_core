@@ -576,7 +576,7 @@ def collect(dsh_client, con_mysql, host_id: str, *, only_agent: str = "",
 def main() -> int:
     ap = argparse.ArgumentParser(description="DSH 会话消息采集器")
     ap.add_argument("--config", help="agx_config.json 路径")
-    ap.add_argument("--host", default="192.168.0.188", help="DSH web 主机")
+    ap.add_argument("--host", default="", help="DSH web 主机（默认取 agx_config.json 的 dsh.host，再退 127.0.0.1）")
     ap.add_argument("--port", type=int, default=8791, help="DSH web 端口")
     ap.add_argument("--agent", default="", help="只采某个 agent")
     ap.add_argument("--full", action="store_true", help="忽略位点，拉全量")
@@ -587,13 +587,17 @@ def main() -> int:
 
     cfg = load_config(args.config)
     host_id = (cfg.get("host_id") or socket.gethostname()).strip()
+    # * 2026-11-24: the argparse default used to be a hard-coded LAN address of one specific box.
+    #   Resolve it from config instead: --host, then dsh.host, then loopback.
+    _dsh_cfg = cfg.get("dsh") or {}
+    dsh_host = (args.host or (str(_dsh_cfg.get("host") or "") if isinstance(_dsh_cfg, dict) else "") or "127.0.0.1").strip()
 
     scripts_dir = os.environ.get("AGX_SCRIPTS_DIR") or os.path.expanduser("~/.agx/scripts")
     if scripts_dir not in sys.path:
         sys.path.insert(0, scripts_dir)
     from agx_dsh_client import DshClient  # noqa: E402
 
-    dsh = DshClient(host=args.host, port=args.port, autostart=False, check_version=False)
+    dsh = DshClient(host=dsh_host, port=args.port, autostart=False, check_version=False)
     dsh.list_sessions()   # liveness: list working means reachable (DshClient itself has no probe; only the backend does)
 
     con = connect_mysql(cfg)
