@@ -21,7 +21,7 @@ experiment copy, and its default port is offset too, so both can run at once and
      - The community wrapper ComfyUI-QwenASR also relies on an external itn_rules.json for digit and letter merging
      - arXiv 2609.02901: ITN has cascade and unified routes; Qwen3-ASR takes cascade
 
-   * This service **does no digit mapping by default** (laofeng, 2026-11-20: after mapping the experience was
+   * This service **does no digit mapping by default** (the maintainer, 2026-11-20: after mapping the experience was
      not better -- mixed case and simplified/traditional soup came out messier -- and he prefers to type digits himself).
      To enable mapping: QWEN_ASR_ITN_POST=1 (goes through cn_num_normalize.py in the same directory).
 
@@ -146,7 +146,7 @@ experiment copy, and its default port is offset too, so both can run at once and
     QWEN_ASR_LANG           force the language (Chinese / English). Default empty = auto-detect
     QWEN_ASR_MAX_NEW_TOKENS max generated tokens per call, default 256 (raise it for long audio)
     QWEN_ASR_ITN_POST       1=enable Chinese-numeral -> Arabic digit mapping  0=off (**default 0**)
-                            * Off by default. laofeng was not satisfied with the mapped output (mixed case and
+                            * Off by default. the maintainer was not satisfied with the mapped output (mixed case and
                               simplified/traditional soup) and prefers to type digits himself. When on, it goes through cn_num_normalize.py.
                             Letter-by-letter abbreviation merging (A S R -> ASR) is not governed by this switch; always on.
     ASR_DEBUG_AUDIO         1=save the audio into debug_audio/ on every recognition (default 0; do not leave it on)
@@ -210,7 +210,7 @@ SAVE_DEBUG_AUDIO = os.environ.get("ASR_DEBUG_AUDIO", "0") == "1"
 #   anything without a quantifier anchor (altogether / together / by all means / very / below zero) is left alone.
 #   Set FUN_NANO_ITN_POST=0 to disable.
 # Chinese numerals -> Arabic digits post-processing switch.
-# * 2026-11-20 laofeng's decision: **off by default**.
+# * 2026-11-20 the maintainer's decision: **off by default**.
 #   Measured: the mapped output was not a better experience (mixed case and simplified/traditional soup made it messier), and he prefers to type digits himself.
 #   Turn it on explicitly when needed: QWEN_ASR_ITN_POST=1
 # Letter-by-letter abbreviation merging (A S R -> ASR, the letters in "4 dian qi G B" -> 4.7GB) is not governed by this switch;

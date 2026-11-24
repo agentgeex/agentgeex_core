@@ -163,7 +163,7 @@ echo ': "${ASR_HOST:=0.0.0.0}"' > tools/audio_stt/asr.env   # 本机专属，不
 
 | 原脚本 | 现在 |
 |---|---|
-| `APP_DIR` 写死 `~/project/moto/...` | 脚本自身所在目录（`BASH_SOURCE`），在哪个 cwd 执行都一样 |
+| `APP_DIR` 写死 `~/my-project/...` | 脚本自身所在目录（`BASH_SOURCE`），在哪个 cwd 执行都一样 |
 | `PYTHON` 写死 conda 路径 | 探测顺序：`$ASR_PYTHON` → 仓库 `.venv`（能 `import funasr` 才算）→ PATH 上的 `python3` |
 | `ENTRY` 写死 `reasoning_service/audio/...` | `tools/audio_stt/audio_service_server.py`（`$ASR_ENTRY` 可覆盖） |
 | `source env_motozolo.sh`（19 行，其中 17 行是 motozolo 业务变量） | 仓库根 `asr.env`（进库，模型路径显式可见） |

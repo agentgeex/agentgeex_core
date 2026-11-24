@@ -968,7 +968,7 @@ class ChapterOrchestrator:
     # ══════════════════════════════════════════════════════════════
     # Per-round focus -- each of the three rounds owns one layer; no duplicated work
     # ══════════════════════════════════════════════════════════════
-    # 2026-10-27 laofeng's decision: keep 3 rounds, but each round must do a different thing.
+    # 2026-10-27 the maintainer's decision: keep 3 rounds, but each round must do a different thing.
     #
     # Evidence (book "On Chain", ch03, night of 2026-10-26): the three review instructions were 99.6% similar
     # (227 chars / 227 chars / 227 chars; the only difference was "round 1" -> "round 2" -> "round 3"),
@@ -1087,7 +1087,7 @@ class ChapterOrchestrator:
         #   2) agent_role == "project_manager" -> a PM created standalone without cloning (e.g. book_up_chain)
         #   3) agx_project.admin_agent_id -> the platform-registered project admin (the most authoritative fallback)
         # Fixed 2026-10-26: the original only recognized (1), so projects "with a PM that is not a super_pm clone" were judged as missing a PM,
-        # and single-chapter orchestration raised an error at the _resolve_agent_ids stage (change authorized by laofeng).
+        # and single-chapter orchestration raised an error at the _resolve_agent_ids stage (change authorized by the maintainer).
         pm_agent_id = lab_map.get("super_pm", [None])[0]
         if not pm_agent_id:
             pm_agent_id = role_map.get("project_manager", [None])[0]

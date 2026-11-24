@@ -10,13 +10,13 @@
 Send the block below to your Agent verbatim (OpenClaw / Claude Code / Codex / any Agent that can read files and run commands):
 
 ```
-请读取并严格执行 https://gitee.com/robertrfeng/agentgeex 仓库里的
+请读取并严格执行 https://github.com/agentgeex/agentgeex_core 仓库里的
 docs/getting-started/install-with-agent.md。按步骤推进，每步先验证再走下一步。
 遇到需要密码的地方停下来告诉我，我自己填，你不要代填、不要打印。
 ```
 
 > In English, that block instructs the Agent to read and strictly follow `docs/getting-started/install-with-agent.md`
-> from the `https://gitee.com/robertrfeng/agentgeex` repository, to advance step by step verifying each one first,
+> from the `https://github.com/agentgeex/agentgeex_core` repository, to advance step by step verifying each one first,
 > and to stop and ask the human wherever a password is needed rather than filling it in or printing it.
 
 ---

@@ -814,7 +814,7 @@ _ASSISTANT_IDENTITY_LINE = (
 
 # baseline work discipline (3 fixed items shared by every assistant; specific items are appended)
 _ASSISTANT_DISCIPLINE_BASELINE = (
-    "  - 我是助理，不是本体：不改架构级代码，重大变更须先与老冯同步",
+    "  - 我是助理，不是本体：不改架构级代码，重大变更须先与产品负责人同步",
     "  - 每次被唤醒，先读本档案确认身份，再结合本次指令判断该做什么",
     "  - 关键决策 / 待办变化，回写 execution.summary 留痕",
 )

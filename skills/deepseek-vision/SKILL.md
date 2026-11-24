@@ -32,7 +32,7 @@ OpenAI 兼容对话补全接口 `https://api.deepseek.com/chat/completions`。
 - `credentials.txt` —— （可选）存放 API Key，脚本会自动读取；**不要提交到 git**
 
 ## 配置 API Key（用户填入）
-在 `~/project/fxc/fxc_math_paper/skills/deepseek-vision/credentials.txt`
+在 `~/my-project/skills/deepseek-vision/credentials.txt`
 写入一行你的 DeepSeek key：
 ```
 sk-你的key
@@ -45,7 +45,7 @@ export DEEPSEEK_API_KEY=sk-你的key
 
 ## 用法（项目 uv 环境）
 ```bash
-cd ~/project/fxc/fxc_math_paper
+cd ~/my-project
 
 # 描述图片
 uv run python skills/deepseek-vision/vision.py papers/zhaozhou/output/Figure_2.png

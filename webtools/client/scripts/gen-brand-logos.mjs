@@ -35,7 +35,7 @@ const fmt = (rows) =>
 const content = `/**
  * lib/brand-logos.ts — 项目 / 任务 logo 解析（本地静态图）
  *
- * 目录与命名（与 agx_image 对齐，老冯 2026-10-20 定）：
+ * 目录与命名（与 agx_image 对齐，产品负责人 2026-10-20 定）：
  *   - 项目：\`public/brand/projects/{project_id}.png\`
  *   - 任务：\`public/brand/tasks/{task_labs}.png\`
  *     ★ task_labs 会重复（general / watchdog_alert / universal 各 70+ 行），

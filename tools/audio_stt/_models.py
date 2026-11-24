@@ -1,6 +1,6 @@
 """Model path resolution: fall back to the model id when the local directory does not exist, letting funasr download it.
 
-Background (2026-11-07, laofeng's call: "explicit config + fallback"):
+Background (2026-11-07, the maintainer's call: "explicit config + fallback"):
     `asr.env` spells VOICE_MODEL / VAD_MODEL as two explicit local directories, which makes
     "which model is used, and where it lives" visible at a glance. The cost is that on a new
     machine, before the models have been downloaded, those two directories do not exist --

@@ -19,7 +19,7 @@ Rules (kept consistent with the runtime ensure_session)
 
 Usage
 -----
-    cd ~/project/ai_project/agentgeex/agentgeex
+    cd ~/repos/agentgeex
     AGX_CONFIG_PATH=agx_config.json .venv/bin/python scripts/backfill_agx_session.py            # dry run
     AGX_CONFIG_PATH=agx_config.json .venv/bin/python scripts/backfill_agx_session.py --apply    # actually write
 """

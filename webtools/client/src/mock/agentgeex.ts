@@ -579,7 +579,7 @@ export const executionsSeed: ExecutionRow[] = [
   { run_uuid: "run_p7q8r9", execName: "UI 计划编排", taskId: "task_1001", taskName: "ui_lead",
     agentId: "agx_ui_lead", agentName: "UI 前端负责人", sessionId: "agent:agx_ui_lead:main",
     status: "pending_confirm", startedAt: "2026-09-30 11:00", finishedAt: "2026-09-30 11:06:00",
-    durationSeconds: 360, instruction: "输出 AgentGeeX 管理后台 UI 开发计划，待老冯确认",
+    durationSeconds: 360, instruction: "输出 AgentGeeX 管理后台 UI 开发计划，待产品负责人确认",
     summary: "计划已产出，等待人工确认后开工。",
     log: ["[11:00:00] 开始…", "[11:06:00] 产出计划，等待确认"] },
 ];

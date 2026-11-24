@@ -150,7 +150,7 @@ AGX_REDIS_PASSWORD=...
 然后：
 
 ```bash
-git clone https://gitee.com/robertrfeng/agentgeex.git
+git clone https://github.com/agentgeex/agentgeex_core.git
 cd agentgeex
 ./agx.sh
 ```
@@ -210,6 +210,37 @@ mysql-srv     5 工具
 redis-srv     7 工具
 ```
 
+## 控制台：它到底长什么样
+
+AgentGeeX 讲 MCP。这对 Agent 是对接口，对人则基本无用。网页控制台是同一个数据库的**人这一侧**：
+它通过一个小的 FastAPI BFF 读数据，不直接碰 MySQL，也不会成为第二个真源。
+
+下面全部是一台真实安装里的活数据 —— 12 个智能体、96 个工具、1 台主机。
+
+<p align="center">
+  <img src="./webtools/docs/screenshots/zh-CN/02_system.png" width="49%" alt="系统状态" />
+  <img src="./webtools/docs/screenshots/zh-CN/05_agents.png" width="49%" alt="智能体" />
+</p>
+<p align="center">
+  <img src="./webtools/docs/screenshots/zh-CN/09_quick_cmds.png" width="72%" alt="快捷指令" />
+</p>
+
+14 个页面，分四组：
+
+| 分组 | 页面 | 回答什么 |
+|---|---|---|
+| 系统 | 系统状态 · 快捷入口 · 算力主机 | 现在整体健不健康 |
+| Agent 管理 | 智能体 · 会话 · 任务 · 执行 · 快捷指令 · 技能 · 公告 | 谁在、干了什么、能干什么 |
+| 项目管理 | 项目 · 项目组模板 | 谁和谁一组、能碰什么 |
+| 计划 | 计划 | 哪件多步骤的活在自己往前走 |
+
+**控制台有两件事是刻意不做的。** 它不提供"新建 Agent"的表单 —— 你在消息里让 `agx_agentfather`
+去做，因为创建一个 Agent 是一次部署，不是填一张表。它也不让前端碰数据库：每一次写都走 MCP 工具，
+所以界面上点一下，和 Agent 调一次，审的是同一本账。
+
+📖 **[控制台操作手册](webtools/docs/manual.zh-CN.md)** —— 14 个页面逐页说明，配中英两套截图；
+怎么启动、怎么登录、怎么把一件事从头跑完、语音识别服务怎么配。
+
 ## 15 分钟：让第一个 Agent 干完一件活
 
 **第 1 步 · 让它自检**
@@ -259,6 +290,7 @@ redis-srv     7 工具
 | 项目管理 | [`docs/internal/project-management.md`](docs/internal/project-management.md) |
 | Agent 目录与 Git 布局 | [`docs/development/repo-layout-and-git.md`](docs/development/repo-layout-and-git.md) |
 | 任务模板 | [`tasks/`](tasks/)（每个 Agent 的能力说明书） |
+| **控制台操作手册**（14 页，配中英截图） | [`webtools/docs/manual.zh-CN.md`](webtools/docs/manual.zh-CN.md) |
 | 文档总索引 | [`docs/README.md`](docs/README.md) |
 | **让 Agent 自己装**（交给你的 Agent 执行） | [`docs/getting-started/install-with-agent.md`](docs/getting-started/install-with-agent.md) |
 | 环境探测 | `python3 scripts/probe_env.py` |

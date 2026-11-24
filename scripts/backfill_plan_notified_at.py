@@ -31,7 +31,7 @@ so leaving notified_at NULL is the correct semantics, not a missed fill.
 
 Usage
 ----
-    cd ~/project/ai_project/agentgeex/agentgeex
+    cd ~/repos/agentgeex
     .venv/bin/python scripts/backfill_plan_notified_at.py            # statistics only (dry run)
     .venv/bin/python scripts/backfill_plan_notified_at.py --apply    # actually write
     .venv/bin/python scripts/backfill_plan_notified_at.py --verify   # inspect the results only

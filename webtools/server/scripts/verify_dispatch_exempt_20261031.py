@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """验收：临时调度豁免（agx_set_dispatch_exempt）—— 接口 / 权限 / 三态 / 清理
 
-【2026-10-31 老冯】检查项三态输出（PASS / FAIL / SKIP），全跑完必须把测试数据清干净。
+【2026-10-31 产品负责人】检查项三态输出（PASS / FAIL / SKIP），全跑完必须把测试数据清干净。
 
 覆盖：
   ① 开 30 分钟            → success 且 effective_now=true
@@ -14,7 +14,7 @@
                              换身份就拒）
   ⑦ 清理后断言            → 未给系统留下任何新增豁免（与开跑前 baseline 比）
   ⑧ 非 worker 不许设       → 对 project_manager 设置 → 400 NOT_APPLICABLE
-                            （老冯 2026-10-31：能派活的角色本来就能发消息，给豁免是空操作）
+                            （产品负责人 2026-10-31：能派活的角色本来就能发消息，给豁免是空操作）
   ⑨ 非 worker 仍可清       → 对 project_manager「清除」→ 200 放行
                             （只拦设置不拦清除，否则历史脏数据永远洗不掉）
   ⑩ 快照透出               → PM 的 dispatchExemptApplicable=false（前端据此不渲染面板）

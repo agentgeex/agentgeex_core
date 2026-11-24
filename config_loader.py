@@ -108,7 +108,7 @@ def _warn_if_creds_missing(data: dict) -> None:
     """Emit one clear hint when credentials are missing (never prints any value).
 
     Why: with an empty mysql.user, pymysql falls back to the system login name and the
-    error reads `Access denied for user 'fengxiang'@'localhost'` — which looks like
+    error reads `Access denied for user '<user>'@'localhost'` — which looks like
     "the system user has no privileges" while the real cause is "no credentials configured".
     """
     m = data.get("mysql") or {}

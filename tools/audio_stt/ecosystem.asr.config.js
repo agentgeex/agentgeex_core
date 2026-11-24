@@ -31,7 +31,7 @@ module.exports = {
         QWEN_ASR_MODEL: '/home/mat/robertfeng/models/Qwen3-ASR-1.7B',
         ASR_HOST: '0.0.0.0',
         ASR_PORT: '18888',
-        // Digit mapping is off by default (laofeng, 2026-11-20: the mapped output was not a better experience).
+        // Digit mapping is off by default (the maintainer, 2026-11-20: the mapped output was not a better experience).
         // To enable: change to '1'; it goes through cn_num_normalize.py in the same directory.
         QWEN_ASR_ITN_POST: '0',
         // Debug audio is off by default (the original SenseVoice service once accumulated 178MB)

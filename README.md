@@ -150,7 +150,7 @@ AGX_REDIS_PASSWORD=...
 Then:
 
 ```bash
-git clone https://gitee.com/robertrfeng/agentgeex.git
+git clone https://github.com/agentgeex/agentgeex_core.git
 cd agentgeex
 ./agx.sh
 ```
@@ -210,6 +210,40 @@ mysql-srv     5 tools
 redis-srv     7 tools
 ```
 
+## The console: what it actually looks like
+
+AgentGeeX speaks MCP. That is the right interface for an agent and a useless one for a person. The
+web console is the human side of the same database: it reads through a small FastAPI BFF, never talks
+to MySQL directly, and never becomes a second source of truth.
+
+Everything below is live data from a real install -- 12 agents, 96 tools, one host.
+
+<p align="center">
+  <img src="./webtools/docs/screenshots/en-US/02_system.png" width="49%" alt="System status" />
+  <img src="./webtools/docs/screenshots/en-US/05_agents.png" width="49%" alt="Agents" />
+</p>
+<p align="center">
+  <img src="./webtools/docs/screenshots/en-US/09_quick_cmds.png" width="72%" alt="Quick commands" />
+</p>
+
+Fourteen pages, four groups:
+
+| Group | Pages | What it answers |
+|---|---|---|
+| System | System status · Quick access · Hosts | Is the whole thing healthy right now |
+| Agent management | Agents · Sessions · Tasks · Runs · Quick commands · Skills · Notices | Who exists, what they did, what they can do |
+| Project management | Projects · Project templates | Who belongs together and what they may touch |
+| Plans | Plans | Which multi-step work is advancing on its own |
+
+**Two things the console deliberately does not do.** It does not create agents through a form -- you
+ask `agx_agentfather` in a message, because creating an agent is a deployment, not a data entry. And
+it never lets the frontend touch the database: every write goes through an MCP tool, so a click from
+the UI is audited exactly like a call from an agent.
+
+📖 **[Console operations manual](webtools/docs/manual.md)** — all fourteen pages one by one, with
+screenshots in English and Chinese, how to start it, how to sign in, how to run one task end to end,
+and how to set up the speech-to-text service.
+
 ## 15 minutes: get your first agent through a piece of work
 
 **Step 1 · Let it self-check**
@@ -260,6 +294,7 @@ At this point you have: a project, a team, and one auditable execution record.
 | Agent layout and Git conventions | [`docs/development/repo-layout-and-git.md`](docs/development/repo-layout-and-git.md) |
 | Task templates | [`tasks/`](tasks/) (the capability manual for each agent) |
 | **Let an agent install it** (hand this to your agent) | [`docs/getting-started/install-with-agent.md`](docs/getting-started/install-with-agent.md) |
+| **Console operations manual** (14 pages, screenshots) | [`webtools/docs/manual.md`](webtools/docs/manual.md) |
 | Full documentation index | [`docs/README.md`](docs/README.md) |
 | Environment probe | `python3 scripts/probe_env.py` |
 | Schema consistency check | `python3 scripts/verify_schema.py` |

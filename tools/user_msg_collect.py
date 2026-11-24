@@ -215,10 +215,10 @@ SYS_PREFIXES = ("<<<BEGIN_OPENCLAW", "[System]", "[OpenClaw", "[Queue overflow]"
 #
 # * 2026-11-15: of 827 system-class user messages measured, 145 received more than 100 characters of
 #   assistant text -- text that really belonged to the preceding human question or task envelope.
-#   Most typical: laofeng reported a bug at 15:42:23 (d9c10f1fefe110ea) -> tools ran with no output ->
+#   Most typical: the maintainer reported a bug at 15:42:23 (d9c10f1fefe110ea) -> tools ran with no output ->
 #   a [OpenClaw heartbeat poll] was inserted into the transcript at 15:45:17 -> the final answer
 #   at 15:47:14 ("you are right, both problems are real") was recorded under the heartbeat,
-#   so laofeng's row kept reply_content = NULL forever, and the UI shows "question has no reply".
+#   so the maintainer's row kept reply_content = NULL forever, and the UI shows "question has no reply".
 SYS_TURN_OPENERS = (
     "Write a dream diary entry from these memory fragments",
     "[cron:", "[Cron:", "[Subagent Context]",
@@ -229,13 +229,13 @@ def _looks_like_envelope(text: str) -> bool:
     """Whether a text starting with ``{`` is really a dispatch envelope.
 
         * 2026-11-14: while checking 7 rows of invalid JSON, ui_lead found that pkid=423847 was actually
-          laofeng's own words -- `{pipe004_worker, pipe005_pm, ...}` followed by "I have already deleted these from openclaw...".
+          the maintainer's own words -- `{pipe004_worker, pipe005_pm, ...}` followed by "I have already deleted these from openclaw...".
           It merely **starts with `{`**; it is not JSON. The old rule judged any `{` as an envelope,
           which is "it looks like one" -- the same flaw as guessing by content.
 
         Measured over the whole table: only 7 rows start with `{` but are not valid JSON --
           6 are real envelopes (two objects concatenated, so JSON parsing must fail)
-          1 is laofeng's own words (the example above)
+          1 is the maintainer's own words (the example above)
         Telling them apart needs no semantic understanding: a real envelope always contains "task_run_uuid".
     """
     try:
@@ -249,7 +249,7 @@ def _looks_like_envelope(text: str) -> bool:
 #   words before storing them in the form [Queued user message from a previous active turn; preserved
 #   as context only. Continue with the active prompt below.] followed by the original words
 #   It matches SYS_PREFIXES -> judged system -> **human speech treated as system noise**.
-#   Measured 280 rows, all from laofeng himself ("do you still remember your project", "got it, go ahead as you said" ...).
+#   Measured 280 rows, all from the maintainer himself ("do you still remember your project", "got it, go ahead as you said" ...).
 #   senderIsOwner is always None (internal injection writes no marker), so only prefix recognition plus stripping works.
 _QUEUED_PREFIX_RE = re.compile(
     r"^\[Queued user message[^\]]*\]\s*", re.IGNORECASE)
@@ -268,7 +268,7 @@ def strip_queued_prefix(content: str) -> str:
 #   the other 68 are "opener + human words" concatenated -- for example
 #     "Continue the OpenClaw runtime event. now let me think about it, you have confused me a bit ..."
 #     "Continue the OpenClaw runtime event. 1) project-side active_status delegation ..."
-#   These are laofeng's words, yet SYS_PREFIXES judged the whole line system.
+#   These are the maintainer's words, yet SYS_PREFIXES judged the whole line system.
 #   Note that stripping blindly is wrong: if what remains is "system reminder ..." (watchdog injection) it is still system,
 #   and if nothing remains (bare opener) it must stay system -- so after stripping, let classify decide.
 _RUNTIME_PREFIX = "Continue the OpenClaw runtime event."
@@ -493,11 +493,11 @@ def extract_turns(con: sqlite3.Connection, session_id: str):
         role = msg.get("role")
 
         if role == "user":
-            # * 2026-11-14: no longer filter on senderIsOwner (laofeng decided on the spot: system instructions must not be dropped).
+            # * 2026-11-14: no longer filter on senderIsOwner (the maintainer decided on the spot: system instructions must not be dropped).
             #   The field is tri-state True / False / None (field absent); the old code
             #   `if not ...senderIsOwner` dropped None along with False --
             #   measured 7,808 user messages across 82 DBs, 2,706 wrongly dropped (34.7%):
-            #     - ow=None 2,178: of which 355 plain-text rows were laofeng's own words
+            #     - ow=None 2,178: of which 355 plain-text rows were the maintainer's own words
             #       (injected via send_text / note_main_session / watchdog wake-ups, paths that
             #        write no __openclaw marker), and 1,318 were task-dispatch / plan_completed envelopes
             #     - ow=False  528: all 528 are [System] / [cron:] / heartbeat system instructions
@@ -509,7 +509,7 @@ def extract_turns(con: sqlite3.Connection, session_id: str):
             #   runtime event.", with content as a block array
             #   ([{"type":"text","text":"..."}]) -> the whole row was dropped.
             #   Measured: of 83 DBs / 7,937 user messages, 508 were like this, 280 of them
-            #   laofeng's own words (and he happens to speak only while the agent is busy).
+            #   the maintainer's own words (and he happens to speak only while the agent is busy).
             #   The archive path always had a text_of fallback; these live paths missed it -- now added.
             content = text_of(msg)
             if not content.strip():
@@ -549,7 +549,7 @@ def owner_flag(msg: dict) -> int | None:
 
         * 2026-11-14: this is the single source of truth for ``__openclaw.senderIsOwner``; do not guess from content.
           Measured across 82 DBs, the 4,409 plain-text role=user rows:
-            senderIsOwner=True   3,235 (laofeng himself)
+            senderIsOwner=True   3,235 (the maintainer himself)
             senderIsOwner=False      0  <- plain text never yields False
             __openclaw absent      570
           while all 528 False rows fall into bracketed forms like ``[System]`` / ``[cron:]`` / heartbeat.
@@ -589,7 +589,7 @@ def extract_owner_messages(con: sqlite3.Connection, session_id: str, since_seq: 
         #   runtime event.", with content as a block array
         #   ([{"type":"text","text":"..."}]) -> the whole row was dropped.
         #   Measured: of 83 DBs / 7,937 user messages, 508 were like this, 280 of them
-        #   laofeng's own words (and he happens to speak only while the agent is busy).
+        #   the maintainer's own words (and he happens to speak only while the agent is busy).
         #   The archive path always had a text_of fallback; these live paths missed it -- now added.
         content = text_of(msg)
         if not content.strip():
@@ -1067,7 +1067,7 @@ def extract_turns_loose(lines):
             #   runtime event.", with content as a block array
             #   ([{"type":"text","text":"..."}]) -> the whole row was dropped.
             #   Measured: of 83 DBs / 7,937 user messages, 508 were like this, 280 of them
-            #   laofeng's own words (and he happens to speak only while the agent is busy).
+            #   the maintainer's own words (and he happens to speak only while the agent is busy).
             #   The archive path always had a text_of fallback; these live paths missed it -- now added.
             content = text_of(msg)
             if not content.strip():
@@ -1417,7 +1417,7 @@ def backfill_from_owner(cfg, host_id: str, base: str, dry_run: bool = False) -> 
                 #   runtime event.", with content as a block array
                 #   ([{"type":"text","text":"..."}]) -> the whole row was dropped.
                 #   Measured: of 83 DBs / 7,937 user messages, 508 were like this, 280 of them
-                #   laofeng's own words (and he happens to speak only while the agent is busy).
+                #   the maintainer's own words (and he happens to speak only while the agent is busy).
                 #   The archive path always had a text_of fallback; these live paths missed it -- now added.
                 content = text_of(msg)
                 if not content.strip():

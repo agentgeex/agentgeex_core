@@ -484,7 +484,7 @@
           "label": "项目描述",
           "required": true,
           "type": "text",
-          "placeholder": "面向 A 股庄家资金流的指标体系，负责人老冯",
+          "placeholder": "面向 A 股庄家资金流的指标体系，负责人（产品负责人）",
           "default": ""
         },
         {
@@ -527,7 +527,7 @@
         }
       ],
       "composed_instruction": "创建项目：project_name={project_name}，description={description}，project_abbr={project_abbr}，platform={platform}；先查重(同名项目不可重复)，再 agx_create_project；若 {clone_pm}=true，则 dispatch 给 agx_agentfather 执行 agent_clone 克隆项目专属 PM。",
-      "example_filled": "创建项目：project_name=庄家分析V5，description=面向 A 股庄家资金流的指标体系，负责人老冯，project_abbr=div5，platform=openclaw；先查重再 agx_create_project；clone_pm=true，dispatch agx_agentfather 执行 agent_clone 克隆 PM。",
+      "example_filled": "创建项目：project_name=庄家分析V5，description=面向 A 股庄家资金流的指标体系，负责人（产品负责人），project_abbr=div5，platform=openclaw；先查重再 agx_create_project；clone_pm=true，dispatch agx_agentfather 执行 agent_clone 克隆 PM。",
       "notes": "project_abbr 必须全小写字母；创建 Agent 必须走 agentfather，禁止自调 agx_clone_agent/agx_upsert_agent；批量建 Agent 需逐条 dispatch；agentfather 超时→升级 agx_core/人类，绝不自干。",
       "caller_role_limit": {
         "roles": [
@@ -703,7 +703,7 @@
           "project_manager"
         ],
         "enforce": "both",
-        "note": "projectmother(角色归属体系待老冯后续说明, Q1 搁置)"
+        "note": "projectmother(角色归属体系待产品负责人后续说明, Q1 搁置)"
       }
     },
     {

@@ -4,7 +4,7 @@
     ../../.venv/bin/python tests/asr_reconnect_selftest.py
 
 ★ 全程不碰 8888：用临时端口 59997 + 临时起的极简 WS 服务，
-  不影响老冯正在用的语音服务。验完自己收摊。"""
+  不影响产品负责人正在用的语音服务。验完自己收摊。"""
 import asyncio, sys, time
 sys.path.insert(0, __import__("os").path.dirname(__import__("os").path.dirname(__import__("os").path.abspath(__file__))))
 from app import asr                 # noqa: E402

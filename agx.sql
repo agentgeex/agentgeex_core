@@ -370,7 +370,7 @@ CREATE TABLE
     `assistant_slug` varchar(64) NULL COMMENT '助理命名标识(slug): case 会话从 session_id 尾段 asst_{slug} 派生, 如 ui_design/pm_ops/docs/agx_maint; 非助理会话为 NULL。与 is_assistant 并存(此列管命名, 彼列管程序判定)',
     `avatar` varchar(512) NULL COMMENT '助理头像（URL 或本地路径，不存二进制）',
     `creator_agent_id` varchar(64) NULL COMMENT '创建者(谁第一次发起该会话)',
-    `session_model` varchar(64) NULL COMMENT '★会话级模型: 该会话当前使用的模型(如 deepseek-v4-flash)。模型跟会话走不跟 agent 走(老冯 2026-10-15 定, 取代 agx_agent_registry.base_model)',
+    `session_model` varchar(64) NULL COMMENT '★会话级模型: 该会话当前使用的模型(如 deepseek-v4-flash)。模型跟会话走不跟 agent 走(产品负责人 2026-10-15 定, 取代 agx_agent_registry.base_model)',
     `model_provider` varchar(32) NULL COMMENT '模型 provider(如 deepseek/openai/anthropic), 与 session_model 配对',
     `model_source` varchar(16) NULL COMMENT '模型来源: user-用户显式覆盖(sessions.patch) / auto-自动回填 / default-框架默认回落',
     `run_count` int NOT NULL DEFAULT '1' COMMENT '承载过的执行次数',
@@ -396,7 +396,7 @@ CREATE TABLE
 -- Table structure for agx_execution_link
 -- ----------------------------
 -- execution 引用关系表: 一条原始 execution 可被多个 session 引用(多路复用), 只加边不搬移。
--- 设计依据(2026-10-05 与老冯确认):
+-- 设计依据(2026-10-05 与产品负责人确认):
 --   · 挂的是【指针】不是搬家 —— 原始 execution 一行不动(session_id/summary 永不修改)
 --   · 粒度 = execution 级(不是 session 级) —— 精确到"哪一次执行", 可挑着挂
 --   · 一条 execution 可挂 N 个 session —— 同一份历史被多个上下文复用
@@ -456,7 +456,7 @@ CREATE TABLE
 -- Table structure for agx_skill
 -- ----------------------------
 -- 技能共享表: Agent 把工作中研究的可复用技能(怎么做)沉淀于此, 全员公开可查。
--- 设计依据(2026-10-05/2026-10-06 与老冯确认):
+-- 设计依据(2026-10-05/2026-10-06 与产品负责人确认):
 --   · 纪律一 与公告边界切死 —— 技能 = 可复用有操作性的"怎么做"; "我干了啥"的流水一律不许进
 --     (判据: 读了能照做 → 技能库; 读了只知道"谁干了啥" → 公告 agx_agent_notice)
 --   · 纪律二 不人工审用信号筛 —— 开放写入(任何 Agent 可贡献) ≠ 无门槛沉淀,
@@ -492,7 +492,7 @@ CREATE TABLE
 
 -- ----------------------------
 -- Table structure for agx_radar
--- 技术雷达: 一个 Agent 研究过的技术条目 + 过程 + 结论 (老冯 2026-10-21 定: MCP 不做任何绑定)
+-- 技术雷达: 一个 Agent 研究过的技术条目 + 过程 + 结论 (产品负责人 2026-10-21 定: MCP 不做任何绑定)
 -- ----------------------------
 DROP TABLE IF EXISTS `agx_radar`;
 
@@ -512,7 +512,7 @@ CREATE TABLE
     `source_type` varchar(32) NOT NULL DEFAULT 'other' COMMENT '【已废弃·改由 agx_radar_doc.source_type】旧单来源字段, 仅存量兼容',
     `source_url` varchar(1024) NOT NULL DEFAULT '' COMMENT '【已废弃·改由 agx_radar_doc.source_url】旧单来源字段, 仅存量兼容',
     `source_meta` varchar(1024) NOT NULL DEFAULT '' COMMENT '【已废弃·改由 agx_radar_doc.source_meta】旧单来源字段, 仅存量兼容',
-    `asked_by` varchar(64) NOT NULL DEFAULT '' COMMENT '★谁点的题: laofeng(老冯) / aifr_pm(我自己发现) / agent_xxx',
+    `asked_by` varchar(64) NOT NULL DEFAULT '' COMMENT '★谁点的题: owner(负责人) / aifr_pm(我自己发现) / agent_xxx',
     `summary` varchar(1024) NOT NULL DEFAULT '' COMMENT '一句话: 这是什么',
     `findings` mediumtext NULL COMMENT '★关键发现(事实层): 一行一条, 星数/License/实测数据/API 返回',
     `conclusion` mediumtext NULL COMMENT '★我的结论(判断层): 行不行、值不值得、什么条件下值得',
@@ -559,7 +559,7 @@ CREATE TABLE
 
 -- ----------------------------
 -- Table structure for agx_release
--- 研究成果对外发布池 (2026-10-23 老冯定: aifr_pm 维护研究过程, 成果经此表对外只读发布)
+-- 研究成果对外发布池 (2026-10-23 产品负责人定: aifr_pm 维护研究过程, 成果经此表对外只读发布)
 -- 一行 = 一版; 只增不改; 对外只出 visibility='network' AND active_status=1 的最新版
 -- 消费方: agx_mcp/mcp_server_release.py (server 名 aifr-research)
 -- ----------------------------
@@ -760,7 +760,7 @@ CREATE TABLE
     `session_label` varchar(64) NOT NULL DEFAULT '' COMMENT '会话短名(label/display_name)',
     `role` varchar(16) NOT NULL DEFAULT 'user' COMMENT '消息角色: user/assistant',
     `msg_kind` varchar(16) NOT NULL DEFAULT 'human' COMMENT '消息类型: human=真人 / envelope=AgentGeeX派发信封 / notice=系统通知告警 / system=系统注入 / command=斜杠命令',
-    `from_owner` tinyint NULL COMMENT '是否老冯本人: 1=确认(transcript 标记) 0=确认非本人 NULL=无标记(归档/旧消息)',
+    `from_owner` tinyint NULL COMMENT '是否产品负责人本人: 1=确认(transcript 标记) 0=确认非本人 NULL=无标记(归档/旧消息)',
     `content` mediumtext NOT NULL COMMENT '消息正文原文(不脱敏)',
     `reply_content` mediumtext COMMENT '回答正文：assistant 在本轮内的所有 text 块按顺序合并（跳过工具调用与思考）',
     `content_len` int unsigned NOT NULL DEFAULT '0' COMMENT '正文字符数',
