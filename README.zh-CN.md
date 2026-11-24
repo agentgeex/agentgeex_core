@@ -154,8 +154,16 @@ AGX_REDIS_PASSWORD=...
 ```bash
 git clone https://github.com/agentgeex/agentgeex_core.git
 cd agentgeex
+
+# 国内网络建议指定镜像源，依赖下载会快很多（不设也能装，只是慢一些）
+export UV_DEFAULT_INDEX=https://pypi.tuna.tsinghua.edu.cn/simple
+
 ./agx.sh
 ```
+
+> 依赖由 `uv` 统一解析下载。国内网络建议走镜像源，能明显加快速度。
+> 不想动环境变量，也可以只在这一次命令上带：
+> `UV_DEFAULT_INDEX=https://pypi.tuna.tsinghua.edu.cn/simple ./agx.sh`
 
 安装过程分十个阶段，你会依次看到：
 

@@ -54,8 +54,14 @@
 ```bash
 git clone <repo-url> agentgeex
 cd agentgeex
+
+# 国内网络建议指定镜像源，依赖下载会快很多（不设也能装，只是慢一些）
+export UV_DEFAULT_INDEX=https://pypi.tuna.tsinghua.edu.cn/simple
+
 uv sync
 ```
+
+镜像源对本目录下后续所有 `uv` 命令（含 `uv sync --extra audio`）都生效，不必重复指定。
 
 **锁文件是权威。** `uv.lock` 固定了每一个依赖，包括间接依赖。
 
