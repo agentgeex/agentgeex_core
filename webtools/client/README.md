@@ -136,4 +136,4 @@ End-to-end acceptance uses Playwright (`scripts/verify_*.mjs`), with these rules
 
 ## License
 
-[MIT](./LICENSE)
+[Apache-2.0](../../LICENSE)

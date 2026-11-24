@@ -47,7 +47,7 @@ npm run build        # 生产构建
 
 - 职责：鉴权（JWT）、多租户隔离、聚合 & 字段裁剪、配额 / 计费 / 限流 / 审计、对内核适配。
 - 选型：**FastAPI**（贴 Python/MCP 生态）或 **NestJS**（前后端同语言）—— 待拍板。
-- 对外契约：BFF REST API 契约仍在起草，稳定后再进本树。
+- 对外契约（唯一事实源）：[`api-contract-draft.md`](./api-contract-draft.md) —— 草案 v0.1。
 
 详见 [`server/README.md`](./server/README.md)。
 
@@ -69,4 +69,6 @@ npm run build        # 生产构建
 
 | 文档 | 内容 |
 |------|------|
-| [`client/README.md`](./client/README.md) | ShardKit 模板原始文档（定位 / 机制 / 图标 / i18n）|
+| [`api-contract-draft.md`](./api-contract-draft.md) | BFF REST API 契约（草案 v0.1，对接双方共同遵守）|
+| [`server/README.md`](./server/README.md) | BFF 服务器端：定位 / 技术栈 / 当前状态 / 启动 / 下一步 |
+| [`client/README.md`](./client/README.md) | 前端控制台：页面与路由 / 快速开始 / 国际化 / 质量门槛 |

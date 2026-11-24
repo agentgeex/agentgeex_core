@@ -130,4 +130,4 @@ npm run i18n:check   # 语言包一致
 
 ## License
 
-[MIT](./LICENSE)
+[Apache-2.0](../../LICENSE)

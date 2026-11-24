@@ -49,7 +49,7 @@ Engineering conventions / workflow / cookbook live in the development repository
 
 - Responsibilities: auth (JWT), multi-tenant isolation, aggregation & field trimming, quota / billing / rate limiting / audit, kernel adapter.
 - Stack choice: **FastAPI** (close to the Python/MCP ecosystem) or **NestJS** (one language front to back) — pending decision.
-- External contract: the BFF REST API contract is still being drafted; it will land in this tree once stable.
+- External contract (single source of truth): [`api-contract-draft.md`](./api-contract-draft.md) — draft v0.1.
 
 Details: [`server/README.md`](./server/README.md).
 
@@ -72,4 +72,6 @@ Details: [`server/README.md`](./server/README.md).
 
 | Document | Contents |
 |------|------|
-| [`client/README.md`](./client/README.md) | Original ShardKit template doc (positioning / mechanics / icons / i18n) |
+| [`api-contract-draft.md`](./api-contract-draft.md) | BFF REST API contract (draft v0.1, binding on both sides) |
+| [`server/README.md`](./server/README.md) | BFF server: positioning, stack, current state, startup, next steps |
+| [`client/README.md`](./client/README.md) | Frontend console: pages, routes, quick start, i18n, quality gates |
