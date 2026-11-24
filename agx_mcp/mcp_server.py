@@ -1643,7 +1643,7 @@ def agx_register_host(
 
         caller_agent_id (str): caller agent ID (required, identity audit and permission checks).
         network_id (str): logical network ID this host belongs to.
-        host_alias (str): host alias, e.g. "Ubuntu-Server-01" or "Robert-MacBook-Pro".
+        host_alias (str): host alias, e.g. "Ubuntu-Server-01" or "Test-MacBook-Pro".
         ip (str): access address of the host. May be a LAN IP, a public IP or a Tailscale virtual IP.
         platform (str): OS type. Suggested enum: ['macOS', 'Ubuntu', 'WSL2', 'Windows'].
         slots (int): maximum concurrent tasks, default 16. How many agent instances this host can carry at once.
@@ -9243,7 +9243,7 @@ AGX_PROJECT_ID="{project_id}"
                 # * corrected 2026-11-05: this must be the agent's host_id, not the gateway process's
                 #   config.host_id. Commit 5a68bfb (multi-instance rework) changed routing to
                 #   ws_queue_key=f"agx:ws:task:{host_id}" (agent level, correct),
-                #   but this line of the returned body was missed, so test_srv_ab/17b/17c all reported
+                #   but this line of the returned body was missed, so test_srv_a2 / openclaw2 / test_host_srvc all reported
                 #   being deployed to the primary instance (test_srv_a / test_host_srv) -- right routing, wrong echo.
                 "host_id": host_id,
                 "workspace": workspace_dir,
@@ -10749,7 +10749,7 @@ def agx_get_project_config(caller_agent_id: str, project_id: str = "") -> str:
 
 
 # -- caller agent -> owning host_id resolution (multi-instance) --
-# one machine may run several OpenClaw instances, each with its own host_id (e.g. test_srv_a / test_srv_ab).
+# one machine may run several OpenClaw instances, each with its own host_id (e.g. test_srv_a / test_srv_a2).
 # the MCP gateway is [one process serving all instances]; config.host_id is only the gateway process's own identity,
 # not the calling agent's owning host. This used to cause errors: an agent of the second instance calling
 # agx_get_global_config read the primary instance's host_id and itself reported "inconsistent with the registry".
@@ -10950,7 +10950,7 @@ def agx_resolve_host_manager(caller_agent_id: str, host_id: str) -> str:
     [Resolve host manager agent] Find the host_manager agent for a given host_id.
 
     In a multi-host setup each host has its own separately named host_manager agent
-    (e.g. agx_host_test_srv_a), so a dispatcher need not hard-code an agent_id --
+    (e.g. agx_host_srv_a), so a dispatcher need not hard-code an agent_id --
     it only needs the target host_id and this tool resolves the right agent_id.
 
     Lookup logic:
@@ -11958,7 +11958,7 @@ def agx_list_agent_tasks(caller_agent_id: str, agent_id: str) -> str:
 
     Args:
         caller_agent_id (str): caller agent ID (required, for identity audit and permission checks).
-        agent_id (str): target agent ID, e.g. "agx_host" or "agx_host_test_srv_a".
+        agent_id (str): target agent ID, e.g. "agx_host" or "agx_host_srv_a".
 
     Returns:
         str: a JSON array, each item with task_name, task_labs, agent_id, task_id, is_private.

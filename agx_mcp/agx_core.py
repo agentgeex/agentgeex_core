@@ -2291,7 +2291,7 @@ def _resolve_host_manager(host_id: str) -> dict:
     2. fallback: agent_name = 'agx_host' (single-host compatibility mode)
 
     Args:
-        host_id: the target host id (e.g. "robert_windows")
+        host_id: the target host id (e.g. "test_host_win")
 
     Returns:
         dict: {"agent_id": "...", "agent_name": "...", "host_id": "..."}
