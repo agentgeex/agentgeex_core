@@ -7,6 +7,7 @@
  * Front-end demo only: the password lives in component state.
  */
 import * as React from "react";
+import { useGetIdentity } from "@refinedev/core";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,10 @@ export function useLockScreen(): LockCtx {
 }
 
 export function LockScreenProvider({ children }: { children: React.ReactNode }) {
+  /* ★ 2026-11-24: was hard-coded "feng" -- show the signed-in person instead. */
+  const { data: identity } = useGetIdentity<{ id: string; name: string }>();
+  const displayName = identity?.name || "operator";
+  const initial = (displayName.trim()[0] || "A").toUpperCase();
   const { t } = useTranslation();
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [lockPwd, setLockPwd] = React.useState("");
@@ -77,9 +82,9 @@ export function LockScreenProvider({ children }: { children: React.ReactNode }) 
           </DialogHeader>
           <div className="flex flex-col items-center gap-3 py-2">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-sky-400 via-indigo-500 to-fuchsia-500 text-2xl font-semibold text-white">
-              F
+              {initial}
             </div>
-            <span className="text-sm text-muted-foreground">feng</span>
+            <span className="text-sm text-muted-foreground">{displayName}</span>
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="lock-pwd">{t("miscShell.lockScreen.password")}</Label>
@@ -109,9 +114,9 @@ export function LockScreenProvider({ children }: { children: React.ReactNode }) 
           className="fixed inset-0 z-toast flex flex-col items-center justify-center gap-5 bg-background/95 backdrop-blur-xl"
         >
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-sky-400 via-indigo-500 to-fuchsia-500 text-3xl font-semibold text-white">
-            F
+            {initial}
           </div>
-          <span className="text-base font-medium">feng</span>
+          <span className="text-base font-medium">{displayName}</span>
           <div className="flex w-64 flex-col gap-2">
             <Input
               type="password"

@@ -19,6 +19,7 @@ import { useLockScreen } from "@/components/lock-screen";
 /* [2026-11-13 08:30 Feng] Global "send message" button in the top bar: the dialog was lifted to the Shell layer so any page can open it */
 import { MessageSendDialog } from "@/components/agentgeex/message-send-dialog";
 import { AGX_NAV_GROUPS, type AgxNavItem } from "@/lib/nav-agentgeex";
+import { useGetIdentity } from "@refinedev/core";
 import { useTranslation } from "react-i18next";
 import { SUPPORTED_LOCALES, changeLocale, type LocaleKey } from "@/i18n";
 import { TabBar } from "@/components/tabs/TabBar";
@@ -203,6 +204,11 @@ function HeaderActions({ dark, toggle, onSend }: { dark: boolean; toggle: () => 
  *   Logout          → confirm, then go to /login
  */
 function UserMenu() {
+  /* ★ 2026-11-24: the header used to hard-code "feng" / "F". It must show the signed-in
+     person instead -- screenshots and the shipped UI should never carry a real name. */
+  const { data: identity } = useGetIdentity<{ id: string; name: string }>();
+  const displayName = identity?.name || "operator";
+  const initial = (displayName.trim()[0] || "A").toUpperCase();
   const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
   const [confirmLogout, setConfirmLogout] = React.useState(false);
@@ -227,9 +233,9 @@ function UserMenu() {
             className="ml-1 flex items-center gap-2 rounded-md px-1.5 py-1 transition-colors hover:bg-accent"
           >
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-sky-400 via-indigo-500 to-fuchsia-500 text-xs font-semibold text-white">
-              F
+              {initial}
             </span>
-            <span className="hidden text-sm font-medium lg:inline">feng</span>
+            <span className="hidden text-sm font-medium lg:inline">{displayName}</span>
             <ChevronDown className="hidden h-3.5 w-3.5 text-muted-foreground lg:inline" />
           </button>
         </PopoverTrigger>
@@ -448,7 +454,7 @@ export function AppShell({ children }: { children?: React.ReactNode }) {
           <div className="min-h-0 flex-1 overflow-y-auto">{children ?? <Outlet />}</div>
         </main>
         <footer className="shrink-0 border-t border-strong bg-card px-6 py-2 text-xs text-muted-foreground">
-          {t("footer.builtWith")} · MIT © 2026
+          {t("footer.builtWith")} · Apache-2.0 © 2026
           <span className="ml-2 font-mono text-[10px] opacity-60" data-testid="build-stamp" title={t("miscShell.shell.buildStamp")}>
             {__BUILD_STAMP__}
           </span>
