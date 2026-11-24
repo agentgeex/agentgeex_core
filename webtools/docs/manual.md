@@ -4,10 +4,12 @@
 > page does, and how to run one piece of work end to end.
 > Installing AgentGeeX itself (kernel, database, daemons) is a different document --
 > see [`../../docs/getting-started/install-with-agent.md`](../../docs/getting-started/install-with-agent.md).
+> Concepts that belong to the system rather than the UI (host, agent, project, task, execution, plan)
+> live in the repository's `docs/manual/` -- the AgentGeeX User Guide. That one explains how the system
+> works; this one explains where the screens are and what to click.
 >
 > Screenshots come in both languages (the UI language switch is at the top right). Every one of them
-comes from a real installed test machine: host `test_srv_a`, network
-> `lan_test`, one auto-created `system` project, 12 agents. Your names will differ; the screens
+> comes from a real installed test machine: host `test_srv_a`, network `lan_test`, one auto-created `system` project, 12 agents. Your names will differ; the screens
 > will look the same.
 
 ---
@@ -551,6 +553,30 @@ pm2 save
 
 **Ports**: if one BFF must offer both a local and a remote host, the ports have to differ (say 9998
 locally, 18888 remotely). With a single host, any port is fine.
+
+#### Chinese or English
+
+Both built-in implementations initialise for **Chinese** (`language="zh"`). The models themselves are
+multilingual. To recognise English, change the two `language="zh"` sites in
+`tools/audio_stt/audio_service_server.py` (one in `model_kwargs`, one in `generate()`) to `"en"`, or to
+`"auto"` to let the model decide. The Qwen implementation has its own copy of the same switch.
+Only Chinese is verified in this version; English accuracy is untested.
+
+#### Swapping the engine
+
+The server depends on a single method:
+
+```python
+asr_engine.transcribe_bytes(pcm_bytes: bytes) -> str     # audio bytes in, text out
+```
+
+To use another model (Whisper, a cloud ASR, your own service), implement a method with that signature
+and replace `asr_engine`. VAD, buffering, the WebSocket protocol and the BFF relay all stay as they
+are -- changing engines touches this one function.
+
+> The tree also contains `tools/audio_stt/audio_service_server_fun_nano.py` (Fun-ASR-Nano), an
+> experimental implementation that needs its weights downloaded separately (`FUN_NANO_MODEL`
+> environment variable); it is not part of the recommended set.
 
 ### 8.5 Verifying that it really works
 

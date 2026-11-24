@@ -2,6 +2,7 @@
 
 > 这份手册讲**怎么用界面**：怎么启动、怎么登录、每个页面是干什么的、怎么把一件事从头跑完。
 > 安装 AgentGeeX 本体（内核、数据库、守护进程）不在这里，看 [`../docs/getting-started/install-with-agent.md`](../../docs/getting-started/install-with-agent.md)。
+> 系统层面的概念（主机、Agent、项目、任务、任务执行、计划）也不在这里，见仓库 `docs/manual/` 的《AgentGeeX 使用手册》—— 那份讲系统怎么运作，这份讲界面在哪、怎么点。
 >
 > 本手册配中英两套截图（界面右上角可切语言）。所有截图都来自一台真实安装的测试机：主机名 `test_srv_a`、网络 `lan_test`、一个自动创建的 `system` 项目、12 个智能体。你装出来的名字不同，但页面长得一样。
 
@@ -489,6 +490,27 @@ pm2 save
 ```
 
 **端口**：同一套 BFF 里要并存「本机 + 远端」两台，端口必须分开（例如本机 9998、远端 18888）。只有一台的话随便。
+
+#### 识别中文还是英文
+
+内置的两个实现都按**中文**初始化（`language="zh"`）。这两个模型本身是多语的。要识别英文，把
+`tools/audio_stt/audio_service_server.py` 里两处 `language="zh"`（`model_kwargs` 一处、`generate()` 一处）
+改成 `"en"`，或者改成 `"auto"` 让模型自己判。Qwen 实现在它自己的文件里，同样改一处即可。
+本版本只验证过中文，英文识别效果未测。
+
+#### 换一个引擎
+
+服务端只依赖一个方法：
+
+```python
+asr_engine.transcribe_bytes(pcm_bytes: bytes) -> str     # 收音频字节，回文本
+```
+
+要接别的模型（Whisper、云端 ASR、你自己的服务），实现同名方法并替换 `asr_engine` 就行。
+VAD、音频缓冲、WebSocket 协议、BFF 转发都不用动 —— 换引擎只换这一个函数。
+
+> 仓库里另有 `tools/audio_stt/audio_service_server_fun_nano.py`（Fun-ASR-Nano），属实验实现，
+> 权重需另行下载（环境变量 `FUN_NANO_MODEL`），未列入默认推荐。
 
 ### 8.5 怎么确认它真的能用
 
