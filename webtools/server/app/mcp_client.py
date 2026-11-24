@@ -108,7 +108,16 @@ class _McpClient:
 
             ctx = sse_client(self._url)
         else:
-            from mcp.client.streamable_http import streamablehttp_client
+            # ★ 2026-11-24: mcp >= 1.28 renamed the helper to streamable_http_client and
+            #   dropped the third tuple element (get_session_id). We only use read/write, so
+            #   accepting either name keeps the BFF working across both. Exposed by the
+            #   clean-machine install on 118: uv.lock pins mcp 1.27.0 via fastmcp, but a
+            #   freshly synced venv can resolve a newer mcp -> ImportError -> /readyz hangs
+            #   with "mcp session lost ... cannot import name 'streamablehttp_client'".
+            try:
+                from mcp.client.streamable_http import streamablehttp_client  # mcp < 1.28
+            except ImportError:  # mcp >= 1.28
+                from mcp.client.streamable_http import streamable_http_client as streamablehttp_client
 
             ctx = streamablehttp_client(self._url)
 
