@@ -134,11 +134,12 @@ Opening `http://localhost:5190/` shows the sign-in page first:
 
 ![Sign-in](./screenshots/en-US/01_login.png)
 
-> ⚠️ **Sign-in is currently a demo-grade implementation**: `authenticate()` in
-> `server/app/auth.py` is a placeholder -- **any non-empty username and password are accepted**.
-> Its only job is to issue a JWT and record you as the **audit subject** (who clicked).
-> Wiring a real user source (a user table, or your corporate IdP) is a must-do before release;
-> the code comments mark exactly where to plug it in.
+> 📌 **This version does not ship an account system**: no registration, no password check,
+> no roles or permissions. `authenticate()` in `server/app/auth.py` accepts any non-empty
+> username and password -- **that is how this version is designed, not a stand-in**.
+> The only thing the account does is issue a JWT and record you as the **audit subject**
+> (who clicked). Accounts and permissions are out of scope for this version and may come later.
+> Any non-empty username works and gives you every feature.
 
 Two concepts that are easy to confuse (this is the one place the product design invites you to
 get backwards):
