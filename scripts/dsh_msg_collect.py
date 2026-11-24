@@ -48,7 +48,7 @@ OpenClaw side (distinguished by the platform column).
 Usage::
 
     # collect sessions of all dsh agents
-    python tools/dsh_msg_collect.py --host 192.168.0.188 --port 8791
+    python tools/dsh_msg_collect.py --host 10.0.0.13 --port 8791
 
     # only one agent, and do not write to the DB
     python tools/dsh_msg_collect.py --agent dshlab_pm --dry-run

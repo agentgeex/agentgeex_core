@@ -182,9 +182,9 @@ def _local_host_ids() -> set:
 
 
 HOST_IDS = _local_host_ids()
-# Quote list used for SQL generation, e.g. "'test_srv_a','test_srv_ab'"
+# Quote list used for SQL generation, e.g. "'test_srv_a','test_srv_a2'"
 HOST_IDS_SQL = ",".join(f"'{_h}'" for _h in sorted(HOST_IDS)) or "''"
-# For log display, e.g. "test_srv_a,test_srv_ab"
+# For log display, e.g. "test_srv_a,test_srv_a2"
 HOST_IDS_LABEL = ",".join(sorted(HOST_IDS)) or "?"
 
 # Host keepalive parameters
@@ -705,7 +705,7 @@ def _query_session_status(agent_id: str, run_uuid: str, agent_type: str, session
 # -- Multi-instance: pick the matching Gateway by host ------------------------------
 # * 2026-11-04 multi-instance (118 runs two openclaw instances on one machine):
 #   all three direct ws connections used to be hard-wired to config.gateway (singular) -> only the main instance was connected.
-#   For tasks of the second instance (test_srv_ab, 19789): wakes went to 18789, diagnostics found nothing, plan notifications could not be delivered,
+#   For tasks of the second instance (test_srv_a2, 19789): wakes went to 18789, diagnostics found nothing, plan notifications could not be delivered,
 #   and all of it failed silently (no error). Here the gateway is chosen by the agent's owning host.
 _AGENT_HOST_CACHE: dict = {}
 

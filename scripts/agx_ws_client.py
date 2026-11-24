@@ -438,7 +438,7 @@ class AgxWsClient:
                             #   Root cause: when redeploying an already registered agent with force=true, agents.create always returns
                             #   ok=false + INVALID_REQUEST "agent xxx already exists";
                             #   ws_client treated it as a failure -> sent no callback -> the host agent never learned.
-                            #   Evidence run_agent_deploy_28b3cae62adf (118/test_srv_ab): the host agent could only
+                            #   Evidence run_agent_deploy_28b3cae62adf (118/test_srv_a2): the host agent could only
                             #   run `openclaw agents list` itself as a fallback check and report "never received agx_deploy_callback".
                             #   I.e. the first deploy callback works and a redeploy always loses it -- the fixed reproduction path of BUG-A2.
                             _err_obj = data.get("error") or {}
@@ -2608,7 +2608,7 @@ def load_gateways() -> list[dict]:
 
         "gateways": [
           {"host_id": "test_srv_a",  "ws_url": "ws://127.0.0.1:18789", "token": "..."},
-          {"host_id": "test_srv_ab", "ws_url": "ws://127.0.0.1:18799", "token": "..."}
+          {"host_id": "test_srv_a2", "ws_url": "ws://127.0.0.1:18799", "token": "..."}
         ]
 
     Backward compatible: with no gateways array it falls back to the old single-value gateway.ws_url + gateway.token,

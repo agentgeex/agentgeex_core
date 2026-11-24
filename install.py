@@ -84,8 +84,8 @@ def _render_agent_md_for_identity(text: str, mapping: dict) -> str:
 # template md loading (2026-10-25 DH-068)
 # -----------------------------------------------------------------
 # root cause: the old implementation located the template directory with `labs_fs = agent_labs or aid`, but a per_host_unique
-# agent reaching this point already had aid rewritten to [the instance id] (agx_host_test_srv_a) ->
-# agents/agx_host_test_srv_a does not exist -> _load_md swallowed the exception and returned "" ->
+# agent reaching this point already had aid rewritten to [the instance id] (agx_host_srv_a) ->
+# agents/agx_host_srv_a does not exist -> _load_md swallowed the exception and returned "" ->
 # the five fields AGENTS/SOUL/IDENTITY/USER/TOOLS were silently written empty, and a reinstall did not heal it either.
 # Here "how to compute the directory" and "how to read the files" collapse into a single point, and failures become visible.
 # ═══════════════════════════════════════════════════════════════
@@ -124,7 +124,7 @@ def resolve_agent_template_dir(install_src, agent_def) -> Path:
     * DH-068 root fix: the directory name comes from struct's agent_labs (the template
       directory name); when empty it falls back to struct's agent_id (the template base
       name = directory name). **Never use the instance id** — a per_host_unique instance id
-      carries a host suffix (agx_host_test_srv_a) and the matching template directory does not exist.
+      carries a host suffix (agx_host_srv_a) and the matching template directory does not exist.
     """
     labs_fs = agent_def.get("agent_labs") or agent_def["agent_id"]
     return Path(install_src) / "agents" / labs_fs
@@ -241,7 +241,7 @@ def _sanitize_host_suffix(host_id: str) -> str:
     """Normalize a host_id into a form usable as a directory / id suffix.
 
     * Lao Feng, 2026-10-25: per_host_unique agents no longer use random hex as the suffix but
-      [the host name] — e.g. agx_host_test_srv_a / agx_host_test_host_srv.
+      [the host name] — e.g. agx_host_srv_a / agx_host_test_host_srv.
       Reason: the id is meant to be read by humans, and random hex does not show which machine
       it is; also, agent drift requires identifying the machine by name.
 
@@ -1044,7 +1044,7 @@ def sync_files(install_src, workdir, mode, env_cfg, dry_run=False):
     for agent_name in SYSTEM_AGENTS:
         if mode == "host" and agent_name not in per_host_unique_ids and agent_name not in HOST_AGENT_NAMES:
             continue
-        # with per_host_unique the directory name is the unique id (e.g. agx_host_test_srv_a)
+        # with per_host_unique the directory name is the unique id (e.g. agx_host_srv_a)
         agent_dir_name = per_host_unique_ids.get(agent_name, agent_name)
         # * fixed 2026-10-25: path joining must go through the single point agent_home_rel_dir(),
         #   otherwise host-type agents land on agx_agents/<id>/ instead of agx_agents/host/<id>/.
@@ -1494,7 +1494,7 @@ def _delete_gateway_agent(env_cfg, agent_id):
 
 def _write_agx_env(workdir, agent_name, agent_id, per_host_unique_ids=None):
     """Write agx.env back, ensuring AGX_AGENT_ID points at the correct unique id.
-    With per_host_unique the directory name is the unique id (e.g. agx_host_test_srv_a); otherwise the agent_name is used.
+    With per_host_unique the directory name is the unique id (e.g. agx_host_srv_a); otherwise the agent_name is used.
     """
     dir_name = (per_host_unique_ids or {}).get(agent_name, agent_name)
     # * 2026-10-25: the directory name supports the new structure (agx_agents) + the host/ subdirectory
@@ -1531,7 +1531,7 @@ def cleanup_agent(agent_id, env_cfg=None):
     Design goal: idempotent and safe — no error even when some data was already deleted by hand.
 
     Args:
-        agent_id: the Agent ID to clean up (e.g. agx_host_test_srv_a)
+        agent_id: the Agent ID to clean up (e.g. agx_host_srv_a)
         env_cfg: environment config dict (optional); when passed, Redis is cleaned up too
 
     Returns:

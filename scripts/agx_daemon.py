@@ -1724,7 +1724,7 @@ def run_daemon(host_id: str, with_watchdog: bool = True):
             # -- Concurrency control: check slots (counted separately per host) --
             #   * Multi-instance rework: it used to be one set of max_slots/running/available for a single host.
             #     Two instances each have their own task_slots_limit and running count, and combining them makes them encroach on each other:
-            #     when test_srv_a is full, test_srv_ab also stalls (and vice versa). Changed to a host_avail dict.
+            #     when test_srv_a is full, test_srv_a2 also stalls (and vice versa). Changed to a host_avail dict.
             host_avail = {}
             for _h in hosts:
                 _ms = get_task_slots_limit(r, _h)

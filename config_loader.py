@@ -314,7 +314,7 @@ def gateway_entries() -> list[dict]:
           {"host_id": "test_host_srv",  "agent_type": "openclaw",
            "ws_url": "ws://127.0.0.1:18789", "token": "..."},
           {"host_id": "test_host_srv", "agent_type": "dsh",
-           "dsh": {"host": "192.168.0.188", "port": 8791}}   # optional override
+           "dsh": {"host": "10.0.0.13", "port": 8791}}   # optional override
         ]
 
     * Inference when agent_type is absent (backward compatible with old configs)::

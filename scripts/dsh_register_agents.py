@@ -31,7 +31,7 @@ Usage
 ====
   python3 dsh_register_agents.py --dry-run        # print the plan only, no DSH changes
   python3 dsh_register_agents.py                  # actually register (local default 127.0.0.1:8791)
-  python3 dsh_register_agents.py --host 192.168.0.188 --port 20790
+  python3 dsh_register_agents.py --host 10.0.0.13 --port 20790
   python3 dsh_register_agents.py --root /home/owner/.agx/agx_agents
   python3 dsh_register_agents.py --token <TOKEN>   # or env var AGX_DSH_TOKEN
   python3 dsh_register_agents.py --token-file /path/to/token   # recommended: keeps it out of argv/env

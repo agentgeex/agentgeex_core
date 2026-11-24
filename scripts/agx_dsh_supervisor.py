@@ -33,7 +33,7 @@ Decision basis: agent_type (fixed as a config contract on 2026-11-17)
     Address of a DSH entry (optional override, written inside that entry's ``dsh`` object)::
 
         {"host_id": "test_host_srv", "agent_type": "dsh",
-         "dsh": {"host": "192.168.0.188", "port": 8791, "profile": "web"}}
+         "dsh": {"host": "10.0.0.13", "port": 8791, "profile": "web"}}
 
     Without a ``dsh`` object the top-level ``config.dsh`` block is used - a single-DSH machine needs
     no duplication. The bridge already supports these env overrides (AGX_DSH_HOST / AGX_DSH_PORT /
