@@ -5,7 +5,8 @@
 > Installing AgentGeeX itself (kernel, database, daemons) is a different document --
 > see [`../../docs/getting-started/install-with-agent.md`](../../docs/getting-started/install-with-agent.md).
 >
-> Every screenshot here comes from a real installed test machine: host `test_srv_a`, network
+> Screenshots come in both languages (the UI language switch is at the top right). Every one of them
+comes from a real installed test machine: host `test_srv_a`, network
 > `lan_test`, one auto-created `system` project, 12 agents. Your names will differ; the screens
 > will look the same.
 
@@ -20,8 +21,9 @@
 5. [Interface map](#5-interface-map)
 6. [Page by page](#6-page-by-page)
 7. [One full walkthrough: dispatch a task](#7-one-full-walkthrough-dispatch-a-task)
-8. [Troubleshooting](#8-troubleshooting)
-9. [Stopping and reinstalling](#9-stopping-and-reinstalling)
+8. [Voice input (speech to text)](#8-voice-input-speech-to-text)
+9. [Troubleshooting](#9-troubleshooting)
+10. [Stopping and reinstalling](#10-stopping-and-reinstalling)
 
 ---
 
@@ -61,6 +63,7 @@ Three things must be running:
 | MCP gateway `:31890` | the kernel's only entry point | `curl -s http://127.0.0.1:31890/agentgeex/mcp` responds |
 | MySQL + Redis | the kernel's data layer | if the kernel starts, these are fine |
 | Node ≥ 18 | frontend build and dev server | `node -v` |
+| Speech service (optional) | speech to text. Without it the mic button stays unavailable; everything else works | see chapter 8 |
 
 If AgentGeeX itself is installed per the install guide (`~/.agx` exists, `daemon.sh status`
 reports running), that is enough.
@@ -129,7 +132,7 @@ BFF_PORT=8190 CLIENT_PORT=5290 ./start.sh start
 
 Opening `http://localhost:5190/` shows the sign-in page first:
 
-![Sign-in](./screenshots/01_login.png)
+![Sign-in](./screenshots/en-US/01_login.png)
 
 > ⚠️ **Sign-in is currently a demo-grade implementation**: `authenticate()` in
 > `server/app/auth.py` is a placeholder -- **any non-empty username and password are accepted**.
@@ -173,6 +176,7 @@ Persistent controls along the top:
 
 - **Send message** (blue button, top right): global dispatch, available on every page
 - **Tab bar**: pages you opened stay as tabs
+- **Service settings**: pick the speech host, check the MCP channel (see 6.14)
 - **Fullscreen / theme (light-dark) / language (zh-en) / lock screen / user menu**
 
 ---
@@ -181,7 +185,7 @@ Persistent controls along the top:
 
 ### 6.1 System status
 
-![System status](./screenshots/02_system.png)
+![System status](./screenshots/en-US/02_system.png)
 
 Answers "what shape is my system in right now" on one screen.
 
@@ -200,7 +204,7 @@ Answers "what shape is my system in right now" on one screen.
 
 ### 6.2 Quick access
 
-![Quick access](./screenshots/03_quick_access.png)
+![Quick access](./screenshots/en-US/03_quick_access.png)
 
 Four buckets: projects / agents / sessions / plans.
 
@@ -209,7 +213,7 @@ here.** Each bucket's "go to the … list" link jumps straight there.
 
 ### 6.3 Compute hosts
 
-![Compute hosts](./screenshots/04_hosts.png)
+![Compute hosts](./screenshots/en-US/04_hosts.png)
 
 The machine inventory, from the kernel's `agx_host_inventory`.
 
@@ -221,7 +225,7 @@ SSH port, or slot limit.
 
 ### 6.4 Agents
 
-![Agents](./screenshots/05_agents.png)
+![Agents](./screenshots/en-US/05_agents.png)
 
 Every agent, grouped by project (the shot shows the four deployed system agents under `system`).
 
@@ -243,7 +247,7 @@ Each card carries:
 
 ### 6.5 Sessions
 
-![Sessions](./screenshots/06_sessions.png)
+![Sessions](./screenshots/en-US/06_sessions.png)
 
 Agent conversations. The strip on top is live: **running / idle / failed / stuck / unknown**.
 
@@ -257,7 +261,7 @@ The "send" action at the end of a row talks directly inside that session.
 
 ### 6.6 Tasks
 
-![Tasks](./screenshots/07_tasks.png)
+![Tasks](./screenshots/en-US/07_tasks.png)
 
 The **task template catalogue** -- a list of what an agent *can* do, not a run history.
 
@@ -272,7 +276,7 @@ Filters: search / category / state / agent.
 
 ### 6.7 Executions
 
-![Executions](./screenshots/08_executions.png)
+![Executions](./screenshots/en-US/08_executions.png)
 
 **Every real run** lands here. This is the first place to look when something goes wrong.
 
@@ -288,7 +292,7 @@ was dispatched, when it was woken, when it was acknowledged).
 
 ### 6.8 Quick commands
 
-![Quick commands](./screenshots/09_quick_cmds.png)
+![Quick commands](./screenshots/en-US/09_quick_cmds.png)
 
 Frequently used operations as cards -- **fill a few parameters and send**, instead of typing a
 long instruction every time.
@@ -303,7 +307,7 @@ host info, network usage analysis, notice summarisation, create a project, deact
 
 ### 6.9 Shared skills
 
-![Shared skills](./screenshots/10_skills.png)
+![Shared skills](./screenshots/en-US/10_skills.png)
 
 The global skill library. A skill is **a reusable, followable "how to"** (commands, pitfalls,
 examples). The split from notices is deliberate:
@@ -318,14 +322,14 @@ empty here; it becomes valuable as the system is used (popular skills rise to th
 
 ### 6.10 Notices / work logs
 
-![Notices](./screenshots/11_notices.png)
+![Notices](./screenshots/en-US/11_notices.png)
 
 What agents wrote down: work logs, decisions, pitfalls, handoffs, configuration changes.
 Filterable by type, visibility, project, agent, and originating task.
 
 ### 6.11 Projects
 
-![Projects](./screenshots/12_projects.png)
+![Projects](./screenshots/en-US/12_projects.png)
 
 A project is the container for tasks, agents, and compute. Each row: project name, abbreviation,
 **members** (a row of tags -- instantly see who is on it), state, created at.
@@ -335,7 +339,7 @@ A fresh install has only `system`, holding the 12 system-level agents (`agx_core
 
 ### 6.12 Project groups
 
-![Project groups](./screenshots/13_project_groups.png)
+![Project groups](./screenshots/en-US/13_project_groups.png)
 
 Reusable team templates: pack a set of agents together; bind the group to a new project and the
 whole roster is cloned in one go.
@@ -346,7 +350,7 @@ Three ship by default: `agx-core-group`, `Python-Vue 开发小队`, `图书创�
 
 ### 6.13 Plans
 
-![Plans](./screenshots/14_plans.png)
+![Plans](./screenshots/en-US/14_plans.png)
 
 Multi-step plans and their progress. Filters: plan / owner / state / host.
 
@@ -355,6 +359,31 @@ in parallel (fan-out / fan-in).
 
 > Empty is normal -- a fresh install has not run a plan yet. `plan_generate_and_deploy` in Quick
 > commands generates the first one.
+
+---
+
+### 6.14 Service settings
+
+The **Service settings** button at the top right opens a **window** (it is not in the left rail).
+It has two tabs.
+
+**Speech service** -- choose and probe the speech-to-text hosts:
+
+![Service settings · speech](./screenshots/en-US/15_service_asr.png)
+
+- The list comes from `BFF_ASR_HOSTS` in the server-side `.env`. Each row shows: name, WebSocket
+  address, note, availability (available / unreachable / untested), and when it was last probed.
+- Selecting a host switches **immediately** and probes it once on the spot. The preference is stored in
+  `webtools/server/.runtime/service_settings.json`, so it survives a restart.
+- The per-row "check" button forces one probe (the cost of a single WebSocket handshake).
+- Availability is maintained by a background probe every 8 seconds. So "the service is back" is
+  discovered by the system, instead of by a person clicking once more and failing.
+
+**MCP connection** -- the kernel channel: gateway address, tool count, reachability.
+
+> This window answers exactly one question: **the speech service can live on many machines; which one
+> do we use?** Changing *what is available* means editing `.env` and restarting the BFF. Changing
+> *which one this time* is a click here, effective at once. Details in chapter 8.
 
 ---
 
@@ -387,7 +416,7 @@ Report this machine's CPU core count and total memory in one sentence. Do nothin
 
 The instant you dispatch, **Executions** shows a row in `运行中` (running):
 
-![Executions](./screenshots/08_executions.png)
+![Executions](./screenshots/en-US/08_executions.png)
 
 The state changes on its own: `运行中` → `已成功` (succeeded), or `失败` (failed).
 The successful row above took 65 seconds.
@@ -406,11 +435,172 @@ Example result:
 Back on **Sessions**, that agent now has a conversation where there was none, holding your two
 messages and the **context share**:
 
-![Sessions](./screenshots/06_sessions.png)
+![Sessions](./screenshots/en-US/06_sessions.png)
 
 ---
 
-## 8. Troubleshooting
+## 8. Voice input (speech to text)
+
+### 8.1 Where it is
+
+![Agents](./screenshots/en-US/05_agents.png)
+
+The microphone next to the input box in the send-message dialog. Click once to start recording, click
+again to stop; it **stops itself at 60 seconds** (forgetting to stop does not record forever).
+
+Behaviours that are deliberately fixed:
+
+| Behaviour | Why |
+|---|---|
+| You **cannot send** while recording or transcribing | otherwise half a sentence goes out |
+| The transcript is **appended**, never overwriting | you may already have typed something; overwriting is the least acceptable failure |
+| Failures distinguish four causes: no permission / no device / service down / timeout | those four need completely different actions from you |
+| A waveform runs while recording | the two most common failures are "mic muted by the system" and "forgot to press stop", and both look like "I talked for ages, why no text"; a moving waveform proves sound went in |
+
+### 8.2 The path
+
+```
+Browser microphone
+   │  POST /v1/audio/transcribe   (Bearer token)
+   ▼
+BFF  :8090
+   │  WS  ws://<speech host>:<port>/ws/audio/audio2text/{client_id}
+   ▼
+Speech service (ASR)  →  text
+```
+
+**Why the browser does not connect to the speech service directly** -- three reasons:
+
+1. The address would leak into the frontend bundle, so moving the service means repackaging; for
+   remote customers a hard-coded `127.0.0.1` does not exist at all.
+2. It bypasses authentication -- every `/v1/*` requires a Bearer token, a direct connection has no gate.
+3. Error attribution scatters: unreachable / timeout / model not loaded would all have to be guessed in
+   the browser.
+
+So **the BFF is the only front door**, the speech address lives only in the server-side `.env`, and the
+frontend only ever knows `/v1/audio/transcribe`.
+
+### 8.3 Configured in two places (the easiest thing to mix up)
+
+| Where | What it holds | Who changes it | Restart needed |
+|---|---|---|---|
+| `BFF_ASR_HOSTS` in `webtools/server/.env` | **what is available** (a deployment fact) | ops / whoever deploys | yes: `./start.sh restart` |
+| the choice in the Service settings window | **which one this time** (a runtime preference) | any signed-in user, one click | no |
+
+One sentence: **the list is a fact, the choice is a preference.**
+
+How `.env` looks (a JSON array):
+
+```bash
+BFF_ASR_HOSTS=[{"id":"asr-a","name":"Local ASR","url":"ws://127.0.0.1:9998/ws/audio/audio2text","note":"this box · CPU"},{"id":"asr-b","name":"GPU box","url":"ws://10.0.0.21:18888/ws/audio/audio2text","note":"LAN · dedicated GPU"}]
+
+# fallback used only when the list above is empty (a single-machine install can set just this)
+BFF_ASR_WS_URL=ws://127.0.0.1:9998/ws/audio/audio2text
+
+BFF_ASR_TIMEOUT=30          # a cold start has to load the model (~10s); 30s covers both warm and cold
+BFF_ASR_HEALTH_INTERVAL=8   # background probe interval, seconds
+```
+
+Three points that matter:
+
+- `url` **must end at `audio2text`**; the `client_id` segment is appended by the BFF on every call.
+- `id` is the only key behind "which one was chosen". **Changing an `id` is changing machines** -- the
+  previous choice stops matching and falls back to the first host.
+- A bad list (invalid JSON / missing `url` / duplicate `id`) **never stops the BFF** -- it degrades to a
+  single default host and logs one warning. Speech is an auxiliary feature; a typo there must not take
+  the whole service down.
+
+### 8.4 Start a speech service
+
+Two implementations ship in the tree; pick one:
+
+| Implementation | Engine | Footprint | How to start |
+|---|---|---|---|
+| `tools/audio_stt/audio_service_server.py` | SenseVoiceSmall (funasr) + VAD | light, runs on CPU, model downloads on first use | `python tools/audio_stt/audio_service_server.py --host 0.0.0.0 --port 9998` |
+| `tools/audio_stt/audio_service_server_qwen_asr.py` | Qwen3-ASR-1.7B | about 4.7 GB of weights, GPU recommended | `./tools/audio_stt/start_qwen_asr.sh start` |
+
+For the Qwen path, run the **environment self-check** first (it only inspects, it does not start):
+
+```bash
+./tools/audio_stt/start_qwen_asr.sh check
+```
+
+It tells you item by item what is missing and how to fix it. Four things it checks, and all four are
+real pitfalls:
+
+| Check | What happens when it fails |
+|---|---|
+| the interpreter can `import qwen_asr` | it will not start at all |
+| `torch` version (pin 2.7.0) | `torch.cuda.is_available()` is False, it silently falls back to CPU and is tens of times slower |
+| `websockets` is installed | uvicorn **silently degrades to plain HTTP** and every WebSocket request 404s -- the hardest one to diagnose |
+| the model directory has `config.json` + `*.safetensors` | it will not start (an unfinished download looks identical) |
+
+Once the check passes, `start`. The script also has `stop` / `restart` / `status` / `log` / `run`
+(foreground, for pm2 or systemd):
+
+```bash
+pm2 start ./tools/audio_stt/start_qwen_asr.sh --name qwen-asr -- run
+pm2 save
+```
+
+**Ports**: if one BFF must offer both a local and a remote host, the ports have to differ (say 9998
+locally, 18888 remotely). With a single host, any port is fine.
+
+### 8.5 Verifying that it really works
+
+Verify all three layers; do not skip one:
+
+**Layer 1 -- the service itself is alive**
+
+```bash
+./tools/audio_stt/start_qwen_asr.sh status     # or
+curl -s http://127.0.0.1:9998/
+```
+
+**Layer 2 -- the BFF can reach it**
+
+The host shows "available" in the Service settings window, or ask the endpoint directly:
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8090/v1/settings/asr
+```
+
+Look at `hosts[].state` (`up` or `down`); `error` carries the concrete reason (for example
+`ConnectionRefusedError`).
+
+**Layer 3 -- it really transcribes**
+
+```bash
+curl -s -X POST http://127.0.0.1:8090/v1/audio/transcribe \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: audio/wav" \
+     --data-binary @test.wav
+
+→ {"text":"本机CPU4核内存8G。","engine":"sensevoice","host_id":"asr-a","attempts":1,"duration_ms":8256}
+```
+
+The response carries `engine` and `host_id` -- **you can see which machine did the work** without
+digging through logs. The line above is a real measurement (cold start including model load, 8.2 s;
+warm is typically under a second).
+
+### 8.6 Troubleshooting
+
+| Symptom | Real cause | What to do |
+|---|---|---|
+| The mic button does nothing, or reports no permission | the browser was not granted microphone access | allow it in the site settings on the left of the address bar. **Note: on plain `http://` (anything but localhost) browsers disable the microphone outright** -- you need https or localhost |
+| It spins and then times out | the service is up but the model has not finished loading (cold start) | raise `BFF_ASR_TIMEOUT`, or warm it up with one manual transcription |
+| "Service unavailable" | the BFF probe fails | check the `url` and the port. **Moving the service and forgetting to update `.env`** is the most common cause |
+| Every WS request 404s in the service log | `websockets` is missing, so uvicorn degraded to plain HTTP | install `websockets` and restart the service |
+| The transcript is empty | no speech in the audio, or the system muted the mic | watch the waveform while recording |
+| `ERROR: ...` arrives and the connection never closes | the service's error frame carries no end marker | that is existing ASR behaviour; the BFF relies on the 30 s timeout -- and go read the service log |
+
+> ⚠️ **The HTTPS rule is the one people miss**: browsers only grant microphone access on `https://` or
+> `localhost`. Open the console at `http://192.168.0.x:5190` and the browser disables the microphone --
+> that has nothing to do with the BFF or the speech service, so do not debug in the wrong place.
+
+---
+
+## 9. Troubleshooting
 
 ### The page opens but every list is empty
 
@@ -464,7 +654,7 @@ Two ways out:
 
 ---
 
-## 9. Stopping and reinstalling
+## 10. Stopping and reinstalling
 
 ```bash
 cd ~/.agx/webtools

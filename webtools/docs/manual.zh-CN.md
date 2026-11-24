@@ -3,7 +3,7 @@
 > 这份手册讲**怎么用界面**：怎么启动、怎么登录、每个页面是干什么的、怎么把一件事从头跑完。
 > 安装 AgentGeeX 本体（内核、数据库、守护进程）不在这里，看 [`../docs/getting-started/install-with-agent.md`](../../docs/getting-started/install-with-agent.md)。
 >
-> 本手册的所有截图都来自一台真实安装的测试机：主机名 `test_srv_a`、网络 `lan_test`、一个自动创建的 `system` 项目、12 个智能体。你装出来的名字不同，但页面长得一样。
+> 本手册配中英两套截图（界面右上角可切语言）。所有截图都来自一台真实安装的测试机：主机名 `test_srv_a`、网络 `lan_test`、一个自动创建的 `system` 项目、12 个智能体。你装出来的名字不同，但页面长得一样。
 
 ---
 
@@ -16,8 +16,9 @@
 5. [界面地图](#5-界面地图)
 6. [逐页说明](#6-逐页说明)
 7. [走一遍完整流程：派一个任务](#7-走一遍完整流程派一个任务)
-8. [常见问题](#8-常见问题)
-9. [停止与重装](#9-停止与重装)
+8. [语音输入（语音转文字）](#8-语音输入语音转文字)
+9. [常见问题](#9-常见问题)
+10. [停止与重装](#10-停止与重装)
 
 ---
 
@@ -55,6 +56,7 @@ MySQL + Redis                 ← 唯一真源 + 缓存
 | MCP 网关 `:31890` | 内核唯一入口 | `curl -s http://127.0.0.1:31890/agentgeex/mcp` 有响应 |
 | MySQL + Redis | 内核的数据层 | 内核能起来就说明通了 |
 | Node ≥ 18 | 前端构建与开发服务器 | `node -v` |
+| 语音服务（可选） | 语音转文字。不装则麦克风按钮不可用，其余功能不受影响 | 见第 8 章 |
 
 AgentGeeX 本体已经按安装手册装好（`~/.agx` 存在、`daemon.sh status` 显示运行中）就够了。
 
@@ -120,7 +122,7 @@ BFF_PORT=8190 CLIENT_PORT=5290 ./start.sh start
 
 打开 `http://localhost:5190/` 会先看到登录页：
 
-![登录页](./screenshots/01_login.png)
+![登录页](./screenshots/zh-CN/01_login.png)
 
 > ⚠️ **当前登录是演示级实现**：`server/app/auth.py` 的 `authenticate()` 是占位函数，**任何非空的用户名和密码都能进**。
 > 它的作用只是拿一个 JWT，并把你记为**审计主体（是谁点的）**。
@@ -161,6 +163,7 @@ BFF_PORT=8190 CLIENT_PORT=5290 ./start.sh start
 
 - **信息发送**（右上蓝色按钮）：全局发消息/派任务，任何页面都能用
 - **页签栏**：打开过的页面留在上面，可以来回切
+- **服务设置**：选择语音识别主机、看 MCP 通道状态（见 6.14）
 - **全屏 / 主题（日/夜）/ 语言（中/英）/ 锁屏 / 用户菜单**
 
 ---
@@ -169,7 +172,7 @@ BFF_PORT=8190 CLIENT_PORT=5290 ./start.sh start
 
 ### 6.1 系统状态
 
-![系统状态](./screenshots/02_system.png)
+![系统状态](./screenshots/zh-CN/02_system.png)
 
 一屏回答"我这套系统现在什么状况"。
 
@@ -185,7 +188,7 @@ BFF_PORT=8190 CLIENT_PORT=5290 ./start.sh start
 
 ### 6.2 快捷入口
 
-![快捷入口](./screenshots/03_quick_access.png)
+![快捷入口](./screenshots/zh-CN/03_quick_access.png)
 
 四个收藏夹：项目 / Agent / 会话 / 计划。
 
@@ -194,7 +197,7 @@ BFF_PORT=8190 CLIENT_PORT=5290 ./start.sh start
 
 ### 6.3 算力主机
 
-![算力主机](./screenshots/04_hosts.png)
+![算力主机](./screenshots/zh-CN/04_hosts.png)
 
 机器资产清单，来自内核的 `agx_host_inventory`。
 
@@ -204,7 +207,7 @@ BFF_PORT=8190 CLIENT_PORT=5290 ./start.sh start
 
 ### 6.4 智能体
 
-![智能体](./screenshots/05_agents.png)
+![智能体](./screenshots/zh-CN/05_agents.png)
 
 所有 Agent，按项目分组（上图是 `system` 项目下的 4 个已部署系统 Agent）。
 
@@ -222,7 +225,7 @@ BFF_PORT=8190 CLIENT_PORT=5290 ./start.sh start
 
 ### 6.5 会话
 
-![会话](./screenshots/06_sessions.png)
+![会话](./screenshots/zh-CN/06_sessions.png)
 
 Agent 的会话列表。顶部一排实时统计：**运行中 / 空闲 / 失败 / 卡住 / 未知**。
 
@@ -234,7 +237,7 @@ Agent 的会话列表。顶部一排实时统计：**运行中 / 空闲 / 失败
 
 ### 6.6 任务
 
-![任务](./screenshots/07_tasks.png)
+![任务](./screenshots/zh-CN/07_tasks.png)
 
 **任务模板目录** —— 一个 Agent "会干什么"的清单，不是执行记录。
 
@@ -246,7 +249,7 @@ Agent 的会话列表。顶部一排实时统计：**运行中 / 空闲 / 失败
 
 ### 6.7 任务执行记录
 
-![任务执行记录](./screenshots/08_executions.png)
+![任务执行记录](./screenshots/zh-CN/08_executions.png)
 
 **每一次真实执行**都在这里，这是排查问题第一站。
 
@@ -260,7 +263,7 @@ Agent 的会话列表。顶部一排实时统计：**运行中 / 空闲 / 失败
 
 ### 6.8 快捷指令
 
-![快捷指令](./screenshots/09_quick_cmds.png)
+![快捷指令](./screenshots/zh-CN/09_quick_cmds.png)
 
 把常用操作做成卡片，**填几个参数就能发**，不用每次手打长指令。
 
@@ -272,7 +275,7 @@ Agent 的会话列表。顶部一排实时统计：**运行中 / 空闲 / 失败
 
 ### 6.9 技能共享
 
-![技能共享](./screenshots/10_skills.png)
+![技能共享](./screenshots/zh-CN/10_skills.png)
 
 全局技能库。技能 = **可复用、能照着做的"怎么做"**（命令、踩坑、示例），与"公告"分工明确：
 
@@ -285,13 +288,13 @@ Agent 的会话列表。顶部一排实时统计：**运行中 / 空闲 / 失败
 
 ### 6.10 公告 / 工作日志
 
-![公告](./screenshots/11_notices.png)
+![公告](./screenshots/zh-CN/11_notices.png)
 
 Agent 写下的公告：工作日志、决策记录、踩坑、交接、配置变更。可按类型、可见性、项目、Agent、任务追溯筛选。
 
 ### 6.11 项目列表
 
-![项目列表](./screenshots/12_projects.png)
+![项目列表](./screenshots/zh-CN/12_projects.png)
 
 项目是所有任务、Agent、算力的容器。每行：项目名、简称、**项目组成员**（一排标签，一眼看出这个项目有谁）、状态、创建时间。
 
@@ -299,7 +302,7 @@ Agent 写下的公告：工作日志、决策记录、踩坑、交接、配置�
 
 ### 6.12 项目组模板
 
-![项目组模板](./screenshots/13_project_groups.png)
+![项目组模板](./screenshots/zh-CN/13_project_groups.png)
 
 可复用的团队模板：把一组 Agent 打包，绑到一个新项目上就一次性克隆出整套班子。
 
@@ -309,13 +312,33 @@ Agent 写下的公告：工作日志、决策记录、踩坑、交接、配置�
 
 ### 6.13 计划
 
-![计划](./screenshots/14_plans.png)
+![计划](./screenshots/zh-CN/14_plans.png)
 
 多步计划及其推进情况。筛选：计划 / 负责人 / 状态 / 主机。
 
 点进去能看到每一步的状态、前置依赖、是串行还是并行（扇出/扇入）。
 
 > 空的是正常的 —— 新装的系统还没有跑过计划。用「快捷指令」里的 `plan_generate_and_deploy` 可以生成第一个。
+
+---
+
+### 6.14 服务设置
+
+顶部右侧的「服务设置」打开一个**窗口**（不在左侧菜单里），两个标签页。
+
+**语音服务** —— 语音识别主机的选择与检测：
+
+![服务设置 · 语音服务](./screenshots/zh-CN/15_service_asr.png)
+
+- 列表来自服务端 `.env` 的 `BFF_ASR_HOSTS`。每行：名称、WebSocket 地址、备注、可用状态（可用 / 不可用 / 未测试）、最近一次探测时间。
+- 选中某一台 → **立即切换**，并马上探测一次；偏好存在 `webtools/server/.runtime/service_settings.json`，重启后保持。
+- 每行的「检测」按钮 = 手动探一次（一次 WebSocket 握手的成本）。
+- 状态由服务端后台每 8 秒探活维护。所以「服务回来了」是系统先发现的，不用人等一次失败再刷新页面。
+
+**MCP 连接** —— 内核通道：网关地址、工具数量、连通状态。
+
+> 这一页解决的是一件事：**语音服务可以装在很多台机器上，这里决定用哪一台。**
+> 改「有哪些可选」要动 `.env` 并重启 BFF；改「这次用哪台」在这个窗口点一下，立刻生效。详见第 8 章。
 
 ---
 
@@ -347,7 +370,7 @@ Agent 写下的公告：工作日志、决策记录、踩坑、交接、配置�
 
 派出去之后立刻能在 **任务执行记录** 看到一条 `运行中`：
 
-![执行记录](./screenshots/08_executions.png)
+![执行记录](./screenshots/zh-CN/08_executions.png)
 
 状态会自己变：`运行中` → `已成功`（或 `失败`）。上图那条成功的用了 65 秒。
 
@@ -363,11 +386,157 @@ Agent 写下的公告：工作日志、决策记录、踩坑、交接、配置�
 
 回到 **会话**，会看到那个 Agent 的会话从"无"变成一条记录，里面有你这次的两条消息，还有**上下文占比**：
 
-![会话](./screenshots/06_sessions.png)
+![会话](./screenshots/zh-CN/06_sessions.png)
 
 ---
 
-## 8. 常见问题
+## 8. 语音输入（语音转文字）
+
+### 8.1 在哪用
+
+![信息发送](./screenshots/zh-CN/05_agents.png)
+
+信息发送对话框里，输入框旁边的麦克风按钮。点一下开始录，再点停止；到 **60 秒自动停**（忘了停不会一直录下去）。
+
+几条写死的行为：
+
+| 行为 | 为什么 |
+|---|---|
+| 录音中、识别中**都不能发送** | 避免把半句话发出去 |
+| 识别结果**追加**在输入框末尾，不覆盖 | 你可能已经打了字，覆盖是最不能接受的失败 |
+| 失败会区分四种原因：没有权限 / 没有设备 / 服务没开 / 超时 | 这四件事要做的事完全不同 |
+| 录音时有波形 | 最常见的两个故障是「系统静音」和「忘了停」，症状都是「我说了半天怎么没字」；波形在动就说明声音真进去了 |
+
+### 8.2 一条链路
+
+```
+浏览器麦克风
+   │  POST /v1/audio/transcribe   （Bearer token）
+   ▼
+BFF  :8090
+   │  WS  ws://<语音主机>:<端口>/ws/audio/audio2text/{client_id}
+   ▼
+语音服务（ASR）  →  返回文字
+```
+
+**为什么不让浏览器直连语音服务**，三条：
+
+1. 地址会漏进前端包，换机器就得重新打包；商用场景里客户在远端，`127.0.0.1` 根本不存在。
+2. 绕过鉴权 —— `/v1/*` 全要 Bearer token，直连语音服务没有任何门。
+3. 出错说不清是谁的问题（连不上 / 超时 / 模型没加载，只能在浏览器里猜）。
+
+所以 **BFF 是唯一前门**，语音地址只存在于服务端 `.env`，前端永远只知道 `/v1/audio/transcribe`。
+
+### 8.3 配置分两处（这是最容易混的地方）
+
+| 配在哪 | 存的是什么 | 谁能改 | 要重启吗 |
+|---|---|---|---|
+| `webtools/server/.env` 的 `BFF_ASR_HOSTS` | **有哪些可选**（部署事实） | 运维 / 部署的人 | 要：`./start.sh restart` |
+| 服务设置窗口里选的 | **这次用哪台**（运行偏好） | 任何登录用户点一下 | 不要 |
+
+一句话：**清单是事实，选择是偏好。**
+
+`.env` 的写法（JSON 数组）：
+
+```bash
+BFF_ASR_HOSTS=[{"id":"asr-a","name":"Local ASR","url":"ws://127.0.0.1:9998/ws/audio/audio2text","note":"本机 · CPU"},{"id":"asr-b","name":"GPU box","url":"ws://10.0.0.21:18888/ws/audio/audio2text","note":"局域网 · 独立显卡"}]
+
+# 只在上面为空时兜底（单机部署可以只配这条）
+BFF_ASR_WS_URL=ws://127.0.0.1:9998/ws/audio/audio2text
+
+BFF_ASR_TIMEOUT=30          # 冷启动要加载模型（约 10s），30s 让热态和冷态都容得下
+BFF_ASR_HEALTH_INTERVAL=8   # 后台探活间隔（秒）
+```
+
+三个要点：
+
+- `url` **必须写到 `audio2text` 结尾**，后面的 `client_id` 由 BFF 每次拼接。
+- `id` 是「选了哪台」的唯一依据。**改了 `id` 等于换了一台机器**，之前的选择会失效、回到第一台。
+- 配错（坏 JSON / 缺 `url` / `id` 重复）**不会让 BFF 起不来** —— 会退回单机默认并记一条 warning。语音是辅助功能，写错它不该把整套服务拖死。
+
+### 8.4 起一个语音服务
+
+仓库里带两个实现，选一个装：
+
+| 实现 | 引擎 | 算力 | 怎么起 |
+|---|---|---|---|
+| `tools/audio_stt/audio_service_server.py` | SenseVoiceSmall（funasr）+ VAD | 轻，CPU 可用，模型首次自动下载 | `python tools/audio_stt/audio_service_server.py --host 0.0.0.0 --port 9998` |
+| `tools/audio_stt/audio_service_server_qwen_asr.py` | Qwen3-ASR-1.7B | 权重约 4.7 GB，建议 GPU | `./tools/audio_stt/start_qwen_asr.sh start` |
+
+Qwen 这条先做**环境自检**（只查不启动）：
+
+```bash
+./tools/audio_stt/start_qwen_asr.sh check
+```
+
+它会逐项告诉你缺什么、怎么补。四个必查项，也是四个真实的坑：
+
+| 检查项 | 不满足会怎样 |
+|---|---|
+| 解释器能 `import qwen_asr` | 直接起不来 |
+| `torch` 版本（建议钉 2.7.0） | `torch.cuda.is_available()` 为 False，静默退回 CPU，慢几十倍 |
+| 装了 `websockets` | uvicorn 会**静默降级成纯 HTTP**，所有 WebSocket 请求 404 —— 最难查的一个 |
+| 模型目录有 `config.json` + `*.safetensors` | 起不来（下载没完成也是这个症状） |
+
+修齐了再 `start`。脚本还带 `stop` / `restart` / `status` / `log` / `run`（前台运行，给 pm2 / systemd 用）：
+
+```bash
+pm2 start ./tools/audio_stt/start_qwen_asr.sh --name qwen-asr -- run
+pm2 save
+```
+
+**端口**：同一套 BFF 里要并存「本机 + 远端」两台，端口必须分开（例如本机 9998、远端 18888）。只有一台的话随便。
+
+### 8.5 怎么确认它真的能用
+
+三层都验过才算通，别跳步：
+
+**第一层，服务自己活着**
+
+```bash
+./tools/audio_stt/start_qwen_asr.sh status     # 或
+curl -s http://127.0.0.1:9998/
+```
+
+**第二层，BFF 探得到它**
+
+服务设置窗口里那台显示「可用」，或者直接问题接口：
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8090/v1/settings/asr
+```
+
+看每个 `hosts[].state` 是 `up` 还是 `down`，`error` 里会写具体原因（例如 `ConnectionRefusedError`）。
+
+**第三层，真的能识别**
+
+```bash
+curl -s -X POST http://127.0.0.1:8090/v1/audio/transcribe \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: audio/wav" \
+     --data-binary @test.wav
+
+→ {"text":"本机CPU4核内存8G。","engine":"sensevoice","host_id":"asr-a","attempts":1,"duration_ms":8256}
+```
+
+返回里带 `engine` 和 `host_id` —— **这次是谁干的活，一眼看得出来**，不用去翻日志。上面这条是实测输出（冷启动含模型加载，8.2 秒；热态通常 1 秒内）。
+
+### 8.6 排错
+
+| 症状 | 真正原因 | 怎么办 |
+|---|---|---|
+| 点麦克风没反应，提示没权限 | 浏览器没给麦克风授权 | 地址栏左侧站点设置里放开。**注意：`http://` 且非 localhost 时，浏览器直接禁用麦克风**，必须 https 或 localhost |
+| 一直转圈然后超时 | 服务在，但模型没加载完（冷启动） | 调大 `BFF_ASR_TIMEOUT`；或先手动识别一次预热 |
+| 提示「服务不可用」 | BFF 探活失败 | 查 `url` 对不对、端口通不通。**换机器忘了改 `.env`** 是最常见的 |
+| 服务日志里 WS 请求全 404 | 没装 `websockets`，uvicorn 降级成纯 HTTP | 装上 `websockets` 重启服务 |
+| 识别结果为空 | 音频没人声 / 系统静音 | 看录音时的波形有没有动 |
+| 返回 `ERROR: ...` 之后连接不结束 | 语音服务的错误帧不带结束标记 | 这是 ASR 服务的既有行为，BFF 靠 30s 超时兜底；同时去查服务日志 |
+
+> ⚠️ **HTTPS 那条最容易漏**：浏览器只在 `https://` 或 `localhost` 下给麦克风权限。你用 `http://192.168.0.x:5190` 打开控制台，麦克风会被浏览器直接禁掉 —— 这跟 BFF、跟语音服务都没关系，别去查错地方。
+
+---
+
+## 9. 常见问题
 
 ### 页面能打开，但所有列表都是空的
 
@@ -410,7 +579,7 @@ Python 包 `mcp` 在 1.28 版本把 `streamablehttp_client` 改名成了 `stream
 
 ---
 
-## 9. 停止与重装
+## 10. 停止与重装
 
 ```bash
 cd ~/.agx/webtools
