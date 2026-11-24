@@ -273,6 +273,11 @@ Filters: search / category / state / agent.
 
 > Why does the same name repeat? Because templates are **per agent** -- every agent owns one
 > `universal` row. That is where the 62 rows in the screenshot come from.
+>
+> The task text itself ships **with the product** (it comes from `agx_struct.json` and the `tasks/*.md`
+> templates, seeded into the database at install time). The screenshot is taken on a Chinese
+> deployment, so the descriptions read Chinese while the interface around them is English -- that is
+> data, not an untranslated label. A deployment that needs English task text edits those templates.
 
 ### 6.7 Executions
 
