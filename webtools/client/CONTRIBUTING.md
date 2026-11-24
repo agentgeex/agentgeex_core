@@ -71,12 +71,13 @@ if you change the interface contract, update `agent_doc/api-contract-draft.md` a
 
 ## Commit messages
 
-Chinese, one sentence stating "what changed + why". Example:
+English, one sentence stating "what changed + why". Example:
 
 ```
-fix(sessions)：会话列表按最后活跃排序 —— 原来按创建时间，翻到第二页就找不到刚聊过的
+fix(sessions): sort the session list by last activity -- it used to sort by creation time,
+so a conversation opened a minute ago was already on page two
 ```
 
 ## License
 
-Contributing means you agree to release it under this project's [MIT License](./LICENSE).
+Contributing means you agree to release it under this project's [Apache-2.0 License](../../LICENSE).

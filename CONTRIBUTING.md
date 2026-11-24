@@ -191,14 +191,15 @@ Format:
 Examples from this repository's history:
 
 ```
-fix(install): 装完「安装完成」，但唯一接口 MCP 网关（31890）从来没被启动
-fix(scripts): 3.10 以下直接说清楚，别让人对着无关 TypeError 猜
-docs(readme): 工具数 100 → 96（数字必须可核，此前写错）
-chore(tasks): 任务清单对齐 —— 28 条 struct 无缺件，3 个孤儿归档
+fix(install): install says "done" but the only MCP gateway (31890) was never started
+fix(scripts): below 3.10, say so -- do not leave people guessing from an unrelated TypeError
+docs(readme): tool count 100 -> 96 (numbers must be verifiable; the old value was wrong)
+chore(tasks): align the task inventory -- 28 struct entries present, 3 orphans archived
 ```
 
-Message bodies may be written in Chinese or English. Subjects are fine in either;
-what matters is that a reader six months later understands *what was broken*.
+Commit messages are written in English -- subject and body alike. What matters is that a
+reader six months later understands *what was broken*; English keeps the history readable for
+everyone who clones this repository.
 
 ### Hard rules about git commands
 

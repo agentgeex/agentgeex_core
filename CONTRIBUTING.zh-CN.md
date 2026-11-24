@@ -170,14 +170,14 @@ uv run pytest test/ -q
 本仓库历史里的真实例子：
 
 ```
-fix(install): 装完「安装完成」，但唯一接口 MCP 网关（31890）从来没被启动
-fix(scripts): 3.10 以下直接说清楚，别让人对着无关 TypeError 猜
-docs(readme): 工具数 100 → 96（数字必须可核，此前写错）
-chore(tasks): 任务清单对齐 —— 28 条 struct 无缺件，3 个孤儿归档
+fix(install): install says "done" but the only MCP gateway (31890) was never started
+fix(scripts): below 3.10, say so -- do not leave people guessing from an unrelated TypeError
+docs(readme): tool count 100 -> 96 (numbers must be verifiable; the old value was wrong)
+chore(tasks): align the task inventory -- 28 struct entries present, 3 orphans archived
 ```
 
-正文用中文或英文都可以。subject 哪一种都行；关键是半年后的读者能看懂**当时坏在
-哪里**。
+提交信息一律用英文（subject 与正文都是）。理由是：这个仓库对外公开，英文历史任何人
+clone 下来都读得懂。关键是半年后的读者能看懂**当时坏在哪里**。
 
 ### 关于 git 命令的硬规矩
 

@@ -70,12 +70,13 @@ npm run i18n:check   # 中英语言包同构 + key 真实存在
 
 ## 提交信息
 
-中文，一句话说清「改了什么 + 为什么」。示例：
+英文，一句话说清「改了什么 + 为什么」。示例：
 
 ```
-fix(sessions)：会话列表按最后活跃排序 —— 原来按创建时间，翻到第二页就找不到刚聊过的
+fix(sessions): sort the session list by last activity -- it used to sort by creation time,
+so a conversation opened a minute ago was already on page two
 ```
 
 ## License
 
-贡献即表示同意以本项目的 [MIT License](./LICENSE) 发布。
+贡献即表示同意以本项目的 [Apache-2.0 License](../../LICENSE) 发布。
