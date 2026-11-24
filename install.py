@@ -3165,14 +3165,31 @@ def rebuild_cache(env_cfg):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="AgentGeeX 跨平台安装脚本")
+    ap = argparse.ArgumentParser(
+        description="AgentGeeX 跨平台安装脚本",
+        epilog=(
+            "多实例安装（同一台机器装第二套）必须同时指定三项，缺一项就会串到已有实例：\n"
+            "  --workdir         文件装到哪（只决定文件落点，不改变配置的读取位置）\n"
+            "  AGX_CONFIG_PATH   读哪个 agx_config.json（默认 ~/.agx/agx_config.json）\n"
+            "  AGX_CREDS_ENV     读哪个 agx_creds.env（默认 ~/.agx/agx_creds.env）\n"
+            "MCP 端口由 AGX_MCP_PORT 决定（mcp.sh 不读 agx_config.json，默认 31890），\n"
+            "第二套请另起端口：./mcp.sh start --port <other-port>\n"
+            "\n"
+            "例：AGX_CONFIG_PATH=/data/inst2/agx_config.json \\\n"
+            "    AGX_CREDS_ENV=/data/inst2/agx_creds.env \\\n"
+            "    ./agx.sh --core --workdir /data/inst2/.agx"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     ap.add_argument("--core", action="store_true", help="核心节点安装（daemon + watchdog + ws）")
     ap.add_argument("--host", action="store_true", help="工作节点安装（只 agx_host + MCP 环境，不启动 daemon，不初始化数据库）")
     ap.add_argument("--no-daemon", action="store_true", help="安装后不启动 daemon（--host 默认已开启；--core 想手动开局时加）")
     ap.add_argument("--host-only", action="store_true", help=argparse.SUPPRESS)  # backward compatible
     ap.add_argument("--default", action="store_true", help="非交互模式，使用默认值")
     ap.add_argument("--dry-run", action="store_true", help="预览模式，不实际执行")
-    ap.add_argument("--workdir", default=None, help="工作目录路径（默认 ~/.agx）")
+    ap.add_argument("--workdir", default=None,
+                    help="工作目录路径（默认 ~/.agx）。只决定文件装到哪，"
+                         "不改变配置/凭据的查找位置（见下方「多实例安装」）")
     ap.add_argument("--force", action="store_true", help="强制覆盖已有安装（等于 overwrite）")
     ap.add_argument("--skip-agent-register", action="store_true",
                     help="跳过 Phase 4 Gateway Agent 注册（WS 协议不匹配时改用 openclaw agents add）")
