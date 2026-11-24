@@ -87,7 +87,7 @@ function pageHostname(): string {
 export interface PlatformEndpoint {
   /** Whether resolution succeeded; on false origin/basePath are empty strings, see reason for why */
   ok: boolean;
-  /** scheme + host + port, e.g. http://192.168.0.188:18789 */
+  /** scheme + host + port, e.g. http://10.0.0.13:18789 */
   origin: string;
   /** Session page path prefix, e.g. /chat (no trailing slash) */
   basePath: string;
@@ -209,7 +209,7 @@ export function chatDeepLink(
  *
  * Requirement in his words: "A session has an id, and the session id corresponds to the UI. It used to be
  * appended directly after the UI, now there is a transformation". His example:
- *   http://192.168.0.188:18789/chat/book_pydev_850472/book_code_engineer
+ *   http://10.0.0.13:18789/chat/book_pydev_850472/book_code_engineer
  * while the matching session id in the DB is:
  *   agent:book_pydev_850472:book_code_engineer
  *

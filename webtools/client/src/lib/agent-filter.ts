@@ -17,7 +17,7 @@ export function agentFilterOptions(
     if (!id || seen.has(id)) continue;
     seen.set(id, r.agentName || id);
   }
-  /* Display names may collide (e.g. agx_host / agx_host_test_srv_a / agx_host_test_host_srv —
+  /* Display names may collide (e.g. agx_host / agx_host_srv_a / agx_host_test_host_srv —
      the agent_name of all three host_manager instances is "agx_host").
      On collision, fall back to agentId as the label — at that point only the id can tell them apart, and showing
      the same name means the user cannot choose. */

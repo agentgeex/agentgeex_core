@@ -36,7 +36,7 @@ function StatusBadge({ online }: { online: boolean }) {
 
 /** [2026-11-16 09:28 Feng] There are hosts with the DSH platform now — "if the platform data is not exposed, this side knows nothing".
  *
- *  One host can have **several platform instances** (test_host_mac one openclaw; test_srv_ab is the second instance;
+ *  One host can have **several platform instances** (test_host_mac one openclaw; test_srv_a2 is the second instance;
  *  test_host_srv is dsh), so here they are listed vertically one by one per array, not assuming "one platform per machine".
  *  Icons use the site-wide PlatformTag (`platform-logo.tsx`, already has dsh.svg / openclaw.svg);
  *  do not hardcode an `<img>` path here — otherwise adding a platform later means searching the whole repo.

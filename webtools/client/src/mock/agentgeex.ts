@@ -412,7 +412,7 @@ export interface HostPlatform {
   /**
    * Address. Both usages share this field:
    *   - mode=container: full address, e.g. `172.17.0.5:18789` (may include scheme)
-   *   - mode=process  : optional "host part override", e.g. `192.168.0.66` or `robert-mac.local`;
+   *   - mode=process  : optional "host part override", e.g. `10.0.0.11` or `test-host-mac.local`;
    *                    if empty, use host.endpoint_ip.
    *   ★ Why process needs it too: a host with endpoint_ip=127.0.0.1 is unreachable from other machines,
    *     and changing endpoint_ip would affect other readers; writing addr here has the smallest blast radius.
@@ -615,7 +615,7 @@ export const skillsSeed: SkillRow[] = [
 ];
 
 export const hostsSeed: HostRow[] = [
-  { id: "test_host_mac", alias: "test_host_mac", ip: "192.168.50.8", sshPort: 22,
+  { id: "test_host_mac", alias: "test_host_mac", ip: "10.0.0.11", sshPort: 22,
     os: "Darwin arm64", slotsLimit: 8, activeTasks: 0, active: true, online: true, xDesc: "本机开发/运行主机" },
 ];
 

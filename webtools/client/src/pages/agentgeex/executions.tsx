@@ -96,7 +96,7 @@ function ExecAgentLink({ agentId, label, mono }: { agentId?: string; label?: str
            Now: cap raised to 22ch, **wrap instead of ellipsis when longer** (Feng: "wrapping at that point is
            fine too").
            `shrink-0` is required: flex children shrink by default, and once the name shrinks it "breaks words
-           inside the box" (measured: `XHOSTTestWorker-2(test_srv_ab)` split into `Worker-` / `2(test_srv_ab)` on two
+           inside the box" (measured: `XHOSTTestWorker-2(test_srv_a2)` split into `Worker-` / `2(test_srv_a2)` on two
            lines, looking like a typo). With shrink-0 it stays one block -> when space runs out, the whole
            "-> name" moves to the next line.
            Also do **not** use overflow-wrap:anywhere: it shrinks min-content to one character wide, so flex
@@ -453,7 +453,7 @@ export function ExecutionsBoard({
                 mono={!agentLabels.has(sendId)}
               />
               {/* No whitespace-nowrap: it would be inherited by the button, and then the receiver name could never wrap
-                  (measured: `XHOSTTestWorker-2(test_srv_ab)` overflows 2px horizontally instead of wrapping).
+                  (measured: `XHOSTTestWorker-2(test_srv_a2)` overflows 2px horizontally instead of wrapping).
                   A flex container is enough -- a flex item under the default flex-nowrap is not split across
                   lines, while the name can still wrap inside the button's own box. */}
               <span className="inline-flex items-center gap-1">
