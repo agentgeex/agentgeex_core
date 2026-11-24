@@ -69,6 +69,7 @@ npm run build        # 生产构建
 
 | 文档 | 内容 |
 |------|------|
+| [`docs/manual.zh-CN.md`](./docs/manual.zh-CN.md) | **操作手册** —— 怎么启动 / 怎么登录 / 每个页面干什么 / 完整走一遍 / 排错 |
 | [`api-contract-draft.md`](./api-contract-draft.md) | BFF REST API 契约（草案 v0.1，对接双方共同遵守）|
 | [`server/README.md`](./server/README.md) | BFF 服务器端：定位 / 技术栈 / 当前状态 / 启动 / 下一步 |
 | [`client/README.md`](./client/README.md) | 前端控制台：页面与路由 / 快速开始 / 国际化 / 质量门槛 |

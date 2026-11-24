@@ -72,6 +72,7 @@ Details: [`server/README.md`](./server/README.md).
 
 | Document | Contents |
 |------|------|
+| [`docs/manual.md`](./docs/manual.md) | **Operations manual** -- start it, sign in, every page explained, one full walkthrough, troubleshooting |
 | [`api-contract-draft.md`](./api-contract-draft.md) | BFF REST API contract (draft v0.1, binding on both sides) |
 | [`server/README.md`](./server/README.md) | BFF server: positioning, stack, current state, startup, next steps |
 | [`client/README.md`](./client/README.md) | Frontend console: pages, routes, quick start, i18n, quality gates |
