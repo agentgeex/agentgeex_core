@@ -293,6 +293,7 @@ AgentGeeX 讲 MCP。这对 Agent 是对接口，对人则基本无用。网页�
 | Agent 目录与 Git 布局 | [`docs/development/repo-layout-and-git.md`](docs/development/repo-layout-and-git.md) |
 | 任务模板 | [`tasks/`](tasks/)（每个 Agent 的能力说明书） |
 | **控制台操作手册**（14 页，配中英截图） | [`webtools/docs/manual.zh-CN.md`](webtools/docs/manual.zh-CN.md) |
+| **使用手册**（概念与流程，8 章） | [`docs/manual/README.md`](docs/manual/README.md) |
 | 文档总索引 | [`docs/README.md`](docs/README.md) |
 | **让 Agent 自己装**（交给你的 Agent 执行） | [`docs/getting-started/install-with-agent.md`](docs/getting-started/install-with-agent.md) |
 | 环境探测 | `python3 scripts/probe_env.py` |

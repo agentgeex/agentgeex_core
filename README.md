@@ -297,6 +297,7 @@ At this point you have: a project, a team, and one auditable execution record.
 | Task templates | [`tasks/`](tasks/) (the capability manual for each agent) |
 | **Let an agent install it** (hand this to your agent) | [`docs/getting-started/install-with-agent.md`](docs/getting-started/install-with-agent.md) |
 | **Console operations manual** (14 pages, screenshots) | [`webtools/docs/manual.md`](webtools/docs/manual.md) |
+| **User guide** (concepts and workflow, 8 chapters) | [`docs/manual/README.md`](docs/manual/README.md) |
 | Full documentation index | [`docs/README.md`](docs/README.md) |
 | Environment probe | `python3 scripts/probe_env.py` |
 | Schema consistency check | `python3 scripts/verify_schema.py` |
