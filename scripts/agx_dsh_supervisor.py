@@ -11,8 +11,8 @@ Why this layer exists (decided by the owner on 2026-11-17)
     **unconditionally**, taking host_id from the top-level config.host_id. So:
       . A host without DSH (test_host_mac): still started a bridge against 127.0.0.1:8791,
         where no dsh web exists -> pure spin.
-      . A host with DSH (188): the bridge started by the daemon took host_id=test_host_srv (top-level
-        default) and consumed agx:dsh:task:test_host_srv - while tasks actually go to test_host_srv.
+      . A host with DSH (188): the bridge started by the daemon took host_id=test_srv_b (top-level
+        default) and consumed agx:dsh:task:test_srv_b - while tasks actually go to test_srv_b_dsh.
         The one doing the work was a separate hand-written systemd service. **Two bridges, one working.**
 
     The root cause is not the bridge but "who decides how many to start": the openclaw side has long
@@ -32,7 +32,7 @@ Decision basis: agent_type (fixed as a config contract on 2026-11-17)
 
     Address of a DSH entry (optional override, written inside that entry's ``dsh`` object)::
 
-        {"host_id": "test_host_srv", "agent_type": "dsh",
+        {"host_id": "test_srv_b_dsh", "agent_type": "dsh",
          "dsh": {"host": "10.0.0.13", "port": 8791, "profile": "web"}}
 
     Without a ``dsh`` object the top-level ``config.dsh`` block is used - a single-DSH machine needs
@@ -161,8 +161,8 @@ def _child_env(hid: str, dsh_overrides: dict) -> dict:
     """Child environment: inherited + this entry's host_id + entry-level dsh overrides.
 
     * host_id must be passed per entry, never the top-level default - that was the deadliest bug
-      before the change: the bridge started by the daemon took the top-level host_id=test_host_srv and
-      consumed agx:dsh:task:test_host_srv, while tasks went to test_host_srv, so it never received any.
+      before the change: the bridge started by the daemon took the top-level host_id=test_srv_b and
+      consumed agx:dsh:task:test_srv_b, while tasks went to test_srv_b_dsh, so it never received any.
     """
     env = {**os.environ}
     env["AGX_DAEMON_HOST_ID"] = hid

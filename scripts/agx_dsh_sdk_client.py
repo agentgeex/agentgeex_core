@@ -68,7 +68,7 @@ class DshSdkTimeout(DshSdkError):
 def find_node_bin() -> str:
     """Locate the node executable.
 
-    * 2026-11-16 (measured on test_host_srv): the daemon is started from a separate environment whose
+    * 2026-11-16 (measured on test_srv_b): the daemon is started from a separate environment whose
     PATH may not contain the nvm-managed node, causing `[Errno 2] No such file or directory: 'node'`.
     Hence the fallback chain AGX_DSH_NODE -> PATH -> highest version under ~/.nvm.
     """
@@ -128,7 +128,7 @@ def find_dsh_bin() -> str:
     """Locate an executable dsh.
 
     Fallback chain (* revised 2026-11-16: the old implementation missed the nvm global install, so on
-    test_host_srv it fell back to the old 0.2.1-rc.5 in the npx cache although 0.2.2-rc.1 was installed):
+    test_srv_b it fell back to the old 0.2.1-rc.5 in the npx cache although 0.2.2-rc.1 was installed):
       1. env var AGX_DSH_BIN (explicit, highest priority)
       2. dsh on PATH (respects the current environment; on this Mac this is the path taken)
       3. nvm global install (highest version wins)

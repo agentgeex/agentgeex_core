@@ -69,7 +69,7 @@ CONFIG_CANDIDATES = (
 OPENCLAW_BASE_CANDIDATES = ("~/.openclaw/agents",)
 # One machine may have several OpenClaw profiles (.openclaw / .openclaw-<gw>b / -c ...),
 # each with its own agents/ directory and store. Recognizing only the first would miss the sessions
-# of the other gateways entirely (measured: test_srv_a missed 4/6, test_host_srv missed 6/19), so all are scanned by default.
+# of the other gateways entirely (measured: test_srv_a missed 4/6, test_srv_b missed 6/19), so all are scanned by default.
 OPENCLAW_BASE_GLOB = "~/.openclaw*/agents"
 CREDS_CANDIDATES = ("~/.agx/agx_creds.env",)
 
@@ -860,7 +860,7 @@ _ZSTD_PROBE: list[str | None] = []  # Lazy detection result (empty list = not pr
 def zstd_available() -> str:
     """Return how zstd can be inflated: "cmd", "py" or "" (neither).
 
-    Two hosts, two situations: test_host_srv ships /usr/bin/zstd but 118 has no
+    Two hosts, two situations: test_srv_b ships /usr/bin/zstd but 118 has no
     zstd binary at all (and its glibc is too old to accept one copied over),
     while 118 does have the ``zstandard`` wheel installed.  Hard-coding the CLI
     made archive recovery a silent no-op there — the stage logged one OSError

@@ -198,7 +198,7 @@ log = setup_logging("WS", log_dir=os.path.join(PROJECT_ROOT, "logs"))
 def _write_run_result(r, run_uuid, payload: dict, where: str = "") -> bool:
     """Write the execution result key agx:ws:result:{run_uuid}, and gate an empty run_uuid.
 
-    * 2026-11-04 evidence (a malformed key agx:ws:result: with ttl=-1 appeared in Redis, produced by test_host_srv):
+    * 2026-11-04 evidence (a malformed key agx:ws:result: with ttl=-1 appeared in Redis, produced by test_srv_b):
       when the task message lacked run_uuid, all 5 write sites in the old code produced "agx:ws:result:".
       The daemon's result scan pattern is agx:ws:result:run_*, which **never matches an empty suffix** --
       so that task got neither a close-out nor a result, with no log and no alert the whole time: a silent loss.
@@ -2358,7 +2358,7 @@ class AgxWsClient:
                 #   Root cause: agx:ws:result:run_* is a global key (no host isolation), so any machine's
                 #   daemon scans another host's results -> triggers a retry delivery -> pushes with the consumer's own
                 #   host_id into agx:ws:task:{itself} -> executes locally and judges succeeded.
-                #   Measured: the scheduling record had host_id=test_host_srv while it actually ran and succeeded on test_host_mac.
+                #   Measured: the scheduling record had host_id=test_srv_b while it actually ran and succeeded on test_host_mac.
                 #   The host_id field is added here so the daemon can decide ownership (key structure unchanged, backward compatible).
                 if isinstance(outcome, dict):
                     outcome["host_id"] = self.host_id
@@ -2454,7 +2454,7 @@ class AgxWsClient:
                 # * 2026-11-04: run_uuid is the unique identifier of the result key; an empty value must be intercepted up front.
                 #   The old code carried on even when task["run_uuid"] was "" / None, so every place that wrote a result
                 #   produced "agx:ws:result:" -- while the daemon scans agx:ws:result:run_*,
-                #   an empty suffix is never scanned, so the task was silently lost (evidence: key ttl=-1, test_host_srv).
+                #   an empty suffix is never scanned, so the task was silently lost (evidence: key ttl=-1, test_srv_b).
                 #   Drop it here and keep the original text: better to drop one unidentified dirty message than to create a malformed key.
                 run_uuid = str(task.get("run_uuid") or "").strip()
                 _mode_guard = str(task.get("mode") or "")
@@ -2492,7 +2492,7 @@ class AgxWsClient:
                 #   The first two gates (daemon result ownership check + retry delivery ownership) are on the daemon side,
                 #   but should some other path push a task that is not this machine's into agx:ws:task:{this machine},
                 #   the old code would create a session and execute it directly -- looking only at agent_id,
-                #   never at whether this machine should be responsible. The measured incident was exactly that (scheduling host_id=test_host_srv,
+                #   never at whether this machine should be responsible. The measured incident was exactly that (scheduling host_id=test_srv_b,
                 #   actually executed and judged succeeded on test_host_mac).
                 #   This gate reads target_host_id written by the daemon (sourced from DB execution.host_id);
                 #   on mismatch it refuses and writes back a failed result carrying the real producing host, leaving it to the owning host.

@@ -39,8 +39,8 @@ export interface MemberRef {
 const isLead = (m: MemberRef) => !!m.isAdmin || m.role === "project_manager";
 
 /** For duplicate names, take only the **last segment** of the id as the distinction.
- *  agx_host_test_host_srv → test_host_srv (not host_test_host_srv — those 10 chars
- *  get truncated to `host_sgai...` inside a chip, which distinguishes nothing). */
+ *  agx_host_srv_b → test_srv_b (not host_srv_b — those 10 chars
+ *  get truncated to `host_srv_...` inside a chip, which distinguishes nothing). */
 function shortId(id: string): string {
   const parts = id.split("_").filter(Boolean);
   return parts.length > 1 ? parts[parts.length - 1] : id;

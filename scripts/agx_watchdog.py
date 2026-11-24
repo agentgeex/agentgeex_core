@@ -1951,14 +1951,14 @@ def _get_completed_need_reply() -> list:
 
     * 2026-10-26 multi-host host isolation (DH-067): the original implementation scanned the whole table, and under
       the "one dog per machine" topology three dogs fought over the same task -> duplicate receipts (measured up to 3 per task, earliest 2026-09-11).
-      Evidence: run_general_9898f22c1393 (host=test_srv_a) was answered by both the test_host_mac and test_host_srv
+      Evidence: run_general_9898f22c1393 (host=test_srv_a) was answered by both the test_host_mac and test_srv_b
       dogs, while test_srv_a's own dog did not send at all.
 
     * Why filter by agent_id rather than host_id:
       agx_task_execution.host_id records "which machine the task ran on", while the agent's
       agx_agent_registry.host_id records "which machine the agent belongs to" -- the two may disagree.
-      Evidence: xplane_toliss_dev is registered on test_host_mac but its tasks ran on test_host_srv
-      (three rows on 2026-10-25, host_id=test_host_srv / reg_host=test_host_mac).
+      Evidence: xplane_toliss_dev is registered on test_host_mac but its tasks ran on test_srv_b
+      (three rows on 2026-10-25, host_id=test_srv_b / reg_host=test_host_mac).
       get_running_executions decides by agent ownership, so this must use the same criterion, otherwise the two views fight.
 """
     my_agents = _get_my_agent_ids()

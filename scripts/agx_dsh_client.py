@@ -309,7 +309,7 @@ def find_dsh_bin() -> str:
 def find_node_bin() -> str:
     """Locate the node executable (same convention as agx_dsh_sdk_client.find_node_bin).
 
-    * 2026-11-16 (measured on test_host_srv): the daemon is started from an independent environment
+    * 2026-11-16 (measured on test_srv_b): the daemon is started from an independent environment
     whose PATH may lack nvm-managed node, so the child process reports
     `[Errno 2] No such file or directory: 'node'`.
     Fall back in order: AGX_DSH_NODE -> PATH -> the highest version under ~/.nvm.

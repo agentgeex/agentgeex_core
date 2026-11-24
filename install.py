@@ -241,7 +241,7 @@ def _sanitize_host_suffix(host_id: str) -> str:
     """Normalize a host_id into a form usable as a directory / id suffix.
 
     * Lao Feng, 2026-10-25: per_host_unique agents no longer use random hex as the suffix but
-      [the host name] — e.g. agx_host_srv_a / agx_host_test_host_srv.
+      [the host name] — e.g. agx_host_srv_a / agx_host_srv_b.
       Reason: the id is meant to be read by humans, and random hex does not show which machine
       it is; also, agent drift requires identifying the machine by name.
 

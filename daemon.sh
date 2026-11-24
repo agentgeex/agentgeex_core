@@ -238,7 +238,7 @@ count_daemon_instances() {
 }
 
 # ── supervisor detection (Linux/systemd only; macOS never enters this path) ──
-# * 2026-10-29: on Linux hosts (test_srv_a / test_host_srv) the daemon is managed by the
+# * 2026-10-29: on Linux hosts (test_srv_a / test_srv_b) the daemon is managed by the
 #   systemd **user unit** agx-daemon.service (ExecStart=daemon.sh run --core,
 #   Restart=always + RestartSec=15). In that case a manual start always creates a double
 #   instance: ensure_singleton kills the systemd copy -> systemd relaunches it 15s later

@@ -743,7 +743,7 @@ _ws_process: subprocess.Popen | None = None
 # * Why the daemon no longer starts the bridge itself:
 #   the daemon used to spawn an agx_dsh_client.py **unconditionally**, taking host_id from the top-level config.host_id.
 #   So a host without DSH also started one (idling), and on a host that has DSH the host_id was wrong
-#   (top-level test_host_srv vs the real test_host_srv) -- two bridges, one doing the work.
+#   (top-level test_srv_b vs the real test_srv_b_dsh) -- two bridges, one doing the work.
 #   Now the daemon knows only "one launcher handle"; how many bridges start is decided by the number of
 #   agent_type=dsh entries in config.gateways (same shape as state_relay).
 _dsh_supervisor_process: subprocess.Popen | None = None
@@ -943,8 +943,8 @@ def check_ws_client():
 #
 #   Before the rework: the daemon spawned one agx_dsh_client.py unconditionally, host_id from top-level config.host_id
 #     - test_host_mac (no DSH): started one anyway, idling against 127.0.0.1:8791
-#     - 188: the one it started had host_id=test_host_srv and consumed agx:dsh:task:test_host_srv,
-#       while tasks went to test_host_srv -> never received; the real work was done by a hand-made systemd service
+#     - 188: the one it started had host_id=test_srv_b and consumed agx:dsh:task:test_srv_b,
+#       while tasks went to test_srv_b_dsh -> never received; the real work was done by a hand-made systemd service
 #     Result: two bridge processes, one working, one sitting on an empty queue.
 #
 #   Now: the daemon knows only this one handle; how many start is decided by agent_type=dsh entries in gateways.
@@ -1229,7 +1229,7 @@ def check_ws_results(host_id: str, r) -> int:
 
             # ** 2026-10-25 DH-067 fix: verify the host a result belongs to (prevent execution on the wrong host)
             #   Root cause: `agx:ws:result:run_*` is a global key (no host isolation), so every daemon scans the whole set.
-            #   Measured incident: a task record with host_id=test_host_srv failed on 188, and the test_host_mac daemon
+            #   Measured incident: a task record with host_id=test_srv_b failed on 188, and the test_host_mac daemon
             #   picked up that failure result -> triggered a retry delivery -> pushed with **its own** host_id
             #   agx:ws:task:test_host_mac -> executed locally and judged succeeded, and the scheduling record was completely distorted.
             #   Fix: the result carries its own host_id (written by ws_client / dsh_client) plus a DB lookup of
@@ -1858,7 +1858,7 @@ def run_daemon(host_id: str, with_watchdog: bool = True):
                         instruction = inner.get("instruction", "")
 
                         # * 2026-11-04 upstream gate: a message without task_run_uuid must not be dispatched.
-                        #   Evidence (leftover Redis key agx:ws:result:, ttl=-1, host=test_host_srv,
+                        #   Evidence (leftover Redis key agx:ws:result:, ttl=-1, host=test_srv_b,
                         #   session=agent:book_efficient_agent:main): the old code went straight to
                         #   inner.get("task_run_uuid", "") -> an empty string travelled all the way to ws_client,
                         #   the result was written into an empty-suffix key; the daemon scans agx:ws:result:run_*,

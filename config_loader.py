@@ -311,9 +311,9 @@ def gateway_entries() -> list[dict]:
     Config shape (Lao Feng, 2026-11-17: agent_type added to every entry)::
 
         "gateways": [
-          {"host_id": "test_host_srv",  "agent_type": "openclaw",
+          {"host_id": "test_srv_b",  "agent_type": "openclaw",
            "ws_url": "ws://127.0.0.1:18789", "token": "..."},
-          {"host_id": "test_host_srv", "agent_type": "dsh",
+          {"host_id": "test_srv_b_dsh", "agent_type": "dsh",
            "dsh": {"host": "10.0.0.13", "port": 8791}}   # optional override
         ]
 

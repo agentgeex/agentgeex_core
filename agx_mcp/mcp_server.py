@@ -1666,7 +1666,7 @@ def agx_register_host(
             note      free-form comment; **must not carry information the machine needs to read**
                       (promote anything machine-readable to its own key)
         Example: [{"platform":"openclaw","name":"OpenClaw #2","mode":"process",
-                "port":19789,"base_path":"/chat","profile":"openclaw2"}]
+                "port":19789,"base_path":"/chat","profile":"test_srv_b2"}]
         When omitted, a new host gets platforms = NULL (fill it later with agx_update_host).
 
     Returns:
@@ -8025,7 +8025,7 @@ def agx_update_host(caller_agent_id: str, host_id: str, updates: dict) -> str:
                   note      free-form comment; **must not carry information the machine needs to read**
                             (historically "profile xxx" was written into note and the machine could not parse it)
               Example: [{"platform":"openclaw","name":"OpenClaw #2","mode":"process",
-                      "port":19789,"base_path":"/chat","profile":"openclaw2"}]
+                      "port":19789,"base_path":"/chat","profile":"test_srv_b2"}]
               Passing [] or null clears it.
 
             Example: {"host_alias": "prod-server-01", "task_slots_limit": "8"}
@@ -9058,7 +9058,7 @@ AGX_PROJECT_ID="{project_id}"
         #   and ws_client needs no new branch for it.
         #
         #   * the queue delivery target must be [the host where the caller (host agent) lives], not the deployed agent's
-        #     host: a DSH-only logical host (e.g. test_host_srv) has no ws_client, so pushing there leaves it unconsumed.
+        #     host: a DSH-only logical host (e.g. test_srv_b_dsh) has no ws_client, so pushing there leaves it unconsumed.
         if _agent_type == "dsh":
             _cb_rows = executeSql(
                 "SELECT host_id FROM agx_agent_registry WHERE agent_id = %s",
@@ -9243,8 +9243,8 @@ AGX_PROJECT_ID="{project_id}"
                 # * corrected 2026-11-05: this must be the agent's host_id, not the gateway process's
                 #   config.host_id. Commit 5a68bfb (multi-instance rework) changed routing to
                 #   ws_queue_key=f"agx:ws:task:{host_id}" (agent level, correct),
-                #   but this line of the returned body was missed, so test_srv_a2 / openclaw2 / test_host_srvc all reported
-                #   being deployed to the primary instance (test_srv_a / test_host_srv) -- right routing, wrong echo.
+                #   but this line of the returned body was missed, so test_srv_a2 / test_srv_b2 / test_srv_b3 all reported
+                #   being deployed to the primary instance (test_srv_a / test_srv_b) -- right routing, wrong echo.
                 "host_id": host_id,
                 "workspace": workspace_dir,
                 "files_written": files_written,

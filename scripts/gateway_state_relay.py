@@ -1233,7 +1233,7 @@ def parse_args(argv):
     p.add_argument("--redis-config", default="",
                    help="AgentGeeX 配置路径；留空则用 ~/.agx/agx_config.json")
     p.add_argument("--host-id", required=True,
-                   help="必填。test_host_mac / test_host_srv，写进每个 hash 的 host_id 字段")
+                   help="必填。test_host_mac / test_srv_b，写进每个 hash 的 host_id 字段")
     p.add_argument("--namespace", default=DEFAULT_NAMESPACE,
                    help="Redis 键前缀，默认 agx:gw:；测试期用 agx:gw:test188:")
     p.add_argument("--duration", "--seconds", dest="duration", type=float, default=0,

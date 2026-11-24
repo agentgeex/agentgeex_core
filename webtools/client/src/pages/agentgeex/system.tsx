@@ -894,7 +894,7 @@ export default function SystemDashboard() {
                   <RankCell
                     /* ★ 2026-11-11: the key used to be t.name, but there are 6 host-management Agents
                          **all named "agx_host"** (different ids: agx_host / _test_srv_a /
-                         _test_host_srv / _test_srv_a2 / _openclaw2 / _test_host_srvc),
+                         _test_srv_b / _test_srv_a2 / _test_srv_b2 / _test_srv_b3),
                          so React reported "two children with the same key".
                          A key only needs to be unique among siblings; agentId is the stable unique identifier. */
                     key={a.agentId || a.name}

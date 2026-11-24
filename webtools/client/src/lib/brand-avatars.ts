@@ -116,7 +116,7 @@ export function resolveBrandAvatar(key?: string): string {
     if (!c.startsWith("asst_")) candidates.push(`asst_${c}`);
   }
   // ★ 2026-11-11: host_manager became per-host unique naming (agx_host_test_host_mac /
-  //   agx_host_srv_a / agx_host_test_host_srv …). They share the same "host management" avatar,
+  //   agx_host_srv_a / agx_host_srv_b …). They share the same "host management" avatar,
   //   otherwise every new machine adds a list entry — the list should record **roles**, not **instances**.
   for (const c of [...candidates]) {
     const m = /^(agx_host)_.+$/.exec(c);

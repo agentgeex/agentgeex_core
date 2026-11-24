@@ -278,10 +278,10 @@ def resolve_host_ids(con_mysql) -> dict[str, str]:
 
     * Why agx_config.json's host_id cannot be used directly (hit on a real box 2026-11-17):
       the 188 machine has **two** records in agx_host_inventory -
-        test_host_srv   runs the OpenClaw main instance
-        test_host_srv  DSH-only logical host (same IP; all agent_type=dsh agents hang off it)
-      while agx_config.json writes host_id=test_host_srv.
-      Copying the config -> collected data is filed under test_host_srv, does not match the agent records,
+        test_srv_b   runs the OpenClaw main instance
+        test_srv_b_dsh  DSH-only logical host (same IP; all agent_type=dsh agents hang off it)
+      while agx_config.json writes host_id=test_srv_b.
+      Copying the config -> collected data is filed under test_srv_b, does not match the agent records,
       and the BFF finds nothing when filtering by host.
       So follow the agent's own registration here; the config value is only a fallback.
     """
