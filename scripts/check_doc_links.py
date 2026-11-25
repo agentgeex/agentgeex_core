@@ -17,6 +17,8 @@
     . image sources    ![alt](path)
     . skips            http://, https://, mailto:, and pure #anchor targets
     . skips            fenced code blocks (``` and ~~~), so sample links in docs are not flagged
+    . skips            [text](...) / [text](…) ellipsis placeholders, which appear verbatim
+                       inside quoted upstream documentation and must not be rewritten
 
 * What it does NOT check
     . links written inside backticks (too many false positives in prose)
@@ -29,6 +31,12 @@ Usage
     python3 scripts/check_doc_links.py docs README.md
     python3 scripts/check_doc_links.py --quiet        # errors only
     python3 scripts/check_doc_links.py --json         # machine-readable
+    python3 scripts/check_doc_links.py --exclude docs/agent_docs/sem_toolchain
+
+* --exclude exists for archived third-party material
+    docs/agent_docs/sem_toolchain/readmes/ holds README files captured from other
+    repositories. Their relative links point at files inside *their* repo, not ours,
+    so they will never resolve here. Excluding that subtree is correct, not cheating.
 
 Exit code
     0 = every relative link resolves
@@ -75,17 +83,24 @@ def strip_code_fences(text: str) -> str:
     return "\n".join(out)
 
 
-def iter_markdown(targets: list[str], root: Path):
+def iter_markdown(targets: list[str], root: Path, excludes: list[Path]):
     for t in targets:
         p = (root / t).resolve() if not os.path.isabs(t) else Path(t).resolve()
         if p.is_file() and p.suffix.lower() == ".md":
-            yield p
+            if not any(p == ex or ex in p.parents for ex in excludes):
+                yield p
             continue
         if not p.is_dir():
             print(f"warning: {t} is neither a markdown file nor a directory", file=sys.stderr)
             continue
         for dirpath, dirnames, filenames in os.walk(p):
-            dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
+            here = Path(dirpath).resolve()
+            if any(here == ex or ex in here.parents for ex in excludes):
+                dirnames[:] = []
+                continue
+            dirnames[:] = [d for d in dirnames
+                           if d not in SKIP_DIRS
+                           and (here / d).resolve() not in excludes]
             for fn in filenames:
                 if fn.lower().endswith(".md"):
                     yield Path(dirpath) / fn
@@ -108,6 +123,10 @@ def check_file(md: Path, repo_root: Path) -> list[dict]:
     for m in LINK_RE.finditer(text):
         label, target = m.group(1), m.group(2)
         if target.startswith(EXTERNAL_PREFIXES):
+            continue
+        # Ellipsis placeholders: quoted documentation sometimes writes [text](...) verbatim.
+        # Not a link, and rewriting a quotation to satisfy a linter would be wrong.
+        if target.rstrip("/") in ("...", "\u2026") or target.startswith(("...", "\u2026")):
             continue
         path_part = target.split("#", 1)[0]
         if not path_part:
@@ -143,12 +162,15 @@ def main() -> int:
     ap.add_argument("targets", nargs="*", default=[], help="files or directories (default: repo root)")
     ap.add_argument("--quiet", action="store_true", help="print only broken links")
     ap.add_argument("--json", action="store_true", help="machine-readable output")
+    ap.add_argument("--exclude", action="append", default=[], metavar="PATH",
+                    help="skip a directory (repeatable), e.g. docs/agent_docs/sem_toolchain")
     args = ap.parse_args()
 
     repo_root = Path(__file__).resolve().parent.parent
     targets = args.targets or ["."]
 
-    files = list(iter_markdown(targets, repo_root))
+    excludes = [(repo_root / e).resolve() for e in args.exclude]
+    files = list(iter_markdown(targets, repo_root, excludes))
     all_broken = []
     for md in files:
         all_broken.extend(check_file(md, repo_root))
