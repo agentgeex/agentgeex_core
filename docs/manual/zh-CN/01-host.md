@@ -29,9 +29,9 @@ Agent 需要有地方运行，调度方需要有地址把任务投递过去。�
 | `host_id` | 运行时 | 端口 | 容量 |
 |---|---|---|---|
 | `test_host_srv` | OpenClaw 主实例 | 18789 | 16 |
-| `openclaw2` | OpenClaw 第二实例 | 20789 | 8 |
-| `test_host_srvc` | OpenClaw 第三实例 | 21789 | 8 |
-| `test_host_srv` | DSH 实例 | 8791（SDK 模式不监听端口） | 8 |
+| `test_host_srv_b` | OpenClaw 第二实例 | 20789 | 8 |
+| `test_host_srv_c` | OpenClaw 第三实例 | 21789 | 8 |
+| `test_host_srv_d` | DSH 实例 | 8791（SDK 模式不监听端口） | 8 |
 
 四条记录的 `endpoint_ip` 都是 `192.168.0.188`，`os_platform` 都是 `Linux x86_64`。同一台机器，四个独立主机。
 
@@ -135,7 +135,7 @@ Agent 需要有地方运行，调度方需要有地址把任务投递过去。�
 | 形态 | 例子 | 每个实例各自需要 |
 |---|---|---|
 | 多个 OpenClaw 实例 | 主实例 + 第二实例 + 第三实例 | 独立 `host_id`、端口、profile、gateway token |
-| OpenClaw 与 DSH 并存 | `test_host_srv` 与 `test_host_srv` | 独立 `host_id`、接入方式 |
+| OpenClaw 与 DSH 并存 | `test_host_srv` 与 `test_host_srv_d` | 独立 `host_id`、接入方式 |
 | 容器化实例 | 每个容器一个实例 | 独立 `host_id`、`addr` |
 
 四项在实例之间不能复用：

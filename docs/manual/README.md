@@ -1,6 +1,8 @@
 # AgentGeeX 使用手册
 
-> 状态：中文初稿完成（2026-11-24）。共 1 篇简介 + 8 章，待逐章复核。
+> 状态：中英双版完成（2026-11-25）。1 篇简介 + 8 章：中文在 [`zh-CN/`](./zh-CN/)，英文在 [`en-US/`](./en-US/)。
+>
+> English version: [`README.en.md`](./README.en.md), chapters under [`en-US/`](./en-US/).
 
 ## 这本书的组织方式
 
