@@ -27,8 +27,8 @@
 
 | 语言 | 文件 | 行数 | 截图 |
 |---|---|---|---|
-| 中文 | [`webtools/docs/manual.zh-CN.md`](../../webtools/docs/manual.zh-CN.md) | 631 | `webtools/docs/screenshots/zh-CN/` |
-| English | [`webtools/docs/manual.md`](../../webtools/docs/manual.md) | 715 | `webtools/docs/screenshots/en-US/` |
+| 中文 | [`webtools/docs/manual.zh-CN.md`](../../webtools/docs/manual.zh-CN.md) | 653 | `webtools/docs/screenshots/zh-CN/` |
+| English | [`webtools/docs/manual.md`](../../webtools/docs/manual.md) | 741 | `webtools/docs/screenshots/en-US/` |
 
 两份的分工：
 
