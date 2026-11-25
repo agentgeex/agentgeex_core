@@ -307,6 +307,7 @@ AgentGeeX 讲 MCP。这对 Agent 是对接口，对人则基本无用。网页�
 | 环境探测 | `python3 scripts/probe_env.py` |
 | 库结构一致性校验 | `python3 scripts/verify_schema.py` |
 | 任务清单一致性校验 | `python3 scripts/verify_tasks.py` |
+| 文档链接检查 | `python3 scripts/check_doc_links.py` |
 
 ## 项目状态
 

@@ -302,6 +302,7 @@ At this point you have: a project, a team, and one auditable execution record.
 | Environment probe | `python3 scripts/probe_env.py` |
 | Schema consistency check | `python3 scripts/verify_schema.py` |
 | Task list consistency check | `python3 scripts/verify_tasks.py` |
+| Documentation link check | `python3 scripts/check_doc_links.py` |
 
 ## Project status
 
