@@ -18,7 +18,7 @@ New to the project? [`../README.md`](../README.md) is the 5-minute overview.
 
 | Document | Read it when |
 |---|---|
-| [Console operations manual](webtools/docs/manual.md) | You are using the web console and want every page explained; screenshots in English and Chinese, plus the speech-to-text setup |
+| [Console operations manual](../webtools/docs/manual.md) | You are using the web console and want every page explained; screenshots in English and Chinese, plus the speech-to-text setup |
 | [User guide](manual/README.md) | You want the concepts in the order they are built: host → agent → project → task → execution → quick command → session → plan |
 
 ## Concepts
