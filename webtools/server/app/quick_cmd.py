@@ -38,6 +38,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+import uuid
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -939,12 +940,22 @@ def create_command(body: dict[str, Any]) -> dict[str, Any]:
 
     cmd_id = row["cmd_id"]
     if not cmd_id:
-        # No cmdId given -> slugify from title
-        base = re.sub(r"[^a-z0-9]+", "_", str(body.get("title") or "").strip().lower()).strip("_")
-        cmd_id = base or "cmd"
+        # No cmdId given -> slugify from title.
+        # ★ 2026-11-26 fix: a Chinese title slugifies to "" (the regex only keeps [a-z0-9]), and the old code
+        #   fell back to the fixed string "cmd" -- so the FIRST Chinese command was created as cmd_id="cmd"
+        #   and EVERY later one hit "快捷指令已存在：cmd". That is a bug, not a real duplicate: the user never
+        #   supplied an id. An auto-generated id must make itself unique instead of failing the "add" action.
+        #   Rule kept: an explicitly supplied cmdId that already exists is still a DUPLICATE error (unchanged).
+        base = re.sub(r"[^a-z0-9]+", "_", str(body.get("title") or "").strip().lower()).strip("_") or "cmd"
+        cmd_id = base
+        for _ in range(20):
+            taken = kernel.query("SELECT 1 FROM agx_quick_cmd WHERE cmd_id = %s LIMIT 1", (cmd_id,))
+            if not taken:
+                break
+            cmd_id = f"{base}_{uuid.uuid4().hex[:4]}"
         row["cmd_id"] = cmd_id
 
-    # Uniqueness pre-check
+    # Uniqueness pre-check (reached only for a supplied cmdId; auto ids above are already unique)
     exist = kernel.query("SELECT cmd_id FROM agx_quick_cmd WHERE cmd_id = %s LIMIT 1", (cmd_id,))
     if exist:
         raise QuickCmdError("DUPLICATE", f"快捷指令已存在：{cmd_id}", {"cmd_id": cmd_id})
