@@ -936,7 +936,18 @@ function TextToolsBar({
                 </Button>
               </div>
             </div>
-            <div className="max-h-[360px] overflow-y-auto p-1">
+            {/* [2026-11-26 Feng bug report: the phrase list could not be scrolled] Root cause measured, not guessed:
+                this list really is a scroll container (overflow-y:auto, scrollHeight 395 > clientHeight 360), but the
+                modal dialog's scroll lock (react-remove-scroll inside Radix Dialog) treats a **portaled** popover as
+                "outside the lock" and calls preventDefault() on every wheel event -- the event reaches the div with
+                defaultPrevented=true and scrollTop never moves.
+                Fix: if the native scroll did not move by the next frame, apply the wheel delta ourselves. The guard
+                means we never double-scroll in a context where the native path still works. */}
+            <div
+              className="max-h-[360px] overflow-y-auto p-1"
+              data-testid={tid("phrase-scroll")}
+              onWheel={scrollWhenNativeBlocked}
+            >
               {phrasesLoading ? (
                 <p className="flex items-center gap-1.5 px-2 py-3 text-xs text-muted-foreground">
                   <Loader2 className="h-3 w-3 animate-spin" />
@@ -980,6 +991,35 @@ function TextToolsBar({
       </div>
     </>
   );
+}
+
+/* [2026-11-26 Feng bug: "the phrase list cannot be scrolled"] Measured root cause, not guessed:
+   the list really is a scroll container (overflow-y:auto, scrollHeight 576 > clientHeight 360), yet every wheel event
+   arrived with defaultPrevented=true -- the modal dialog's scroll lock (react-remove-scroll inside Radix Dialog)
+   treats a **portaled** popover as "outside the lock" and unconditionally preventDefault()s wheel there, so scrollTop
+   never moved.
+   Fix: after the frame, if the native scroll did NOT move, apply the accumulated wheel delta ourselves.
+   Why accumulate in a WeakMap instead of one shot per event: several wheel events can land in the same frame
+   (fast wheel / trackpad); without accumulation the first rAF sets scrollTop and the later callbacks see
+   "it already moved" and drop their delta -- measured to halve the scroll distance. */
+const wheelAcc = new WeakMap<HTMLElement, { acc: number; base: number; queued: boolean }>();
+
+function scrollWhenNativeBlocked(e: React.WheelEvent<HTMLElement>) {
+  const el = e.currentTarget;
+  const delta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+  let state = wheelAcc.get(el);
+  if (!state) {
+    state = { acc: 0, base: el.scrollTop, queued: false };
+    wheelAcc.set(el, state);
+  }
+  state.acc += delta;
+  if (state.queued) return;
+  state.queued = true;
+  const cur = state;
+  requestAnimationFrame(() => {
+    if (el.scrollTop === cur.base) el.scrollTop = cur.base + cur.acc;
+    wheelAcc.delete(el);
+  });
 }
 
 /* ────────────────────────────── Main component ────────────────────────────── */
