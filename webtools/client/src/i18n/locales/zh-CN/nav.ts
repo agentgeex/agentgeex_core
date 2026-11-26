@@ -10,6 +10,8 @@ export default {
   expand: "展开侧边栏",
   collapse: "折叠侧边栏",
   newTabHint: "Ctrl/⌘+点击 新标签打开",
+  /** Sidebar-bottom reference link to the AgentGeeX book site */
+  book: "《高效的Agent》",
 
   group: {
     system: "系统",

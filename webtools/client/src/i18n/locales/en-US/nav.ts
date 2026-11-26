@@ -10,6 +10,8 @@ export default {
   expand: "Expand sidebar",
   collapse: "Collapse sidebar",
   newTabHint: "Ctrl/⌘+click to open in a new tab",
+  /** Sidebar-bottom reference link to the AgentGeeX book site (official English title: no leading "The") */
+  book: "Efficient Agent",
 
   group: {
     system: "System",

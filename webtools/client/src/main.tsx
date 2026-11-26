@@ -22,6 +22,10 @@ import { migrateStoredKeys } from "@/lib/storage-keys";
 migrateStoredKeys();
 
 async function bootstrap() {
+  /* [2026-11-25 Feng] Build fingerprint moved off the footer (no longer shown in the UI) but still printed
+     once here: when "I changed something, why didn't it take effect?" comes up, F12 tells you whether
+     this is an old bundle. Do not delete the `__BUILD_STAMP__` define in vite.config.ts. */
+  console.info("[build]", __BUILD_STAMP__);
   try {
     const res = await fetch(`${API_ORIGIN}/readyz`).catch(() => null);
     if (res?.ok) {

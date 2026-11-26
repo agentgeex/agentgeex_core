@@ -414,6 +414,27 @@ export function AppShell({ children }: { children?: React.ReactNode }) {
           ))}
 
         </nav>
+        {/* [2026-11-25 Feng] Book link sits at the sidebar bottom ("position one", his pick):
+            the top bar read like an ad, the footer was too easy to miss, and the sidebar bottom is the
+            standing navigation area — the natural home for reference material.
+            Same spec as the collapse row below it (border-t + px-6 py-2 + text-xs) so the two rows line up.
+            Collapsed (68px): icon only, centered — there is no room for text. */}
+        <div className="shrink-0 border-t border-white/10 px-6 py-2">
+          <a
+            href="https://efficient-agent.pages.dev/"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="sidebar-book-link"
+            className={cn(
+              "flex w-full items-center gap-2 text-xs text-chrome-foreground hover:text-white",
+              collapsed && "justify-center gap-0"
+            )}
+          >
+            <BookOpen className="h-4 w-4 shrink-0" />
+            {!collapsed && <span className="truncate">{t("nav.book")}</span>}
+          </a>
+        </div>
+
         {/* Bottom action area: height-aligned with the right main area's footer (border-t + px-6 py-2 + text-xs, same spec on both sides) */}
         <div className="flex shrink-0 items-center justify-center border-t border-white/10 px-6 py-2">
           <button
@@ -453,11 +474,12 @@ export function AppShell({ children }: { children?: React.ReactNode }) {
         <main className="flex min-h-0 flex-1 flex-col bg-background p-4 md:p-6">
           <div className="min-h-0 flex-1 overflow-y-auto">{children ?? <Outlet />}</div>
         </main>
+        {/* [2026-11-25 Feng] Footer keeps only the license line: the framework blurb ("no need for the framework"),
+            the on-screen build stamp, and (later the same day) the book link all moved out.
+            The book now lives at the sidebar bottom; the build stamp prints once at startup
+            (main.tsx: console.info("[build]", __BUILD_STAMP__)) so "is this an old bundle?" stays diagnosable. */}
         <footer className="shrink-0 border-t border-strong bg-card px-6 py-2 text-xs text-muted-foreground">
-          {t("footer.builtWith")} · Apache-2.0 © 2026
-          <span className="ml-2 font-mono text-[10px] opacity-60" data-testid="build-stamp" title={t("miscShell.shell.buildStamp")}>
-            {__BUILD_STAMP__}
-          </span>
+          {t("footer.license")}
         </footer>
       </div>
 

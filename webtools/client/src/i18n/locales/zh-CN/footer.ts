@@ -1,3 +1,3 @@
 export default {
-  builtWith: "基于 Refine · Tailwind · shadcn/ui 构建",
+  license: "Apache-2.0 © AgentGeeX",
 } as const;
