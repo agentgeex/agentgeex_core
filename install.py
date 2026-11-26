@@ -558,7 +558,11 @@ def setup_workdir(install_src, workdir, overwrite=False, copy_files=False, dry_r
         if not workdir.exists():
             log(f"创建目录: {workdir}")
         if not dry_run:
-            workdir.mkdir(parents=True)
+            # exist_ok: this branch is also reached when workdir already exists but is
+            # empty -- i.e. the user created the folder first, which the install guide
+            # tells them to do. A bare mkdir() raised FileExistsError there, so a fresh
+            # install following the doc would fail before copying a single file.
+            workdir.mkdir(parents=True, exist_ok=True)
 
     if dry_run:
         return True
