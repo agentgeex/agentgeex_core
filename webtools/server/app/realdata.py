@@ -215,6 +215,21 @@ def agents(caller: str = "") -> list[dict]:
     except Exception as e:  # noqa: BLE001
         log.warning("agents exec count failed: %s", e)
 
+    # host_id -> host_alias: host_id is a stable key that never changes, while host_alias is
+    # what the operator renames (a machine name). Agent cards must show the alias, otherwise
+    # renaming a host changes the Hosts page but not the agent cards. Fallback to host_id.
+    host_alias_map: dict[str, str] = {}
+    try:
+        for r in kernel.query(
+            "SELECT host_id, host_alias FROM agx_host_inventory WHERE network_id = %s",
+            (_NETWORK_ID,),
+        ):
+            hid = str(r.get("host_id") or "")
+            if hid:
+                host_alias_map[hid] = str(r.get("host_alias") or "") or hid
+    except Exception as e:  # noqa: BLE001
+        log.warning("agents host alias map failed: %s", e)
+
     now = datetime.now()
     out = []
     for r in rows:
@@ -246,6 +261,9 @@ def agents(caller: str = "") -> list[dict]:
             "model": r.get("base_model") or "—",
             "project_id": r.get("project_id") or "",
             "host_id": r.get("host_id") or "",
+            "hostAlias": host_alias_map.get(
+                str(r.get("host_id") or ""), str(r.get("host_id") or "")
+            ),
             "sessionCount": ses_cnt.get(aid, 0),
             "taskCount": task_cnt.get(aid, 0),
             "execCount": exec_cnt.get(aid, 0),
