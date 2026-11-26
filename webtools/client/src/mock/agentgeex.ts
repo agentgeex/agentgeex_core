@@ -39,6 +39,8 @@ export interface AgentRow {
   /** Owning project id (used to group by project) */
   project_id: string;
   host_id: string;
+  /** Host display name from the BFF (agx_host_inventory.host_alias); falls back to host_id when absent. */
+  hostAlias?: string;
   /** Total sessions */
   sessionCount: number;
   /** Total tasks */

@@ -467,7 +467,7 @@ export default function SystemDashboard() {
                               moving it after the name → **every row of the card aligns to the name's left edge**. */}
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex min-w-0 items-center gap-1.5">
-                        <span className="truncate font-mono text-sm font-medium">{h.hostId}</span>
+                        <span className="truncate font-mono text-sm font-medium">{h.alias}</span>
                         {(() => {
                           const p = hostPresence(h, t);
                           return (

@@ -275,7 +275,7 @@ function AgentCard({
         <div className="flex items-center gap-1 text-[11px] text-muted-foreground" data-testid={`agent-host-${agent.id}`}>
           <Server className="h-3 w-3 opacity-70" />
           <span>{t("agentsPage.card.host")}</span>
-          <span className="font-mono text-foreground/80">{agent.host_id || "—"}</span>
+          <span className="font-mono text-foreground/80">{agent.hostAlias || agent.host_id || "—"}</span>
         </div>
 
         {/* Tag area: type + deploy status + role */}
@@ -322,12 +322,11 @@ function AgentCard({
           </div>
         )}
 
-        {/* Clone source hint */}
-        {agent.originId && (
-          <div className="truncate text-[10px] text-muted-foreground/80">
-            {t("agentsPage.card.clonedFrom")} <span className="font-mono">{agent.originId}</span>
-          </div>
-        )}
+        {/* [2026-11-25 Feng] Clone source removed from the card (his ruling: B).
+            Reasons: the card is already dense (host row + 3 badges + 3 metrics), clone source is
+            detail information that belongs on the detail page; it also leaked the real machine name
+            (e.g. "Cloned from agx_host_sgaiedge17") into the list.
+            Still shown on the detail page (agent-profile.tsx, key agentProfile.label.cloneFrom). */}
 
         {/* Bottom: metric area (session / task / execution)
             [2026-10-29 Feng] These three used to be bare at the card bottom with a few lines of fragmentary text under each
