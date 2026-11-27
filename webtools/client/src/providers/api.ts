@@ -325,6 +325,44 @@ export interface RunTaskResult {
   task_ref: { task_id: string; task_name: string };
 }
 
+/** [2026-11-27 Feng] "定时执行" input: a task wrapped for a later moment.
+ *  Everything is the same as RunTaskInput except that `scheduled_at` is required and there is no
+ *  client_request_id (the kernel agx_schedule_task has no idempotency key). */
+export interface ScheduleTaskInput {
+  /** Receiver session ("" = new session, mirroring RunTaskInput). */
+  session_key: string;
+  instruction: string;
+  task_id: string;
+  task_name?: string;
+  caller_agent_id?: string;
+  send_session_key?: string;
+  /** Local wall-clock time: "YYYY-MM-DDTHH:mm" (datetime-local) or "YYYY-MM-DD HH:mm:ss". Must be in the future. */
+  scheduled_at: string;
+  /** "yes" | "no" — same forced either/or as RunTaskInput.reply. */
+  reply?: "yes" | "no";
+  timeout_seconds?: number;
+  exec_name?: string;
+  skill_ids?: string[];
+  needs_confirm?: number;
+}
+
+/** What a scheduled submit returns: nothing ran yet — the execution sits at pending until the watchdog is due. */
+export interface ScheduleTaskResult {
+  scheduled: boolean;
+  run_uuid: string;
+  /** Always "pending" at this point (echoed by the kernel). */
+  status: string;
+  /** Normalised MySQL DATETIME the backend accepted. */
+  scheduled_at: string;
+  session_key: string;
+  new_session?: boolean;
+  send_session_key?: string;
+  target_agent: string;
+  caller_agent_id?: string;
+  actor_user?: string;
+  task_ref?: { task_id: string; task_name: string };
+}
+
 export interface RunTaskInput {
   /** Receiver session (must belong to the [receiver agent] = the detail-page agent; where the task lands).
    *  [2026-10-11] Empty string = new session: no receiver session id passed, the system creates a new session. */
@@ -527,6 +565,10 @@ export const agentsApi = {
     api.get<AgentProfile>(`/agents/${encodeURIComponent(agentId)}/profile`),
   runTask: (agentId: string, body: RunTaskInput) =>
     api.post<RunTaskResult>(`/agents/${encodeURIComponent(agentId)}/actions/run-task`, body),
+  /** [2026-11-27 Feng] Schedule a task for a later moment (kernel agx_schedule_task → pending + watchdog).
+   *  Nothing is delivered at submit time; do not treat the response as "sent". */
+  scheduleTask: (agentId: string, body: ScheduleTaskInput) =>
+    api.post<ScheduleTaskResult>(`/agents/${encodeURIComponent(agentId)}/actions/schedule-task`, body),
   /** Send plain text straight to a session (agx_send_text): talk, without wrapping a task or creating an execution. */
   sendText: (agentId: string, body: SendTextInput) =>
     api.post<SendTextResult>(`/agents/${encodeURIComponent(agentId)}/actions/send-text`, body),

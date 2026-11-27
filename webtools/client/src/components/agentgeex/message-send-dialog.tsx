@@ -39,7 +39,7 @@ import * as React from "react";
 import {
   Send, Loader2, AlertTriangle, Info, Lock, MessageSquare, ListChecks, Zap, Layers,
   Check, X, Sparkles, RefreshCw, ExternalLink, Maximize2, Minimize2, History, Star, ClipboardList,
-  Plus,
+  Plus, CheckCircle2,
 } from "lucide-react";
 /* [2026-11-14 Feng] Create a common phrase inline — shares the same form with the management page */
 import { QuickCmdForm } from "@/components/agentgeex/quick-cmd-form-dialog";
@@ -51,6 +51,7 @@ import { Badge } from "@/components/ui/badge";
 import { PortalContainerProvider } from "@/components/ui/portal-container";
 import { OnlineDot } from "@/components/ui/online-dot";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { VoiceInput, voiceBlocksSend, type VoicePhase } from "@/components/agentgeex/voice-input";
@@ -260,6 +261,9 @@ export interface UniversalSendResult {
   run_uuid?: string;
   target_agent: string;
   task_name?: string;
+  /** [2026-11-27 Feng] Set only for "scheduled" submits: the moment the watchdog will run it.
+   *  Present means **nothing has run yet** — the history placeholder must say "scheduled", not "sent". */
+  scheduledAt?: string;
 }
 
 /* [2026-11-14 20:31 Feng] "Do not open another box below, it is unnecessary and takes up space,
@@ -306,6 +310,17 @@ export interface MessageSendDialogProps {
 }
 
 /* ────────────────────────────── Small helpers ────────────────────────────── */
+
+/** [2026-11-27] Default time when "定时执行" is switched on: the next full hour, local wall clock.
+ *  Why the next hour: a person scheduling "later today" almost never means "in 30 seconds", and a full hour
+ *  is the least surprising placeholder. It is only a starting point — the operator edits it right after. */
+function defaultScheduledAt(): string {
+  const d = new Date();
+  d.setMinutes(0, 0, 0);
+  d.setHours(d.getHours() + 1);
+  const p2 = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}T${p2(d.getHours())}:${p2(d.getMinutes())}`;
+}
 
 /** Default execution timeout for Task / quick command (seconds). Feng set 3600 on 2026-10-19 12:05; backend default is 1800. */
 const DEFAULT_TIMEOUT_SEC = "3600";
@@ -1489,6 +1504,17 @@ export function MessageSendDialog({
   const [needsConfirm, setNeedsConfirm] = React.useState<"0" | "1">("0");
   /* Execution timeout: Task / quick command default 3600 s (Feng 2026-10-19 12:05; backend default is 1800, so set it explicitly here) */
   const [timeoutSec, setTimeoutSec] = React.useState<string>(DEFAULT_TIMEOUT_SEC);
+  /* [2026-11-27 Feng] "定时执行": some tasks should not run the moment you click send.
+     Off by default — the switch only exists in Task mode. When on, scheduledAt is a local wall-clock
+     value from <input type="datetime-local"> ("YYYY-MM-DDTHH:mm"), which the BFF normalises and refuses
+     if it is in the past. Meaning of the switch: nothing is delivered now; the watchdog activates the
+     pending execution when the time is due (agx_schedule_task). */
+  const [scheduled, setScheduled] = React.useState(false);
+  const [scheduledAt, setScheduledAt] = React.useState<string>("");
+  /* [2026-11-27] Confirmation line for a scheduled submit. Needed because the history panel only renders
+     for an **existing** session: scheduling into a new session would otherwise give the operator no feedback
+     at all — he clicks send, nothing appears, and cannot tell whether the task was registered. */
+  const [schedInfo, setSchedInfo] = React.useState("");
   const [execName, setExecName] = React.useState("");
 
   /* ── State of the unsent draft ── */
@@ -2299,6 +2325,15 @@ function writeLastState(s: UibLastState) {
     if (mode === "task") {
       if (!taskId) return t("sendDialog.validate.task");
       if (sessionMode === "existing" && !targetSession) return t("sendDialog.validate.session");
+      /* [2026-11-27] Scheduled submit: the time is part of the payload, so it is validated here
+         (the button must not be clickable with an empty / already-passed time). The BFF repeats the
+         check authoritatively — this only saves a round-trip. */
+      if (scheduled) {
+        if (!scheduledAt) return t("sendDialog.validate.scheduleTimeMissing");
+        const at = new Date(scheduledAt).getTime();
+        if (!Number.isFinite(at)) return t("sendDialog.validate.scheduleTimeMissing");
+        if (at <= Date.now()) return t("sendDialog.validate.scheduleTimePast");
+      }
       return "";
     }
     /* [2026-11-16 12:45] The criterion changed from `cmdId` to `selectedCmd` (= cmdId hit, or fixedCmd given directly
@@ -2317,7 +2352,7 @@ function writeLastState(s: UibLastState) {
     }
     if (sessionMode === "existing" && !targetSession) return t("sendDialog.validate.session");
     return "";
-  }, [senderAgent, targetAgent, mode, text, targetSession, taskId, sessionMode, cmdId, selectedCmd, params, skillIds, needsReply, textImpossible, voiceLocked, voiceBlockReason]);
+  }, [senderAgent, targetAgent, mode, text, targetSession, taskId, sessionMode, cmdId, selectedCmd, params, skillIds, needsReply, textImpossible, voiceLocked, voiceBlockReason, scheduled, scheduledAt]);
 
   /* [2026-11-13 00:23 Feng] When the body is empty, no longer pop "please enter the message body" —
      empty + grey button is obvious at a glance; more explanation is worse.
@@ -2382,7 +2417,9 @@ function writeLastState(s: UibLastState) {
            that body is what was sent, semantically consistent. */
       histApiRef.current?.appendSent(content, {
         mode: mode === "text" ? "text" : mode === "task" ? "task" : "quickcmd",
-        note: mode === "text" ? out.target_agent || "" : out.task_name || "",
+        note: out.scheduledAt
+          ? t("sendDialog.schedule.note", { time: out.scheduledAt.slice(5, 16) })
+          : mode === "text" ? out.target_agent || "" : out.task_name || "",
         runUuid: out.run_uuid || "",
         /* ★ Go by **the real returned session**: in new-session mode targetSession is still empty,
            while this message really landed in out.session_key. */
@@ -2415,6 +2452,7 @@ function writeLastState(s: UibLastState) {
        Consider adding it back once the criterion is trustworthy again. */
     if (submitting || problem) return;
     setError("");
+    setSchedInfo("");
     setSubmitting(true);
     try {
       if (mode === "text") {
@@ -2435,6 +2473,44 @@ function writeLastState(s: UibLastState) {
         );
       } else if (mode === "task") {
         const task = selectedTask;
+        /* [2026-11-27 Feng] Scheduled branch: create the execution only, let the watchdog run it later.
+           ★ Deliberately NOT agentsApi.runTask + a fake delay: dispatch delivers immediately, and a
+             "delay" flag would only live in the UI — the agent would already be working. */
+        if (scheduled) {
+          const rs = await agentsApi.scheduleTask(targetAgent, {
+            session_key: sessionMode === "new" ? "" : targetSession,
+            instruction: text || task?.description || "",
+            task_id: taskId,
+            task_name: task?.name,
+            caller_agent_id: senderAgent,
+            send_session_key: senderSession,
+            scheduled_at: scheduledAt,
+            reply: needsReply === "1" ? "yes" : "no",
+            ...(timeoutNumber != null ? { timeout_seconds: timeoutNumber } : {}),
+            ...(execName.trim() ? { exec_name: execName.trim() } : {}),
+            ...(skillIds.length ? { skill_ids: skillIds } : {}),
+            ...(needsConfirm === "1" ? { needs_confirm: 1 } : {}),
+          });
+          pushSent(
+            {
+              mode,
+              session_key: rs.session_key,
+              run_uuid: rs.run_uuid,
+              target_agent: targetAgent,
+              task_name: task?.name,
+              scheduledAt: rs.scheduled_at,
+            },
+            text.trim() ||
+              t("sendDialog.emptyInstruction", { name: task?.name || taskId }),
+          );
+          setSchedInfo(
+            t("sendDialog.schedule.done", {
+              time: rs.scheduled_at.slice(5, 16),
+              run: rs.run_uuid,
+            }),
+          );
+          return;
+        }
         const r = await agentsApi.runTask(targetAgent, {
           session_key: sessionMode === "new" ? "" : targetSession,
           instruction: text || task?.description || "",
@@ -2524,6 +2600,9 @@ function writeLastState(s: UibLastState) {
     needsConfirm: mode === "task",
     timeout: mode !== "text",
     execName: mode !== "text",
+    /* [2026-11-27] "定时执行" only exists in Task mode: text is fire-and-forget (no execution to schedule),
+       quick command goes through agx_quick_cmd_send which has no scheduled_at. */
+    schedule: mode === "task",
   };
   const timeoutNumber = timeoutSec.trim() && !Number.isNaN(Number(timeoutSec))
     ? Number(timeoutSec)
@@ -3432,18 +3511,83 @@ function writeLastState(s: UibLastState) {
                 </p>
               )}
 
-              <URow label={t("sendDialog.field.timeout")} className="min-w-0 rounded-lg border bg-card/60 p-2 [&>div:last-child]:min-w-0">
-                <Input
-                  type="number"
-                  inputMode="numeric"
-                  min={0}
-                  placeholder={t("sendDialog.ph.timeout")}
-                  value={timeoutSec}
-                  onChange={(e) => setTimeoutSec(e.target.value)}
-                  disabled={!editable || !execParamSupported.timeout}
-                  data-testid="uib-timeout"
-                />
-              </URow>
+              {/* [2026-11-27 Feng] "The timeout row is long enough to hold another option" — put
+                  timeout and the "scheduled" switch side by side, same 2-column shape as reply/confirm above.
+                  Both cards use tb layout so their controls line up vertically. */}
+              <div
+                className={cn(
+                  "grid min-w-0 gap-1.5",
+                  execParamSupported.schedule ? "grid-cols-2" : "grid-cols-1",
+                )}
+                data-testid="uib-row-timeout-schedule"
+              >
+                <URow
+                  label={t("sendDialog.field.timeout")}
+                  layout="tb"
+                  className="min-w-0 rounded-lg border bg-card/60 p-2 [&>div:last-child]:min-w-0"
+                >
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    min={0}
+                    placeholder={t("sendDialog.ph.timeout")}
+                    value={timeoutSec}
+                    onChange={(e) => setTimeoutSec(e.target.value)}
+                    disabled={!editable || !execParamSupported.timeout}
+                    data-testid="uib-timeout"
+                  />
+                </URow>
+
+                {execParamSupported.schedule && (
+                  <URow
+                    label={t("sendDialog.field.schedule")}
+                    layout="tb"
+                    className="min-w-0 rounded-lg border bg-card/60 p-2 [&>div:last-child]:min-w-0"
+                    title={t("sendDialog.schedule.hint")}
+                  >
+                    <label className="inline-flex min-w-0 cursor-pointer items-center gap-2">
+                      <Switch
+                        checked={scheduled}
+                        onCheckedChange={(v: boolean) => {
+                          setScheduled(v);
+                          setSchedInfo("");
+                          if (v && !scheduledAt) setScheduledAt(defaultScheduledAt());
+                        }}
+                        disabled={!editable}
+                        data-testid="uib-schedule-switch"
+                      />
+                      <span
+                        className={cn(
+                          "truncate text-xs",
+                          scheduled ? "font-medium text-foreground" : "text-muted-foreground",
+                        )}
+                      >
+                        {scheduled ? t("sendDialog.schedule.on") : t("sendDialog.schedule.off")}
+                      </span>
+                    </label>
+                  </URow>
+                )}
+              </div>
+
+              {execParamSupported.schedule && scheduled && (
+                <>
+                  <URow
+                    label={t("sendDialog.field.scheduleAt")}
+                    className="min-w-0 rounded-lg border bg-card/60 p-2 [&>div:last-child]:min-w-0"
+                  >
+                    <Input
+                      type="datetime-local"
+                      value={scheduledAt}
+                      onChange={(e) => setScheduledAt(e.target.value)}
+                      disabled={!editable}
+                      data-testid="uib-schedule-at"
+                    />
+                  </URow>
+                  <p className="px-0.5 text-[11px] leading-tight text-muted-foreground" data-testid="uib-schedule-note">
+                    {t("sendDialog.schedule.hint")}
+                  </p>
+                </>
+              )}
 
               <URow label={t("sendDialog.field.title")} className="min-w-0 rounded-lg border bg-card/60 p-2 [&>div:last-child]:min-w-0">
                 <Input
@@ -3817,6 +3961,11 @@ function writeLastState(s: UibLastState) {
         {error && (
           <p className="flex items-start gap-1 text-sm text-destructive" data-testid="uib-error">
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />{error}
+          </p>
+        )}
+        {schedInfo && !error && (
+          <p className="flex items-start gap-1 text-sm text-success" data-testid="uib-schedule-done">
+            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" />{schedInfo}
           </p>
         )}
         </div>

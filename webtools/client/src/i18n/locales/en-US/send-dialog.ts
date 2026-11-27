@@ -76,6 +76,17 @@ export default {
     session: "Pick a target session",
     quickcmd: "Pick a quick command",
     paramRequired: "Parameter “{{name}}” is required",
+    scheduleTimeMissing: "Pick the time to run at",
+    scheduleTimePast: "The run time must be later than now",
+  },
+
+  /* [2026-11-27 Feng] "Scheduled run" — a task created now, executed by the watchdog later. */
+  schedule: {
+    on: "Scheduled",
+    off: "Now",
+    hint: "When on, nothing is sent right away: the task is created as pending and the watchdog activates it at the run time. The timeout (s) starts counting from activation.",
+    note: "Scheduled for {{time}}",
+    done: "Scheduled to run at {{time}} (task {{run}})",
   },
 
   error: {
@@ -138,6 +149,8 @@ export default {
     needsReply: "Reply needed",
     needsConfirm: "Human confirmation",
     timeout: "Timeout (s)",
+    schedule: "Scheduled run",
+    scheduleAt: "Run at",
     title: "Title",
     projectReserved: "Project (reserved)",
     moduleReserved: "Module (reserved)",
@@ -204,7 +217,7 @@ export default {
   paramsNote: {
     text: "Text mode sends directly (no execution record), so these three do not apply; use Task or Quick command if you need them.",
     quickcmd: "All three are passed to the kernel via agx_quick_cmd_send (receipts are force-disabled when no reply is needed). (Human confirmation is a task-level attribute; quick commands have no such parameter.)",
-    task: "All three are passed to agx_dispatch_task (same as the run dialog).",
+    task: "A normal run goes through agx_dispatch_task (same as the run dialog); a scheduled run goes through agx_schedule_task and the watchdog activates it at the run time.",
   },
 
   prompt: {

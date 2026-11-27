@@ -80,6 +80,17 @@ export default {
     session: "请选择目标会话",
     quickcmd: "请选择快捷指令",
     paramRequired: "参数「{{name}}」为必填",
+    scheduleTimeMissing: "请选择定时执行的时间",
+    scheduleTimePast: "执行时间必须晚于当前时间",
+  },
+
+  /* [2026-11-27 Feng] "Scheduled run" (定时执行) — a task created now, executed by the watchdog later. */
+  schedule: {
+    on: "定时",
+    off: "立即",
+    hint: "打开后不会立刻发送：任务先建成待执行，到「执行时间」由看门狗自动激活执行；超时（秒）从激活那一刻开始计时。",
+    note: "已排定 {{time}} 执行",
+    done: "已排定 {{time}} 执行（任务 {{run}}）",
   },
 
   error: {
@@ -143,6 +154,8 @@ export default {
     needsReply: "是否回复",
     needsConfirm: "人工确认",
     timeout: "超时（秒）",
+    schedule: "定时执行",
+    scheduleAt: "执行时间",
     title: "标题",
     projectReserved: "项目（预留）",
     moduleReserved: "模块（预留）",
@@ -209,7 +222,7 @@ export default {
   paramsNote: {
     text: "文本模式为直发（不生成 execution），此三项不适用；需要这些参数请改用 Task / 快捷指令。",
     quickcmd: "三项均透传内核 agx_quick_cmd_send（不需要回复时同样强制关闭回执）。（人工确认是任务级属性，快捷指令无此参数）",
-    task: "均透传 agx_dispatch_task（同任务运行窗口）。",
+    task: "立即执行透传 agx_dispatch_task（同任务运行窗口）；定时执行改走 agx_schedule_task，到点由看门狗自动激活。",
   },
 
   prompt: {

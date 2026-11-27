@@ -55,6 +55,27 @@ class RunTaskBody(BaseModel):
     needs_confirm: int | None = Field(None, description="人类放行 0/1（None=不传=0）")
 
 
+class ScheduleTaskBody(BaseModel):
+    """[2026-11-27 Feng] "定时执行" input: same fields as run-task, plus the moment to run at.
+
+    scheduled_at is the operator's wall-clock time ("2026-11-27T09:30" from datetime-local, or
+    "2026-11-27 09:30:00"). The BFF normalises it and refuses the past -- see actions._parse_scheduled_at.
+    """
+
+    session_key: str = Field("", description="接收会话 key（空=新会话；非空须属接收方 agent）")
+    instruction: str = Field("", description="任务执行指令 / 说明（与 task 模板 x_desc 合并）")
+    task_id: str = Field("", description="关联任务 id（包装成 task 必需）")
+    task_name: str = Field("", description="关联任务名（可读文本 + 审计）")
+    caller_agent_id: str = Field("", description="发送方 Agent 身份（缺省回退路径 agent）")
+    send_session_key: str = Field("", description="发送方会话 key（缺省回退发送方主会话）")
+    scheduled_at: str = Field(..., description="执行时间（本地时间 YYYY-MM-DDTHH:MM 或 YYYY-MM-DD HH:MM:SS，必须晚于当前）")
+    reply: str = Field("", description="回执：'yes' | 'no'（空=按模板推导）")
+    timeout_seconds: int | None = Field(None, description="看门狗超时秒数（None=不传）")
+    exec_name: str = Field("", description="执行实例短标题（空=不传）")
+    skill_ids: list[str] = Field(default_factory=list, description="引用技能 id 列表（仅有效技能）")
+    needs_confirm: int | None = Field(None, description="人类放行 0/1（None=不传=0）")
+
+
 class DispatchExemptBody(BaseModel):
     """Temporary dispatch exemption input.
 
@@ -110,6 +131,36 @@ def run_task(agent_id: str, body: RunTaskBody, user: dict = _auth) -> dict:
             skill_ids=body.skill_ids,
             reply=body.reply,
             client_request_id=body.client_request_id,
+            needs_confirm=body.needs_confirm,
+        )
+    except ActionError as e:
+        raise HTTPException(400, {"error": {"code": e.code, "message": e.message, "details": e.details}}) from e
+
+
+@router.post("/agents/{agent_id}/actions/schedule-task")
+def schedule_task(agent_id: str, body: ScheduleTaskBody, user: dict = _auth) -> dict:
+    """[2026-11-27 Feng] "定时执行": create the execution now, let the watchdog run it at scheduled_at.
+
+    Nothing is delivered at submit time (run_status stays 'pending', the agent queue is untouched);
+    the watchdog activates it when the time is due. The response therefore echoes `status: pending`
+    and `scheduled_at` -- the console shows "scheduled for <time>" instead of "sent".
+    """
+    actor = str(user.get("name") or user.get("agent_id") or "")
+    try:
+        return actions.schedule_task(
+            agent_id=agent_id,
+            session_key=body.session_key,
+            instruction=body.instruction,
+            scheduled_at=body.scheduled_at,
+            task_name=body.task_name,
+            task_id=body.task_id,
+            caller_agent_id=body.caller_agent_id,
+            send_session_key=body.send_session_key,
+            actor_user=actor,
+            reply=body.reply,
+            timeout_seconds=body.timeout_seconds,
+            exec_name=body.exec_name,
+            skill_ids=body.skill_ids,
             needs_confirm=body.needs_confirm,
         )
     except ActionError as e:

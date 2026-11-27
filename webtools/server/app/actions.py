@@ -37,6 +37,7 @@ from __future__ import annotations
 
 import json
 import logging
+from datetime import datetime
 from typing import Any
 
 from . import kernel
@@ -398,6 +399,199 @@ def run_task(
         "task_ref": {"task_id": task_id, "task_name": task_name},
         "options": extra,
     }
+
+
+def schedule_task(
+    agent_id: str,
+    session_key: str,
+    instruction: str,
+    scheduled_at: str,
+    task_name: str = "",
+    task_id: str = "",
+    caller_agent_id: str = "",
+    send_session_key: str = "",
+    actor_user: str = "",
+    reply: str = "",
+    timeout_seconds: int | None = None,
+    exec_name: str = "",
+    skill_ids: list[str] | None = None,
+    needs_confirm: int | None = None,
+) -> dict[str, Any]:
+    """[2026-11-27 Feng] "定时执行" -- schedule a task for a later moment instead of dispatching it now.
+
+    Semantics = kernel `agx_schedule_task`: it writes the execution record only (run_status='pending',
+    started_at=NULL) and does NOT push anything to the agent queue. The watchdog activates it when
+    `scheduled_at` is due, and only then is it delivered/executed. So "the moment I click send" and
+    "the moment the agent works" are two different things -- the UI must say the schedule time back.
+
+    Why not agx_universal_send: the facade only knows "send now" (text/task/quickcmd); scheduling is a
+    different verb. Reusing dispatch and faking a delay would deliver immediately -- exactly what we don't want.
+
+    Guards copied on purpose from run_task (receiver session / sender session / task ownership):
+    a scheduled task must land in a session of the **receiver** agent, be sent from a session of the
+    **caller** agent, and wrap a task template owned by that receiver -- same contract as sending now,
+    otherwise "send now" and "schedule" would disagree about who may do what.
+    """
+    agent_id = (agent_id or "").strip()
+    session_key = (session_key or "").strip()
+    instruction = (instruction or "").strip()
+    task_id = (task_id or "").strip()
+    caller = (caller_agent_id or "").strip() or agent_id
+    send_session = (send_session_key or "").strip() or f"agent:{caller}:main"
+
+    if not agent_id:
+        raise ActionError("BAD_REQUEST", "缺少 agent_id")
+    new_session = not session_key
+    if not instruction:
+        raise ActionError("BAD_REQUEST", "缺少 instruction（任务指令不能为空）")
+    if not task_id:
+        raise ActionError("BAD_REQUEST", "缺少 task_id（执行必须包装成 task，需指定任务模板）")
+
+    when = _parse_scheduled_at(scheduled_at)
+
+    # ── guard: session ownership (receiver / sender), same as run_task ──
+    recv_prefix = f"agent:{agent_id}:"
+    if not new_session and not (session_key == f"agent:{agent_id}:main" or session_key.startswith(recv_prefix)):
+        raise ActionError(
+            "SESSION_NOT_OWNED",
+            f"接收会话与接收方智能体不匹配：{session_key} 不属于 {agent_id}",
+            {"session_key": session_key, "agent_id": agent_id, "role": "receiver"},
+        )
+    send_prefix = f"agent:{caller}:"
+    if not (send_session == f"agent:{caller}:main" or send_session.startswith(send_prefix)):
+        raise ActionError(
+            "SESSION_NOT_OWNED",
+            f"发送方会话与发送方智能体不匹配：{send_session} 不属于 {caller}",
+            {"send_session_key": send_session, "caller_agent_id": caller, "role": "sender"},
+        )
+
+    # ── guard: the task template must belong to the receiver ──
+    try:
+        rows = kernel.query("SELECT agent_id FROM agx_task_base WHERE task_id = %s LIMIT 1", (task_id,))
+    except Exception as e:  # noqa: BLE001
+        raise ActionError("KERNEL_UNAVAILABLE", f"任务归属校验失败：{e}") from e
+    if not rows:
+        raise ActionError("TASK_NOT_FOUND", f"任务不存在：{task_id}", {"task_id": task_id})
+    owner = str(rows[0].get("agent_id") or "")
+    if owner != agent_id:
+        raise ActionError(
+            "TASK_NOT_OWNED",
+            f"任务与接收方智能体不匹配：task {task_id} 归属 {owner}，非 {agent_id}",
+            {"task_id": task_id, "agent_id": agent_id, "owner": owner},
+        )
+
+    # ── reference skills: agx_schedule_task has no instruction_suffix, so merge the block here (same as the
+    #    old run_task path). Only when there really is something to merge. ──
+    if skill_ids:
+        try:
+            suffix = resolve_skill_block(skill_ids)
+        except SkillRefError as e:
+            raise ActionError(e.code, e.message) from e
+        if suffix:
+            instruction = f"{instruction}\n\n{suffix}"
+
+    extra: dict[str, Any] = {"scheduled_at": when}
+    if timeout_seconds is not None:
+        extra["timeout_seconds"] = int(timeout_seconds)
+    if exec_name.strip():
+        extra["exec_name"] = exec_name.strip()
+    if needs_confirm:
+        extra["needs_confirm"] = 1
+    # reply: explicit either/or. "no" -> force_no_reply (kernel flag), "yes" -> needs_reply=1.
+    r = ""
+    if reply:
+        r = normalize_reply(reply)
+        if r == "yes":
+            extra["needs_reply"] = 1
+        else:
+            extra["force_no_reply"] = True
+
+    res: Any = {}
+    last_err = ""
+    for attempt in (1, 2):
+        try:
+            raw = kernel.call_tool(
+                "agx_schedule_task",
+                caller_agent_id=caller,
+                agent_id=agent_id,
+                task_id=task_id,
+                instruction=instruction,
+                session_key=session_key,
+                self_session_id=send_session,
+                session_name=task_name or "",
+                **extra,
+            )
+        except McpUnavailable as e:
+            last_err = f"内核不可达：{e}"
+            log.warning("schedule_task 第 %d 次 McpUnavailable: %s", attempt, e)
+            continue
+        except McpToolError as e:
+            raise ActionError("MCP_ERROR", str(e)) from e
+
+        res = _parse_mcp_json(raw)
+        if isinstance(res, dict) and res.get("error"):
+            raise ActionError("MCP_REJECTED", str(res.get("error")), res)
+        if isinstance(res, dict) and res.get("run_uuid"):
+            break
+        last_err = f"MCP 返回无 run_uuid（第 {attempt} 次）: {json.dumps(res, ensure_ascii=False)[:200]}"
+        log.warning("schedule_task %s", last_err)
+    else:
+        raise ActionError("MCP_EMPTY_RESULT", f"定时任务未获得 run_uuid，可能未创建：{last_err}")
+
+    res = res if isinstance(res, dict) else {}
+    run_uuid = str(res.get("run_uuid") or "")
+    log.info(
+        "schedule_task created: actor_user=%s caller=%s recv=%s session=%s task=%s run=%s at=%s",
+        actor_user or "-", caller, agent_id, session_key, task_name or task_id, run_uuid, when,
+    )
+    return {
+        "scheduled": True,
+        "run_uuid": run_uuid,
+        "status": str(res.get("status") or "pending"),
+        "scheduled_at": when,
+        "session_key": res.get("session_key") or session_key,
+        "new_session": new_session,
+        "send_session_key": send_session,
+        "target_agent": agent_id,
+        "caller_agent_id": caller,
+        "actor_user": actor_user,
+        "task_ref": {"task_id": task_id, "task_name": task_name},
+        "reply": r,
+    }
+
+
+def _parse_scheduled_at(value: str) -> str:
+    """Normalise the schedule time to MySQL DATETIME and refuse the past.
+
+    The frontend sends a local `datetime-local` value ("2026-11-27T09:30"); the operator's machine and the
+    server are in the same timezone here, and the kernel stores/compares MySQL DATETIME in server local time
+    (the watchdog compares strings against datetime.now()). So: parse as local wall time, no UTC conversion --
+    converting would silently shift every schedule by 8 hours.
+
+    A past time is rejected here rather than handed to the kernel: the watchdog would activate it at once,
+    i.e. the user asked for "later" and got "now" -- a silent semantic failure, not a scheduling.
+    """
+    raw = (value or "").strip()
+    if not raw:
+        raise ActionError("SCHEDULE_TIME_REQUIRED", "定时执行必须指定执行时间")
+    text = raw.replace("T", " ")
+    if len(text) == 16:  # "YYYY-MM-DD HH:MM"
+        text += ":00"
+    try:
+        when = datetime.strptime(text, "%Y-%m-%d %H:%M:%S")
+    except ValueError as e:
+        raise ActionError(
+            "SCHEDULE_TIME_INVALID",
+            f"执行时间格式不正确：{value}（应为 YYYY-MM-DD HH:MM 或带秒）",
+            {"scheduled_at": value},
+        ) from e
+    if when <= datetime.now():
+        raise ActionError(
+            "SCHEDULE_TIME_PAST",
+            f"执行时间必须晚于当前时间：{when.strftime('%Y-%m-%d %H:%M:%S')}",
+            {"scheduled_at": when.strftime("%Y-%m-%d %H:%M:%S")},
+        )
+    return when.strftime("%Y-%m-%d %H:%M:%S")
 
 
 def send_text(
