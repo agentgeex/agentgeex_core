@@ -37,33 +37,33 @@ run that runtime directly.
 [Concepts](docs/concepts/)
 
 <p align="center">
-  <img alt="Version v0.1.0" src="./assets/badges/badge-version.svg" height="20" />
-  <img alt="Status pre-1.0" src="./assets/badges/badge-status.svg" height="20" />
-  <img alt="License Apache-2.0" src="./assets/badges/badge-license.svg" height="20" />
-  <img alt="Deployment self-hosted" src="./assets/badges/badge-selfhosted.svg" height="20" />
+  <img alt="Version v0.1.0" src="./assets/badges/en/badge-version.svg" height="20" />
+  <img alt="Status pre-1.0" src="./assets/badges/en/badge-status.svg" height="20" />
+  <img alt="License Apache-2.0" src="./assets/badges/en/badge-license.svg" height="20" />
+  <img alt="Deployment self-hosted" src="./assets/badges/en/badge-selfhosted.svg" height="20" />
 </p>
 
 <details>
 <summary>Stack and compatibility — Python 3.12 · uv · MCP 1.x · FastMCP 3.2 · MySQL 8.0 · Redis 6.2+ · OpenClaw · Claude Code · DSH · Node.js 22.22.3+ · Codex (POC) · 96 MCP tools · 4 system agents</summary>
 
 <p align="center">
-  <img alt="MCP tools 96" src="./assets/badges/badge-tools.svg" height="20" />
-  <img alt="System agents 4" src="./assets/badges/badge-agents.svg" height="20" />
+  <img alt="MCP tools 96" src="./assets/badges/en/badge-tools.svg" height="20" />
+  <img alt="System agents 4" src="./assets/badges/en/badge-agents.svg" height="20" />
 </p>
 <p align="center">
-  <img alt="Python 3.12+" src="./assets/badges/badge-python.svg" height="20" />
-  <img alt="Environment uv" src="./assets/badges/badge-uv.svg" height="20" />
-  <img alt="Protocol MCP 1.x" src="./assets/badges/badge-mcp.svg" height="20" />
-  <img alt="Framework FastMCP 3.2" src="./assets/badges/badge-fastmcp.svg" height="20" />
-  <img alt="MySQL 8.0" src="./assets/badges/badge-mysql.svg" height="20" />
-  <img alt="Redis 6.2+" src="./assets/badges/badge-redis.svg" height="20" />
+  <img alt="Python 3.12+" src="./assets/badges/en/badge-python.svg" height="20" />
+  <img alt="Environment uv" src="./assets/badges/en/badge-uv.svg" height="20" />
+  <img alt="Protocol MCP 1.x" src="./assets/badges/en/badge-mcp.svg" height="20" />
+  <img alt="Framework FastMCP 3.2" src="./assets/badges/en/badge-fastmcp.svg" height="20" />
+  <img alt="MySQL 8.0" src="./assets/badges/en/badge-mysql.svg" height="20" />
+  <img alt="Redis 6.2+" src="./assets/badges/en/badge-redis.svg" height="20" />
 </p>
 <p align="center">
-  <img alt="OpenClaw 2026.8.35" src="./assets/badges/badge-openclaw.svg" height="20" />
-  <img alt="Claude Code 2.1.318" src="./assets/badges/badge-claudecode.svg" height="20" />
-  <img alt="DSH 0.2.x" src="./assets/badges/badge-dsh.svg" height="20" />
-  <img alt="Node.js 22.22.3+" src="./assets/badges/badge-node.svg" height="20" />
-  <img alt="Codex POC" src="./assets/badges/badge-codex.svg" height="20" />
+  <img alt="OpenClaw 2026.8.35" src="./assets/badges/en/badge-openclaw.svg" height="20" />
+  <img alt="Claude Code 2.1.318" src="./assets/badges/en/badge-claudecode.svg" height="20" />
+  <img alt="DSH 0.2.x" src="./assets/badges/en/badge-dsh.svg" height="20" />
+  <img alt="Node.js 22.22.3+" src="./assets/badges/en/badge-node.svg" height="20" />
+  <img alt="Codex POC" src="./assets/badges/en/badge-codex.svg" height="20" />
 </p>
 
 </details>
