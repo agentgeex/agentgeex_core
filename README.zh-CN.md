@@ -4,19 +4,49 @@
 
 **让已有的 Agent 运行时，从单打独斗变成一支队伍。**
 
+*一人一支 Agent 军团。*
+
 简体中文 · [English](README.md)
 
 > **仓库**：[GitHub](https://github.com/agentgeex/agentgeex_core)（主仓） · [Gitee](https://gitee.com/agentgeex/agentgeex_core)（只读镜像）。Issue 与 PR 统一在 GitHub 处理。
 
 <p align="center">
+  <img src="./assets/screenshots/screenshot-1-status.png" width="820"
+       alt="AgentGeeX 控制台系统状态页：一台主机上 22 个 Agent、11 个会话、145 次执行，槽位 14/16" />
+</p>
+
+<p align="center">
+  <img src="./assets/screenshots/screenshot-2-agents.png" width="49%"
+       alt="智能体列表：一个业务项目下的 5 个 Agent，每张卡片显示会话、任务、执行数" />
+  <img src="./assets/screenshots/screenshot-3-graph.png" width="49%"
+       alt="一份计划展开成 107 步：根节点扇出成多条依赖链" />
+</p>
+
+AgentGeeX 待在你已经在跑的 Agent 运行时（OpenClaw、Claude Code、任何 MCP 客户端）与真正要干的活之间。
+它不调模型、不写提示词，只把 Agent 缺的三件事补上：**重启后还记得自己是谁的身份、先定义再执行的活、
+以及干过什么的完整记录** —— 全部自托管，用你自己的 MySQL 和 Redis。
+
+**这种情况下你需要它**：两个以上的 Agent 之间要交接工作，而你不愿靠翻聊天记录还原谁干了什么。
+**这种情况下你不需要**：一个 Agent 干好一件事 —— 直接用那个运行时就好。
+
+→ **最快上手**：[安装](#安装)（一条命令 + 两个配置文件） ·
+[15 分钟走一遍](#15-分钟让第一个-agent-干完一件活) ·
+[概念文档](docs/concepts/)
+
+<p align="center">
   <img alt="版本 v0.1.0" src="./assets/badges/badge-version.svg" height="20" />
   <img alt="状态 pre-1.0" src="./assets/badges/badge-status.svg" height="20" />
   <img alt="许可证 Apache-2.0" src="./assets/badges/badge-license.svg" height="20" />
-  <img alt="MCP 工具 96" src="./assets/badges/badge-tools.svg" height="20" />
-  <img alt="系统 Agent 4" src="./assets/badges/badge-agents.svg" height="20" />
   <img alt="部署 自托管" src="./assets/badges/badge-selfhosted.svg" height="20" />
 </p>
 
+<details>
+<summary>技术栈与兼容性 —— Python 3.12 · uv · MCP 1.x · FastMCP 3.2 · MySQL 8.0 · Redis 6.2+ · OpenClaw · Claude Code · DSH · Node.js 22.22.3+ · Codex（POC） · 96 个 MCP 工具 · 4 个系统 Agent</summary>
+
+<p align="center">
+  <img alt="MCP 工具 96" src="./assets/badges/badge-tools.svg" height="20" />
+  <img alt="系统 Agent 4" src="./assets/badges/badge-agents.svg" height="20" />
+</p>
 <p align="center">
   <img alt="Python 3.12+" src="./assets/badges/badge-python.svg" height="20" />
   <img alt="环境 uv" src="./assets/badges/badge-uv.svg" height="20" />
@@ -25,7 +55,6 @@
   <img alt="MySQL 8.0" src="./assets/badges/badge-mysql.svg" height="20" />
   <img alt="Redis 6.2+" src="./assets/badges/badge-redis.svg" height="20" />
 </p>
-
 <p align="center">
   <img alt="OpenClaw 2026.8.35" src="./assets/badges/badge-openclaw.svg" height="20" />
   <img alt="Claude Code 2.1.318" src="./assets/badges/badge-claudecode.svg" height="20" />
@@ -33,6 +62,8 @@
   <img alt="Node.js 22.22.3+" src="./assets/badges/badge-node.svg" height="20" />
   <img alt="Codex POC" src="./assets/badges/badge-codex.svg" height="20" />
 </p>
+
+</details>
 
 ---
 
@@ -225,14 +256,11 @@ redis-srv     7 工具
 AgentGeeX 讲 MCP。这对 Agent 是对接口，对人则基本无用。网页控制台是同一个数据库的**人这一侧**：
 它通过一个小的 FastAPI BFF 读数据，不直接碰 MySQL，也不会成为第二个真源。
 
-下面全部是一台真实安装里的活数据 —— 12 个智能体、96 个工具、1 台主机。
+下面全部是一台真实安装里的活数据 —— 22 个智能体、96 个 MCP 工具、1 台主机。
 
 <p align="center">
-  <img src="./webtools/docs/screenshots/zh-CN/02_system.png" width="49%" alt="系统状态" />
-  <img src="./webtools/docs/screenshots/zh-CN/05_agents.png" width="49%" alt="智能体" />
-</p>
-<p align="center">
-  <img src="./webtools/docs/screenshots/zh-CN/09_quick_cmds.png" width="72%" alt="快捷指令" />
+  <img src="./assets/screenshots/screenshot-4-quickcmds.png" width="82%"
+       alt="快捷指令：七条已保存的指令，每条显示目标 Agent、目标任务与参数个数" />
 </p>
 
 14 个页面，分四组：
@@ -282,6 +310,8 @@ AgentGeeX 讲 MCP。这对 Agent 是对接口，对人则基本无用。网页�
 到这里，你已经有了：一个项目、一支队伍、一条可审计的执行记录。
 
 ## 它不适合谁
+
+一句话版本：一个 Agent 干好一件事，你不需要这一层。三条完整边界：
 
 - **只需要一个 Agent 干一件事** → 直接用 OpenClaw 或 Codex，不用上编排层
 - **要的是托管 SaaS** → 本项目只做自托管，不提供云服务

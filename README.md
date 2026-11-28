@@ -4,19 +4,52 @@
 
 **Turn the agent runtimes you already run into a team instead of a crowd.**
 
+*One person. An agent team.*
+
 [English](README.md) · [简体中文](README.zh-CN.md)
 
 > **Repository**: [GitHub](https://github.com/agentgeex/agentgeex_core) (primary) · [Gitee](https://gitee.com/agentgeex/agentgeex_core) (read-only mirror). Issues and pull requests are handled on GitHub.
 
 <p align="center">
+  <img src="./assets/screenshots/screenshot-1-status.png" width="820"
+       alt="AgentGeeX console, system status: 22 agents, 11 sessions, 145 runs and 14 of 16 slots in use on one host" />
+</p>
+
+<p align="center">
+  <img src="./assets/screenshots/screenshot-2-agents.png" width="49%"
+       alt="Agent list: a business project with five agents, each card showing sessions, tasks and runs" />
+  <img src="./assets/screenshots/screenshot-3-graph.png" width="49%"
+       alt="One plan expanded into 107 steps: a root step fanning out into dependency chains" />
+</p>
+
+AgentGeeX sits between the agent runtimes you already operate — OpenClaw, Claude Code, any MCP
+client — and the work you actually want done. It does not call models and it does not write
+prompts. It gives the agents you already have three things they are missing: **an identity that
+survives a restart, a piece of work that is defined before it runs, and a record of what actually
+happened** — self-hosted, on your own MySQL and Redis.
+
+**You need this** if two or more agents should hand work to each other and you would rather not
+reconstruct who did what from chat logs. **You do not need this** if one agent does one thing well —
+run that runtime directly.
+
+→ **Shortest path in:** [Install](#install) (one command, two config files) ·
+[15-minute walkthrough](#15-minutes-get-your-first-agent-through-a-piece-of-work) ·
+[Concepts](docs/concepts/)
+
+<p align="center">
   <img alt="Version v0.1.0" src="./assets/badges/badge-version.svg" height="20" />
   <img alt="Status pre-1.0" src="./assets/badges/badge-status.svg" height="20" />
   <img alt="License Apache-2.0" src="./assets/badges/badge-license.svg" height="20" />
-  <img alt="MCP tools 96" src="./assets/badges/badge-tools.svg" height="20" />
-  <img alt="System agents 4" src="./assets/badges/badge-agents.svg" height="20" />
   <img alt="Deployment self-hosted" src="./assets/badges/badge-selfhosted.svg" height="20" />
 </p>
 
+<details>
+<summary>Stack and compatibility — Python 3.12 · uv · MCP 1.x · FastMCP 3.2 · MySQL 8.0 · Redis 6.2+ · OpenClaw · Claude Code · DSH · Node.js 22.22.3+ · Codex (POC) · 96 MCP tools · 4 system agents</summary>
+
+<p align="center">
+  <img alt="MCP tools 96" src="./assets/badges/badge-tools.svg" height="20" />
+  <img alt="System agents 4" src="./assets/badges/badge-agents.svg" height="20" />
+</p>
 <p align="center">
   <img alt="Python 3.12+" src="./assets/badges/badge-python.svg" height="20" />
   <img alt="Environment uv" src="./assets/badges/badge-uv.svg" height="20" />
@@ -25,7 +58,6 @@
   <img alt="MySQL 8.0" src="./assets/badges/badge-mysql.svg" height="20" />
   <img alt="Redis 6.2+" src="./assets/badges/badge-redis.svg" height="20" />
 </p>
-
 <p align="center">
   <img alt="OpenClaw 2026.8.35" src="./assets/badges/badge-openclaw.svg" height="20" />
   <img alt="Claude Code 2.1.318" src="./assets/badges/badge-claudecode.svg" height="20" />
@@ -33,6 +65,8 @@
   <img alt="Node.js 22.22.3+" src="./assets/badges/badge-node.svg" height="20" />
   <img alt="Codex POC" src="./assets/badges/badge-codex.svg" height="20" />
 </p>
+
+</details>
 
 ---
 
@@ -218,14 +252,11 @@ AgentGeeX speaks MCP. That is the right interface for an agent and a useless one
 web console is the human side of the same database: it reads through a small FastAPI BFF, never talks
 to MySQL directly, and never becomes a second source of truth.
 
-Everything below is live data from a real install -- 12 agents, 96 tools, one host.
+Everything below is live data from a real install -- 22 agents, 96 MCP tools, one host.
 
 <p align="center">
-  <img src="./webtools/docs/screenshots/en-US/02_system.png" width="49%" alt="System status" />
-  <img src="./webtools/docs/screenshots/en-US/05_agents.png" width="49%" alt="Agents" />
-</p>
-<p align="center">
-  <img src="./webtools/docs/screenshots/en-US/09_quick_cmds.png" width="72%" alt="Quick commands" />
+  <img src="./assets/screenshots/screenshot-4-quickcmds.png" width="82%"
+       alt="Quick commands: seven saved commands, each showing its target agent, target task and parameter count" />
 </p>
 
 Fourteen pages, four groups:
@@ -277,6 +308,8 @@ Tell that worker: "write a 300-word brief on XX, put the output in outputs"
 At this point you have: a project, a team, and one auditable execution record.
 
 ## Who this is not for
+
+Short version: if one agent does one thing, you do not need this layer. The three full boundaries:
 
 - **You only need one agent doing one thing** → use OpenClaw or Codex directly; you do not need an orchestration layer
 - **You want managed SaaS** → this project is self-hosted only; there is no cloud offering
